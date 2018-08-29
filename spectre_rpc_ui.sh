@@ -3,10 +3,10 @@
 #
 # FILE: spectre_rpc_ui.sh
 #
-# DESCRIPTION: DIALOG RPC interface for Spectrecoin, 
+# DESCRIPTION: DIALOG RPC interface for Spectrecoin,
 #              It's a lightwight GUI for the spectrecoind (headless) wallet
 #
-# OPTIONS: path to config file can be parsed as an argument, 
+# OPTIONS: path to config file can be parsed as an argument,
 #          if the file is not located in the same folder
 # REQUIREMENTS: dialog, bc
 # NOTES: you may resize your terminal to get most of it
@@ -16,47 +16,94 @@
 # CREATED: 26-08-2018
 # ============================================================================
 
+# ============================================================================
+# This function is the beating heart, it interacts via CURL with the daemon
+# and optimizes it's output via the cutCURLresult function
+#
+# Input: $1 will be executed by the daemon as command
+#        $2 params for the daemon command
+#        $3 optional parameter to indicate if this was done in the user
+#           command mask ($3="u") - in this case we will just display the
+#           result and do not update the UI (except in case of wallet lock/unlock)
+#
+# Output: global variable curl_result_global (clean and bash optimized)
 executeCURL() {
+    local _action=$1
+    local _parameter1=$2
+    local _parameter2=$3
     curl_login="--user $RPCUSER:$RPCPASSWORD"
     curl_connection_parameters="-H content-type:text/plain; http://$IP:$PORT"
     curl_command="--silent --data-binary "
-    curl_command+='{"jsonrpc":"1.0","id":"curltext","method":"'"$1"'","params":['"$2"']}'
+    curl_command+='{"jsonrpc":"1.0","id":"curltext","method":"'"$_action"'","params":['"$_parameter1"']}'
     curl_result_global=$( ${CURL} ${curl_login} ${curl_command} ${curl_connection_parameters} )
+    # clean the result (curl_result_global) and optimize it for bash
     cutCURLresult
-    if [ "$1" = "listtransactions" ] && [ "$3" != "u" ]; then
+    if [ "$_action" = "listtransactions" ] && [ "$_parameter2" != "u" ]; then
         getTransactions
-    elif [ "$1" = "getinfo" ] && [ "$3" != "u" ]; then
+    elif [ "$_action" = "getinfo" ] && [ "$_parameter2" != "u" ]; then
         getInfo
-    elif [ "$1" = "getstakinginfo" ] && [ "$3" != "u" ]; then
+    elif [ "$_action" = "getstakinginfo" ] && [ "$_parameter2" != "u" ]; then
         getStakingInfo
-    elif [ "$1" = "walletlock" ]; then
+    elif [ "$_action" = "walletlock" ]; then
+        # no error occurred, since cutCURLresult checked it
         walletLockedFeedback
-    elif [ "$1" = "walletpassphrase" ]; then
-    :
+    elif [ "$_action" = "walletpassphrase" ]; then
+        # no error occurred, since cutCURLresult checked it
+        : # literally nothing to do here since daemon responds is excellent
     else
+        # User command
+        # let's display the result of the user command, if there is any
+        # if we had a CURL error the msg was already displayed
         if [[ "$curl_result_global" != '{"result":null'* ]]; then
             curl_result_global=${curl_result_global//','/'\n'}
-            curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
+#            curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
             curlFeedbackHandling "$curl_result_global"
         fi
     fi
 }
 
+# ============================================================================
+# Every CURL command will yield to a reply, but this reply
+# is very long and surrounded by plain CURL data (non spectrecoind)
+#
+# Goal: after this function call the global string curl_result_global will
+#       contain just wallet data (bash-optimized)
+#
+# Input: global var. curl_result_global containing CURL transaction data,
+#        lots of " and spaces
+#
+# Output: global var. result (bash optimized) without any spaces nor "
 cutCURLresult() {
-    if [[ $curl_result_global == *'"error":null,'* ]]; then
+    # check if curl_result_global contains error msg
+    # if there was an error print it and exit
+    if [[ ${curl_result_global} == *'"error":null,'* ]]; then
+        # goal: cut the result string so only the real output is left
+        # problem: there exist special results that are 2-dimensional
         if [[ "$curl_result_global" == '{"result":[{'* ]]; then
+            #cut right side in case of 2-dim. result
+            #cut left side in case of 2-dim. result
             curl_result_global="${curl_result_global%'}],"error"'*}"
             curl_result_global="${curl_result_global#*'":[{'}"
         elif [[ "$curl_result_global" == '{"result":{'* ]]; then
+            #cut right side
+            #cut left side
             curl_result_global="${curl_result_global%'},"error"'*}"
             curl_result_global="${curl_result_global#*'":{'}"
         else
+            #curl feedback in the form of {"result":<blabla>,"error":null,"id":"curltext"}
+            #cut right side
+            #cut left side
             curl_result_global="${curl_result_global%',"error"'*}"
             curl_result_global="${curl_result_global#*':'}"
         fi
+        # typically the wallet daemon gives feedback about errors within the daemon
+        # if there was no error, just display none instead of ""
         curl_result_global=${curl_result_global//'""'/'none'}
+        # optimize string for bash
+        # get rid of the "
         curl_result_global=${curl_result_global//'"'/}
     elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
+        # The RPC login failed - since the daemon responded it's due to a wrong login
         s="Error: RPC login failed. Check username and password in script.conf file.\n"
         s+="sample config could be:\n"
         s+='RPCUSER="spectrecoinrpc"'"\n"
@@ -67,67 +114,83 @@ cutCURLresult() {
         s+="IMPORTANT: The login information must match the /.spectrecoin/spectrecoin.conf data."
         errorHandling "$s" 2
     else
+        # Most likely a parsing error in the CURL command parameters
+        # Just hand over the error msg. within the CURL reply
+
+        # cut right side
         msg="${curl_result_global%%'"}'*}"
+
+        # cut left side
         msg="${msg#*'message":"'}"
         errorHandling "CURL error message:\n\n$msg"
     fi
 }
 
+# ============================================================================
+# Fills a string to a given length (filling is done where the marker -_- is)
+# \Z1 etc color commands are ignored
+#
+# Input: $1 will be displayed as CURL response msg
 fillLine() {
-    local output=$1
-    local buff=${output//'\Z'?/}
+    local _output=$1
+
+    # remove dialog color commands
+    buff=${_output//'\Z'?/}
+
+    # remove expander command
     buff=${buff//'-_-'/}
-    local len=${#buff}
-    unset buff
-    local offset=$(( $2 - $len ))
-    unset len
-    local filler
+
+    len=${#buff}
+    offset=$(( $2 - $len ))
     if [ ${offset} -ge 0 ]; then
-        local i=0
-        while [ ${i} -lt ${offset} ]; do
-            if (( $i % 2 == 1 )); then
+        local _i=0
+        while [ ${_i} -lt ${offset} ]; do
+            if (( $_i % 2 == 1 )); then
                 filler=${filler}'.'
             else
                 filler=${filler}' '
             fi
-            i=$(( $i + 1 ))
+            _i=$(( $_i + 1 ))
         done
-        unset i
-        unset offset
     else
         filler='\n'
     fi
     output=${output//'-_-'/"$filler"}
     echo ${output}
-    unset output
-    unset filler
 }
 
+# ============================================================================
+# Gets an amount in sec that will be displayed human readable
+#
+# Input: $1 amount in sec
 secToHumanReadable() {
-    local time=$1
-    if [ $((time / 31536000)) -gt 0 ];then
-        timeHuman="$((time / 31536000))y "
+    local _time=$1
+    if [ $((_time / 31536000)) -gt 0 ];then
+        timeHuman="$((_time / 31536000))y "
     fi
-    if [ $((time % 31536000 /604800)) -gt 0 ];then
-        timeHuman+="$((time % 31536000 /604800))w "
+    if [ $((_time % 31536000 /604800)) -gt 0 ];then
+        timeHuman+="$((_time % 31536000 /604800))w "
     fi
-    if [ $((time % 604800 /86400)) -gt 0 ];then
-        timeHuman+="$((time % 604800 /86400))d "
+    if [ $((_time % 604800 /86400)) -gt 0 ];then
+        timeHuman+="$((_time % 604800 /86400))d "
     fi
-    if [ $((time % 86400 /3600)) -gt 0 ];then
-        timeHuman+="$((time % 86400 /3600))h "
+    if [ $((_time % 86400 /3600)) -gt 0 ];then
+        timeHuman+="$((_time % 86400 /3600))h "
     fi
-    if [ $((time % 3600 /60)) -gt 0 ];then
-        timeHuman+="$((time % 3600 /60))m "
+    if [ $((_time % 3600 /60)) -gt 0 ];then
+        timeHuman+="$((_time % 3600 /60))m "
     fi
-    if [ $((time % 60)) -gt 0 ];then
-        timeHuman+="$((time % 60))s"
+    if [ $((_time % 60)) -gt 0 ];then
+        timeHuman+="$((_time % 60))s"
     fi
-    unset time
     echo "$timeHuman"
-    unset timeHuman
 }
 
+# ============================================================================
+# Gathers the data form the CURL result for the getinfo command
+#
+# Input: $curl_result_global
+# Outpunt: $info_global array
 getInfo() {
     unset info_global
     local i=0
@@ -763,7 +826,7 @@ refreshMainMenu_DATA() {
 }
 
 export NCURSES_NO_UTF8_ACS=1
-printf '\033[8;29;134t' 
+printf '\033[8;29;134t'
 VERSION='v1.8alpha'
 TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
 readConfig $1
