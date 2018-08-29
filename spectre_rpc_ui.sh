@@ -17,15 +17,11 @@
 # ============================================================================
 
 executeCURL() {
-    unset curl_result_global
-    local curl_login="--user $RPCUSER:$RPCPASSWORD"
-    local curl_connection_parameters="-H content-type:text/plain; http://$IP:$PORT"
-    local curl_command="--silent --data-binary "
+    curl_login="--user $RPCUSER:$RPCPASSWORD"
+    curl_connection_parameters="-H content-type:text/plain; http://$IP:$PORT"
+    curl_command="--silent --data-binary "
     curl_command+='{"jsonrpc":"1.0","id":"curltext","method":"'"$1"'","params":['"$2"']}'
-    curl_result_global=$( $CURL $curl_login $curl_command $curl_connection_parameters )
-    unset curl_login
-    unset curl_command
-    unset curl_connection_parameters
+    curl_result_global=$( ${CURL} ${curl_login} ${curl_command} ${curl_connection_parameters} )
     cutCURLresult
     if [ "$1" = "listtransactions" ] && [ "$3" != "u" ]; then
         getTransactions
@@ -39,45 +35,42 @@ executeCURL() {
     :
     else
         if [[ "$curl_result_global" != '{"result":null'* ]]; then
-        curl_result_global=${curl_result_global//','/'\n'}
-        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
-        curlFeedbackHandling "$curl_result_global"
+            curl_result_global=${curl_result_global//','/'\n'}
+            curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
+            curlFeedbackHandling "$curl_result_global"
         fi
     fi
 }
 
 cutCURLresult() {
- if [[ $curl_result_global == *'"error":null,'* ]]; then
- if [[ "$curl_result_global" == '{"result":[{'* ]]; then
- curl_result_global="${curl_result_global%'}],"error"'*}"
- curl_result_global="${curl_result_global#*'":[{'}"      
- elif [[ "$curl_result_global" == '{"result":{'* ]]; then
- curl_result_global="${curl_result_global%'},"error"'*}"   
- curl_result_global="${curl_result_global#*'":{'}"         
- else
- curl_result_global="${curl_result_global%',"error"'*}"   
- curl_result_global="${curl_result_global#*':'}"         
- fi
- curl_result_global=${curl_result_global//'""'/'none'}
- curl_result_global=${curl_result_global//'"'/}
- elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
- local s
- s="Error: RPC login failed. Check username and password in script.conf file.\n"
- s+="sample config could be:\n"
- s+='RPCUSER="spectrecoinrpc"'"\n"
- s+='RPCPASSWORD="44_char_pw_(lower_&_upper_letters_&_numbers)"'"\n"
- s+='IP="127.0.0.1"'"\n"
- s+='PORT="8332"'"\n"
- s+='CURL="/usr/bin/curl"'"\n\n"
- s+="IMPORTANT: The login information must match the /.spectrecoin/spectrecoin.conf data."
- errorHandling "$s" 2
- unset s
- else
- local msg="${curl_result_global%%'"}'*}"     
- msg="${msg#*'message":"'}" 
- errorHandling "CURL error message:\n\n$msg"
- unset msg
- fi
+    if [[ $curl_result_global == *'"error":null,'* ]]; then
+        if [[ "$curl_result_global" == '{"result":[{'* ]]; then
+            curl_result_global="${curl_result_global%'}],"error"'*}"
+            curl_result_global="${curl_result_global#*'":[{'}"
+        elif [[ "$curl_result_global" == '{"result":{'* ]]; then
+            curl_result_global="${curl_result_global%'},"error"'*}"
+            curl_result_global="${curl_result_global#*'":{'}"
+        else
+            curl_result_global="${curl_result_global%',"error"'*}"
+            curl_result_global="${curl_result_global#*':'}"
+        fi
+        curl_result_global=${curl_result_global//'""'/'none'}
+        curl_result_global=${curl_result_global//'"'/}
+    elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
+        s="Error: RPC login failed. Check username and password in script.conf file.\n"
+        s+="sample config could be:\n"
+        s+='RPCUSER="spectrecoinrpc"'"\n"
+        s+='RPCPASSWORD="44_char_pw_(lower_&_upper_letters_&_numbers)"'"\n"
+        s+='IP="127.0.0.1"'"\n"
+        s+='PORT="8332"'"\n"
+        s+='CURL="/usr/bin/curl"'"\n\n"
+        s+="IMPORTANT: The login information must match the /.spectrecoin/spectrecoin.conf data."
+        errorHandling "$s" 2
+    else
+        msg="${curl_result_global%%'"}'*}"
+        msg="${msg#*'message":"'}"
+        errorHandling "CURL error message:\n\n$msg"
+    fi
 }
 
 fillLine() {
@@ -89,13 +82,13 @@ fillLine() {
     local offset=$(( $2 - $len ))
     unset len
     local filler
-    if [ $offset -ge 0 ]; then
+    if [ ${offset} -ge 0 ]; then
         local i=0
-        while [ $i -lt $offset ]; do
+        while [ ${i} -lt ${offset} ]; do
             if (( $i % 2 == 1 )); then
-                filler=$filler'.'
+                filler=${filler}'.'
             else
-                filler=$filler' '
+                filler=${filler}' '
             fi
             i=$(( $i + 1 ))
         done
@@ -105,7 +98,7 @@ fillLine() {
         filler='\n'
     fi
     output=${output//'-_-'/"$filler"}
-    echo $output
+    echo ${output}
     unset output
     unset filler
 }
