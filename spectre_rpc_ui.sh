@@ -192,88 +192,99 @@ secToHumanReadable() {
 # Input: $curl_result_global
 # Outpunt: $info_global array
 getInfo() {
-    unset info_global
-    local i=0
-    local oldIFS=$IFS
-    local itemBuffer
-    local unixtime
-    export IFS=','
-    for itemBuffer in $curl_result_global; do
-        if [[ $itemBuffer == 'unlocked_until:'* ]]; then
-            unixtime="${itemBuffer#*':'}"
-            if [ "$unixtime" -gt 0 ]; then
-                info_global[i]="\Z4true\Zn"
+    local _i=0
+    local _oldIFS=$IFS
+    local _itemBuffer
+    local _unixtime
+    IFS=','
+    for _itemBuffer in ${curl_result_global}; do
+        if [[ ${_itemBuffer} == 'unlocked_until:'* ]]; then
+            _unixtime="${_itemBuffer#*':'}"
+            if [ "$_unixtime" -gt 0 ]; then
+                info_global[_i]="\Z4true\Zn"
+                # set boolean for main menu option to unlock the wallet
                 MENU_WALLET_UNLOCKED="true"
             else
-                info_global[i]="false"
+                info_global[_i]="false"
+                # set boolean for main menu option to lock the wallet
                 MENU_WALLET_UNLOCKED="false"
             fi
-            i=$(( $i + 1 ))
-        elif [[ $itemBuffer == 'errors'* ]]; then
-            if [ "${itemBuffer#*':'}" != "none" ]; then
-                info_global[i]="\Z1""${itemBuffer#*':'}""\Zn"
+            _i=$(( $_i + 1 ))
+        elif [[ ${_itemBuffer} == 'errors'* ]]; then
+            if [ "${_itemBuffer#*':'}" != "none" ]; then
+                info_global[_i]="\Z1""${_itemBuffer#*':'}""\Zn"
             else
-                info_global[i]="${itemBuffer#*':'}"
+                info_global[_i]="${_itemBuffer#*':'}"
             fi
-            i=$(( $i + 1 ))
-        elif [[ $itemBuffer == 'version'* || $itemBuffer == *'balance'* || \
-            $itemBuffer == 'stake'* || $itemBuffer == 'connections'* || \
-            $itemBuffer == 'data'* || $itemBuffer == 'ip'* ]]; then
-            info_global[i]="${itemBuffer#*':'}"
-            i=$(( $i + 1 ))
+            _i=$(( $_i + 1 ))
+        elif [[ ${_itemBuffer} == 'version'* || ${_itemBuffer} == *'balance'* || \
+            ${_itemBuffer} == 'stake'* || ${_itemBuffer} == 'connections'* || \
+            ${_itemBuffer} == 'data'* || ${_itemBuffer} == 'ip'* ]]; then
+            info_global[_i]="${_itemBuffer#*':'}"
+            _i=$(( $_i + 1 ))
         fi
     done
-    IFS=$oldIFS
-    unset oldIFS
-    unset unixtime
-    unset curl_result_global
-    unset itemBuffer
-    unset i
+    IFS=${_oldIFS}
 }
 
+# ============================================================================
+# Gathers the data form the CURL result for the getstakinginfo command
+#
+# Input: $curl_result_global
+# Outpunt: $stakinginfo_global array
 getStakingInfo() {
-    unset stakinginfo_global
-    local i=0
-    local oldIFS=$IFS
-    local itemBuffer
-    local time
-    export IFS=','
-    for itemBuffer in $curl_result_global; do
-        if [[ $itemBuffer == 'expectedtime:'* ]]; then
-            time="${itemBuffer#*':'}"
-            stakinginfo_global[i]=$(secToHumanReadable $time)
-            i=$(( $i + 1 ))
-        elif [[ $itemBuffer == 'staking'* ]]; then
-            if [ "${itemBuffer#*':'}" == "true" ]; then
-                stakinginfo_global[i]="\Z4ON\Zn"
+    local _i=0
+    local _oldIFS=$IFS
+    local _itemBuffer
+    local _time
+    IFS=','
+    for _itemBuffer in ${curl_result_global}; do
+        if [[ ${_itemBuffer} == 'expectedtime:'* ]]; then
+            _time="${_itemBuffer#*':'}"
+            stakinginfo_global[_i]=$(secToHumanReadable ${_time})
+            _i=$(( ${_i} + 1 ))
+        elif [[ ${_itemBuffer} == 'staking'* ]]; then
+            if [ "${_itemBuffer#*':'}" == "true" ]; then
+                stakinginfo_global[_i]="\Z4ON\Zn"
             else
-                stakinginfo_global[i]="\Z1OFF\Zn"
+                stakinginfo_global[_i]="\Z1OFF\Zn"
             fi
-            i=$(( $i + 1 ))
+            _i=$(( ${_i} + 1 ))
         fi
     done
-    IFS=$oldIFS
-    unset oldIFS
-    unset time
-    unset curl_result_global
-    unset itemBuffer
-    unset i
+    IFS=${_oldIFS}
 }
 
+# ============================================================================
+# Gathers the data form the CURL result for the getinfo command
+#
+# Input: $info_global
+#        $stakinginfo_global
+#        $balance_global
+#        $1 - desired width the text should take
+#        $2 - desired hight - not used yet
 makeOutputInfo() {
     echo "Wallet Info\n"
     echo $(fillLine "Balance:-_-`echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc` XSPEC" $1)"\n"
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" $1)"\n"
+
     echo "\nStaking Info\n"
     echo $(fillLine "Wallet unlocked: ${info_global[8]}-_-Staking: ${stakinginfo_global[0]}" $1)"\n"
     echo $(fillLine "Coins: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn aging)" $1)"\n"
     echo $(fillLine "Expected time: ${stakinginfo_global[1]}" $1)"\n"
+
     echo "\nClient info\n"
     echo $(fillLine "Deamon: ${info_global[0]}-_-Errors: ${info_global[9]}" $1)"\n"
     echo $(fillLine "IP: ${info_global[7]}-_-Peers: ${info_global[4]}" $1)"\n"
     echo $(fillLine "Download: ${info_global[5]}-_-Upload: ${info_global[6]}" $1)"\n"
 }
 
+# ============================================================================
+# Gathers the data form the CURL result for the getinfo command
+#
+# Input: $curl_result_global
+# Outpunt: $transactions_global array
+#          $1  - if "full" a staking analysis is done
 getTransactions() {
     unset transactions_global
     local i=0
@@ -283,24 +294,24 @@ getTransactions() {
     local thisWasAStake="false"
     local valueBuffer
     local oldIFS=$IFS
-    local itemBuffer
+    local _itemBuffer
     local unixtime
     export IFS='},{'
-    for itemBuffer in $curl_result_global; do
-        if [[ $itemBuffer == 'timereceived'* ]]; then
-            unixtime="${itemBuffer#*':'}"
-            if ([ $thisWasAStake = "true" ] && [ $unixtime -lt $oldestStakeDate ]); then
-                oldestStakeDate=$unixtime
+    for _itemBuffer in ${curl_result_global}; do
+        if [[ ${_itemBuffer} == 'timereceived'* ]]; then
+            unixtime="${_itemBuffer#*':'}"
+            if ([ ${thisWasAStake} = "true" ] && [ ${unixtime} -lt ${oldestStakeDate} ]); then
+                oldestStakeDate=${unixtime}
                 firstStakeIndex="$i"
             fi
-            if ([ $thisWasAStake = "true" ] && [ $unixtime -gt $newestStakeDate ]); then
-                newestStakeDate=$unixtime
+            if ([ ${thisWasAStake} = "true" ] && [ ${unixtime} -gt ${newestStakeDate} ]); then
+                newestStakeDate=${unixtime}
             fi
             unixtime=$(date -d "@$unixtime" +%d-%m-%Y" at "%H:%M:%S)
             transactions_global[i]=$unixtime
             i=$(( $i + 1 ))
-        elif [[ $itemBuffer == 'category'* ]]; then
-            valueBuffer="${itemBuffer#*':'}"
+        elif [[ $_itemBuffer == 'category'* ]]; then
+            valueBuffer="${_itemBuffer#*':'}"
             thisWasAStake="false"
             if [[ $valueBuffer == 'receive' ]]; then
                 transactions_global[i]='\Z2RECEIVED\Zn'
@@ -313,20 +324,13 @@ getTransactions() {
                 transactions_global[i]='\Z1TRANSFERRED\Zn'
             fi
             i=$(( $i + 1 ))
-        elif [[ $itemBuffer == 'address'* || $itemBuffer == 'amount'* \
-            || $itemBuffer == 'confirmations'* || $itemBuffer == 'txid'* ]]; then
-            transactions_global[i]="${itemBuffer#*':'}"
+        elif [[ $_itemBuffer == 'address'* || $_itemBuffer == 'amount'* \
+            || $_itemBuffer == 'confirmations'* || $_itemBuffer == 'txid'* ]]; then
+            transactions_global[i]="${_itemBuffer#*':'}"
             i=$(( $i + 1 ))
         fi
     done
     IFS=$oldIFS
-    unset oldIFS
-    unset unixtime
-    unset thisWasAStake
-    unset curl_result_global
-    unset itemBuffer
-    unset valueBuffer
-    unset i
     if ([ "$1" = "full" ] && [ $oldestStakeDate != $newestStakeDate ] && [ $newestStakeDate !=  "0" ]); then
         local stakedAmount=0
         local stakeCounter=0
@@ -608,22 +612,22 @@ passwordDialog() {
 }
 
 commandInput() {
-    local itemBuffer
+    local _itemBuffer
     local oldIFS=$IFS
     local buffer
     export IFS=','
     local i=0
-    for itemBuffer in $USER_DAEMON_PARAMS; do
+    for _itemBuffer in $USER_DAEMON_PARAMS; do
         i=$(( $i + 1 ))
         if [ $i -gt 1 ]; then
             buffer+=' '
         fi
-        buffer+="$itemBuffer"
+        buffer+="$_itemBuffer"
     done
     USER_DAEMON_PARAMS="$buffer"
     IFS=$oldIFS
     unset oldIFS
-    unset itemBuffer
+    unset _itemBuffer
     unset buffer
     local s="Here you can enter commands that will be send to the Daemon.\n"
     s+="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
@@ -656,31 +660,31 @@ commandInput() {
         i=0
         unset USER_DAEMON_COMMAND
         unset USER_DAEMON_PARAMS
-        for itemBuffer in $buffer; do
+        for _itemBuffer in $buffer; do
             i=$(( $i + 1 ))
             if [ $i -eq 1 ]; then
-                USER_DAEMON_COMMAND="$itemBuffer"
+                USER_DAEMON_COMMAND="$_itemBuffer"
             else
                 if [ $i -gt 2 ]; then
                 USER_DAEMON_PARAMS+=','
                 fi
-                if [ "$itemBuffer" != "true" ] \
-                && [ "$itemBuffer" != "false" ] \
-                && [[ ! $itemBuffer =~ ^[0-9]+$ ]]; then
-                    if [[ "$itemBuffer" != '"'* ]]; then
+                if [ "$_itemBuffer" != "true" ] \
+                && [ "$_itemBuffer" != "false" ] \
+                && [[ ! $_itemBuffer =~ ^[0-9]+$ ]]; then
+                    if [[ "$_itemBuffer" != '"'* ]]; then
                         USER_DAEMON_PARAMS+='"'
                     fi
-                    USER_DAEMON_PARAMS+="$itemBuffer"
-                    if [[ "$itemBuffer" != *'"' ]]; then
+                    USER_DAEMON_PARAMS+="$_itemBuffer"
+                    if [[ "$_itemBuffer" != *'"' ]]; then
                         USER_DAEMON_PARAMS+='"'
                     fi
                 else
-                    USER_DAEMON_PARAMS+="$itemBuffer"
+                    USER_DAEMON_PARAMS+="$_itemBuffer"
                 fi
             fi
         done
         unset i
-        unset itemBuffer
+        unset _itemBuffer
         unset buffer
         executeCURL "$USER_DAEMON_COMMAND" "$USER_DAEMON_PARAMS" "u"
         commandInput;;
