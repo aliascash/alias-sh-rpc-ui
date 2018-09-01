@@ -16,6 +16,8 @@
 # CREATED: 26-08-2018
 # ============================================================================
 
+VERSION='v1.8alpha'
+
 # ============================================================================
 # This function is the beating heart, it interacts via CURL with the daemon
 # and optimizes it's output via the cutCURLresult function
@@ -286,158 +288,140 @@ makeOutputInfo() {
 # Outpunt: $transactions_global array
 #          $1  - if "full" a staking analysis is done
 getTransactions() {
-    unset transactions_global
-    local i=0
-    local oldestStakeDate=9999999999
-    local newestStakeDate=0
-    local firstStakeIndex
-    local thisWasAStake="false"
-    local valueBuffer
-    local oldIFS=$IFS
+    local _i=0
+    local _oldestStakeDate=9999999999
+    local _newestStakeDate=0
+    local _firstStakeIndex
+    local _thisWasAStake="false"
+    local _valueBuffer
+    local _oldIFS=$IFS
     local _itemBuffer
-    local unixtime
-    export IFS='},{'
+    local _unixtime
+    IFS='},{'
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'timereceived'* ]]; then
-            unixtime="${_itemBuffer#*':'}"
-            if ([ ${thisWasAStake} = "true" ] && [ ${unixtime} -lt ${oldestStakeDate} ]); then
-                oldestStakeDate=${unixtime}
-                firstStakeIndex="$i"
+            _unixtime="${_itemBuffer#*':'}"
+            if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -lt ${_oldestStakeDate} ]); then
+                _oldestStakeDate=${_unixtime}
+                _firstStakeIndex="$_i"
             fi
-            if ([ ${thisWasAStake} = "true" ] && [ ${unixtime} -gt ${newestStakeDate} ]); then
-                newestStakeDate=${unixtime}
+            if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -gt ${_newestStakeDate} ]); then
+                _newestStakeDate=${_unixtime}
             fi
-            unixtime=$(date -d "@$unixtime" +%d-%m-%Y" at "%H:%M:%S)
-            transactions_global[i]=$unixtime
-            i=$(( $i + 1 ))
-        elif [[ $_itemBuffer == 'category'* ]]; then
-            valueBuffer="${_itemBuffer#*':'}"
-            thisWasAStake="false"
-            if [[ $valueBuffer == 'receive' ]]; then
-                transactions_global[i]='\Z2RECEIVED\Zn'
-            elif [[ $valueBuffer == 'generate' ]]; then
-                transactions_global[i]='\Z4STAKE\Zn'
-                thisWasAStake="true"
-            elif [[ $valueBuffer == 'immature' ]]; then
-                transactions_global[i]='\Z5STAKE_Pending\Zn'
+            _unixtime=$(date -d "@$_unixtime" +%d-%m-%Y" at "%H:%M:%S)
+            transactions_global[_i]=${_unixtime}
+            _i=$(( $_i + 1 ))
+        elif [[ ${_itemBuffer} == 'category'* ]]; then
+            _valueBuffer="${_itemBuffer#*':'}"
+            _thisWasAStake="false"
+            if [[ ${_valueBuffer} == 'receive' ]]; then
+                transactions_global[_i]='\Z2RECEIVED\Zn'
+            elif [[ ${_valueBuffer} == 'generate' ]]; then
+                transactions_global[_i]='\Z4STAKE\Zn'
+                _thisWasAStake="true"
+            elif [[ ${_valueBuffer} == 'immature' ]]; then
+                transactions_global[_i]='\Z5STAKE_Pending\Zn'
             else
-                transactions_global[i]='\Z1TRANSFERRED\Zn'
+                transactions_global[_i]='\Z1TRANSFERRED\Zn'
             fi
-            i=$(( $i + 1 ))
-        elif [[ $_itemBuffer == 'address'* || $_itemBuffer == 'amount'* \
-            || $_itemBuffer == 'confirmations'* || $_itemBuffer == 'txid'* ]]; then
-            transactions_global[i]="${_itemBuffer#*':'}"
-            i=$(( $i + 1 ))
+            _i=$(( $_i + 1 ))
+        elif [[ ${_itemBuffer} == 'address'* || ${_itemBuffer} == 'amount'* \
+            || ${_itemBuffer} == 'confirmations'* || ${_itemBuffer} == 'txid'* ]]; then
+            transactions_global[_i]="${_itemBuffer#*':'}"
+            _i=$(( $_i + 1 ))
         fi
     done
-    IFS=$oldIFS
-    if ([ "$1" = "full" ] && [ $oldestStakeDate != $newestStakeDate ] && [ $newestStakeDate !=  "0" ]); then
-        local stakedAmount=0
-        local stakeCounter=0
-        local i
-        local dataTimeFrame=$(($newestStakeDate - $oldestStakeDate))
-        for ((i=$(( $firstStakeIndex + 1));i<${#transactions_global[@]};i=$(( $i + 6)))); do
-            if [ ${transactions_global[$i+1]} = '\Z4STAKE\Zn' ]; then
-                stakedAmount=`echo "scale=8; $stakedAmount + ${transactions_global[$i+2]}" | bc`
-                stakeCounter=$(( $stakeCounter + 1 ))
+    IFS=${_oldIFS}
+    if ([ "$1" = "full" ] && [ ${_oldestStakeDate} != ${_newestStakeDate} ] && [ ${_newestStakeDate} !=  "0" ]); then
+        local _stakedAmount=0
+        local _stakeCounter=0
+        local _i
+        local _dataTimeFrame=$(($_newestStakeDate - $_oldestStakeDate))
+        for ((_i=$(( $_firstStakeIndex + 1));_i<${#transactions_global[@]};_i=$(( $_i + 6)))); do
+            if [ ${transactions_global[$_i+1]} = '\Z4STAKE\Zn' ]; then
+                _stakedAmount=`echo "scale=8; $_stakedAmount + ${transactions_global[$_i+2]}" | bc`
+                _stakeCounter=$(( $_stakeCounter + 1 ))
             fi
         done
-        local totalCoins=`echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc`
-        local stakedCoinRate=`echo "scale=16 ; $stakedAmount / $totalCoins" | bc`
-        local buff=`echo "scale=16 ; $stakedCoinRate + 1" | bc`
-        local buff2=`echo "scale=16 ; 31536000 / $dataTimeFrame" | bc`
-        local buff3=`echo "scale=16 ; e($buff2*l($buff))" | bc -l`
-        local estCoinsY1=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainY1=`echo "scale=8 ; $estCoinsY1 - $totalCoins" | bc`
-        local estStakingRatePerYear=`echo "scale=2 ; $estGainY1 * 100 / $totalCoins" | bc`
-        buff3=`echo "scale=16 ; e(2*$buff2*l($buff))" | bc -l`
-        local estCoinsY2=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainY2=`echo "scale=8 ; $estCoinsY2 - $totalCoins" | bc`
-        buff3=`echo "scale=16 ; e(3*$buff2*l($buff))" | bc -l`
-        local estCoinsY3=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainY3=`echo "scale=8 ; $estCoinsY3 - $totalCoins" | bc`
-        buff3=`echo "scale=16 ; e(4*$buff2*l($buff))" | bc -l`
-        local estCoinsY4=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainY4=`echo "scale=8 ; $estCoinsY4 - $totalCoins" | bc`
-        buff3=`echo "scale=16 ; e(5*$buff2*l($buff))" | bc -l`
-        local estCoinsY5=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainY5=`echo "scale=8; $estCoinsY5 - $totalCoins" | bc`
-        buff3=`echo "scale=16 ; e(1/12*$buff2*l($buff))" | bc -l`
-        local estCoinsM1=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainM1=`echo "scale=8; $estCoinsM1 - $totalCoins" | bc`
-        buff3=`echo "scale=16 ; e(1/2*$buff2*l($buff))" | bc -l`
-        local estCoinsM6=`echo "scale=8 ; $buff3 * $totalCoins" | bc`
-        local estGainM6=`echo "scale=8; $estCoinsM6 - $totalCoins" | bc`
-        stakedAmount=`echo "scale=8; $stakedAmount + ${transactions_global[$firstStakeIndex-3]}" | bc`
-        stakeCounter=$(( $stakeCounter + 1 ))
-        unset oldestStakeDate
-        unset newestStakeDate
-        unset firstStakeIndex
+        local _totalCoins=`echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc`
+        local _stakedCoinRate=`echo "scale=16 ; $_stakedAmount / $_totalCoins" | bc`
+        local _buff=`echo "scale=16 ; $_stakedCoinRate + 1" | bc`
+        local _buff2=`echo "scale=16 ; 31536000 / $_dataTimeFrame" | bc`
+        local _buff3=`echo "scale=16 ; e($_buff2*l($_buff))" | bc -l`
+        local _estCoinsY1=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainY1=`echo "scale=8 ; $_estCoinsY1 - $_totalCoins" | bc`
+        local _estStakingRatePerYear=`echo "scale=2 ; $_estGainY1 * 100 / $_totalCoins" | bc`
+        _buff3=`echo "scale=16 ; e(2*$_buff2*l($_buff))" | bc -l`
+        local _estCoinsY2=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainY2=`echo "scale=8 ; $_estCoinsY2 - $_totalCoins" | bc`
+        _buff3=`echo "scale=16 ; e(3*$_buff2*l($_buff))" | bc -l`
+        local _estCoinsY3=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainY3=`echo "scale=8 ; $_estCoinsY3 - $_totalCoins" | bc`
+        _buff3=`echo "scale=16 ; e(4*$_buff2*l($_buff))" | bc -l`
+        local _estCoinsY4=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainY4=`echo "scale=8 ; $_estCoinsY4 - $_totalCoins" | bc`
+        _buff3=`echo "scale=16 ; e(5*$_buff2*l($_buff))" | bc -l`
+        local _estCoinsY5=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainY5=`echo "scale=8; $_estCoinsY5 - $_totalCoins" | bc`
+        _buff3=`echo "scale=16 ; e(1/12*$_buff2*l($_buff))" | bc -l`
+        local _estCoinsM1=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainM1=`echo "scale=8; $_estCoinsM1 - $_totalCoins" | bc`
+        _buff3=`echo "scale=16 ; e(1/2*$_buff2*l($_buff))" | bc -l`
+        local _estCoinsM6=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
+        local _estGainM6=`echo "scale=8; $_estCoinsM6 - $_totalCoins" | bc`
+        _stakedAmount=`echo "scale=8; $_stakedAmount + ${transactions_global[$_firstStakeIndex-3]}" | bc`
+        _stakeCounter=$(( $_stakeCounter + 1 ))
         staking_analysis[1]="analysis time frame for estimation"
-        staking_analysis[2]=$(secToHumanReadable $dataTimeFrame)
+        staking_analysis[2]=$(secToHumanReadable ${_dataTimeFrame})
         staking_analysis[3]="times wallet staked within the last 1000 transactions"
-        staking_analysis[4]="$stakeCounter"
+        staking_analysis[4]="$_stakeCounter"
         staking_analysis[5]="total staking reward within the last 1000 transactions"
-        staking_analysis[6]="$stakedAmount"
+        staking_analysis[6]="$_stakedAmount"
         staking_analysis[7]="total coins today"
-        staking_analysis[8]="$totalCoins"
+        staking_analysis[8]="$_totalCoins"
         staking_analysis[9]="est. staking reward rate per year"
-        staking_analysis[10]="$estStakingRatePerYear"
+        staking_analysis[10]="$_estStakingRatePerYear"
         staking_analysis[11]="est. total coins in one month"
-        staking_analysis[12]="${estCoinsM1%.*}"
+        staking_analysis[12]="${_estCoinsM1%.*}"
         staking_analysis[13]="est. staked coins in one month"
-        staking_analysis[14]="${estGainM1%.*}"
+        staking_analysis[14]="${_estGainM1%.*}"
         staking_analysis[15]="est. total coins in six months"
-        staking_analysis[16]="${estCoinsM6%.*}"
+        staking_analysis[16]="${_estCoinsM6%.*}"
         staking_analysis[17]="est. staked coins in six months"
-        staking_analysis[18]="${estGainM6%.*}"
+        staking_analysis[18]="${_estGainM6%.*}"
         staking_analysis[19]="est. total coins in one year"
-        staking_analysis[20]="${estCoinsY1%.*}"
+        staking_analysis[20]="${_estCoinsY1%.*}"
         staking_analysis[21]="est. staked coins in one year"
-        staking_analysis[22]="${estGainY1%.*}"
+        staking_analysis[22]="${_estGainY1%.*}"
         staking_analysis[23]="est. total coins in two years"
-        staking_analysis[24]="${estCoinsY2%.*}"
+        staking_analysis[24]="${_estCoinsY2%.*}"
         staking_analysis[25]="est. staked coins in two years"
-        staking_analysis[26]="${estGainY2%.*}"
+        staking_analysis[26]="${_estGainY2%.*}"
         staking_analysis[27]="est. total coins in three years"
-        staking_analysis[28]="${estCoinsY3%.*}"
+        staking_analysis[28]="${_estCoinsY3%.*}"
         staking_analysis[29]="est. staked coins in three years"
-        staking_analysis[30]="${estGainY3%.*}"
+        staking_analysis[30]="${_estGainY3%.*}"
         staking_analysis[31]="est. total coins in four years"
-        staking_analysis[32]="${estCoinsY4%.*}"
+        staking_analysis[32]="${_estCoinsY4%.*}"
         staking_analysis[33]="est. staked coins in four years"
-        staking_analysis[34]="${estGainY4%.*}"
+        staking_analysis[34]="${_estGainY4%.*}"
         staking_analysis[35]="est. total coins in five years"
-        staking_analysis[36]="${estCoinsY5%.*}"
+        staking_analysis[36]="${_estCoinsY5%.*}"
         staking_analysis[37]="est. staked coins in five years"
-        staking_analysis[38]="${estGainY5%.*}"
-        unset totalCoins
-        unset dataTimeFrame
-        unset stakeCounter
-        unset stakedAmount
-        unset stakedCoinRate
-        unset estStakingRatePerYear
-        unset estCoinsY1
-        unset estGainY1
-        unset estCoinsY2
-        unset estGainY2
-        unset estCoinsY3
-        unset estGainY3
-        unset estCoinsY4
-        unset estGainY4
-        unset estCoinsY5
-        unset estGainY5
-        unset estCoinsM1
-        unset estGainM1
-        unset estCoinsM6
-        unset estGainM6
-        for ((i=0;i <= ${#staking_analysis[@]};i++)); do
-            echo "${staking_analysis[$i]}"
+        staking_analysis[38]="${_estGainY5%.*}"
+        for ((_i=0;_i <= ${#staking_analysis[@]};_i++)); do
+            echo "${staking_analysis[$_i]}"
         done
         exit 1
     fi
 }
 
+# ============================================================================
+# Gathers the data form the CURL result for the getinfo command
+#
+# Input: $transactions_global
+#        $1 - desired width the text should take
+#        $2 - desired hight - not used yet
 makeOutputTransactions() {
     for ((i=${#transactions_global[@]}-1;i >= 0;i=$(( $i - 6 )))); do
         echo $(fillLine "${transactions_global[$i-4]}: ${transactions_global[$i-3]}-_-${transactions_global[$i]}" $1)"\n"
@@ -453,6 +437,8 @@ makeOutputTransactions() {
     done
 }
 
+# ============================================================================
+# Define the dialog exit status codes
 : ${DIALOG_OK=0}
 : ${DIALOG_CANCEL=1}
 : ${DIALOG_HELP=2}
@@ -460,6 +446,13 @@ makeOutputTransactions() {
 : ${DIALOG_ITEM_HELP=4}
 : ${DIALOG_ESC=255}
 
+# ============================================================================
+# Simple error handling
+# Input: $1 will be displayed as error msg
+#        $2 exit status (errors are indicated
+#           by an integer in the range 1 - 255).
+# If no $2 is parsed the handler will just promp a dialog and continue,
+# instead of prompting to terminal and exiting
 errorHandling() {
     if [ -z "$2" ]; then
         dialog --backtitle "$TITLE_BACK" \
@@ -474,6 +467,8 @@ errorHandling() {
     fi
 }
 
+# ============================================================================
+# Placeholder checkbox just give the user visual feedback
 sry() {
     dialog --backtitle "$TITLE_BACK" \
         --no-shadow \
@@ -483,6 +478,8 @@ sry() {
     refreshMainMenu_GUI
 }
 
+# ============================================================================
+# Simple goodbye checkbox, this marks the regular ending of the script
 goodbye() {
     dialog --backtitle "$TITLE_BACK" \
         --no-shadow \
@@ -494,6 +491,8 @@ goodbye() {
     exit 0
 }
 
+# ============================================================================
+# Simple warning checkbox for the user at startup
 warning() {
     WARNING="\nUse at your own risc!!!\n\nYou are using Terminal: $(tput longname)\n\n\
     Interface version: $VERSION"
@@ -505,6 +504,9 @@ warning() {
         --msgbox "$WARNING" 0 0
 }
 
+# ============================================================================
+# Goal: Give a visual feedback for the user that the wallet is now locked
+#       and there will be no staking anymore.
 walletLockedFeedback() {
     local s="Wallet successfully locked."
     s+="\n\n\Z5You will not be able to stake anymore.\Zn\n\n"
@@ -514,6 +516,10 @@ walletLockedFeedback() {
     unset s
 }
 
+# ============================================================================
+# decides whether if Hide Stakes or Show Stakes will be displayed
+#
+# Input: $1
 viewAllTransactionsHelper() {
     if [ "$1" = "true" ]; then
         echo 'Hide Stakes'
@@ -522,20 +528,25 @@ viewAllTransactionsHelper() {
     fi
 }
 
+# ============================================================================
+# Gathers the data form the CURL result for the getinfo command
+#
+# Input: $1 - start
+#        $2 - if "true" stakes will be displayed
 viewAllTransactions() {
-    local start
-    local count=$(( ($(tput lines) - 4) / 4 ))
+    local _start
+    local _count=$(( ($(tput lines) - 4) / 4 ))
     if [ -z "$1" ]; then
-        start="0"
+        _start="0"
     else
-        start="$1"
+        _start="$1"
     fi
-    local SIZEX=$((74<$(tput cols)?"74":$(tput cols)))
-    local SIZEY=$(tput lines)
+    local _SIZEX=$((74<$(tput cols)?"74":$(tput cols)))
+    local _SIZEY=$(tput lines)
     if [ $2 = "true" ]; then
-        executeCURL "listtransactions" '"*",'$count','$start',"1"'
+        executeCURL "listtransactions" '"*",'${_count}','${_start}',"1"'
     else
-        executeCURL "listtransactions" '"*",'$count','$start',"0"'
+        executeCURL "listtransactions" '"*",'${_count}','${_start}',"0"'
     fi
     dialog --no-shadow \
         --begin 0 0 \
@@ -551,95 +562,140 @@ viewAllTransactions() {
         --help-label 'Main Menu' \
         --cancel-label "$(viewAllTransactionsHelper "$2")" \
         --default-button 'extra' \
-        --yesno "$(makeOutputTransactions $(( $SIZEX - 4 )))" \
-        "$SIZEY" "$SIZEX"
+        --yesno "$(makeOutputTransactions $(( $_SIZEX - 4 )))" \
+        "$_SIZEY" "$_SIZEX"
     exit_status=$?
-    case $exit_status in
-        $DIALOG_ESC)
+    case ${exit_status} in
+        ${DIALOG_ESC})
             refreshMainMenu_DATA
             ;;
-        $DIALOG_OK)
-            if [[ $start -ge 6 ]]; then
-                viewAllTransactions $(( $start - $count )) $2
+        ${DIALOG_OK})
+            if [[ ${_start} -ge 6 ]]; then
+                viewAllTransactions $(( $_start - $_count )) $2
             else
                 viewAllTransactions 0 $2
             fi
             ;;
-        $DIALOG_EXTRA)
-            viewAllTransactions $(( $start + $count )) $2
+        ${DIALOG_EXTRA})
+            viewAllTransactions $(( $_start + $_count )) $2
             ;;
-        $DIALOG_CANCEL)
+        ${DIALOG_CANCEL})
             if [ $2 = "true" ]; then
             viewAllTransactions "0" "false"
             else
             viewAllTransactions "0" "true"
             fi
             ;;
-        $DIALOG_HELP)
+        ${DIALOG_HELP})
             refreshMainMenu_DATA
             ;;
     esac
     errorHandling "Error while displaying transactions."
 }
 
+# ============================================================================
 advancedMainMenu() {
-:
+# Staking Analysis
+  # count
+  # estimante
+  # log network: means staking coins global
+  # gnu plot ( only if not 127.0.0.1 ) ?
+
+# getpeerinfo
+
+# deamon management
+  # start / stop deamon ? (script startet bisher nicht wenn deamon nicht läuft!!!)
+  # set deamon niceness ? (befehl? - problem tasks müssen auch angepasst werden)
+  # rewind chain
+  # addnode
+
+# wallet management
+  # reserve balance
+  # get wallet addresses (inkl. stealth)
+  # backup wallet
+  # add address to account
+  # encryptwallet
+  # change password of wallet
+
+# command execution  <-- add help command ( = help text zu bereits eingegeben command)
+
+# back to main
+    :
 }
 
+# ============================================================================
 sendCoins() {
-:
+# addressbook
+
+# send to address
+
+# back to main
+    :
 }
 
+# ============================================================================
+# Goal: ask for the wallet password, to unlock the wallet for staking
+#       and sending transactions. Password will never leave this function.
+#
+# Input $1 - time amout the wallet will be opend
+#       $2 - if true the wallet will only be opend for staking
+#
+# Return: nothing
 passwordDialog() {
     exec 3>&1
-    local wallet_password=$(dialog --backtitle "$TITLE_BACK" \
+    local _wallet_password=$(dialog --backtitle "$TITLE_BACK" \
         --no-shadow \
         --insecure \
         --passwordbox "Enter wallet password" 0 0  \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
-    case $exit_status in
-        $DIALOG_CANCEL)
+    case ${exit_status} in
+        ${DIALOG_CANCEL})
             refreshMainMenu_GUI
             ;;
-        $DIALOG_ESC)
+        ${DIALOG_ESC})
             refreshMainMenu_GUI
             ;;
     esac
-    executeCURL "walletpassphrase" "\"$wallet_password\",$1,$2"
-    unset wallet_password
+    executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2"
 }
 
+# ============================================================================
+# This function provides a mask for the user to enter commands, that are
+# send to the spectrecoind daemon. The result will then be displayed.
+#
+# Input: USER_DAEMON_COMMAND global var. that stores the last entered command
+#        USER_DAEMON_PARAMS global var. that stores the last entered parameters
+#
+# Output: USER_DAEMON_COMMAND updated
+#         USER_DAEMON_PARAMS updated
 commandInput() {
     local _itemBuffer
-    local oldIFS=$IFS
-    local buffer
-    export IFS=','
-    local i=0
-    for _itemBuffer in $USER_DAEMON_PARAMS; do
-        i=$(( $i + 1 ))
-        if [ $i -gt 1 ]; then
-            buffer+=' '
+    local _oldIFS=$IFS
+    local _buffer
+    IFS=','
+    local _i=0
+    for _itemBuffer in ${USER_DAEMON_PARAMS}; do
+        _i=$(( $_i + 1 ))
+        if [ ${_i} -gt 1 ]; then
+            _buffer+=' '
         fi
-        buffer+="$_itemBuffer"
+        _buffer+="$_itemBuffer"
     done
-    USER_DAEMON_PARAMS="$buffer"
-    IFS=$oldIFS
-    unset oldIFS
-    unset _itemBuffer
-    unset buffer
-    local s="Here you can enter commands that will be send to the Daemon.\n"
-    s+="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
+    USER_DAEMON_PARAMS="$_buffer"
+    IFS=${_oldIFS}
+    local _s="Here you can enter commands that will be send to the Daemon.\n"
+    _s+="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
     exec 3>&1
-    buffer=$(dialog --backtitle "$TITLE_BACK" \
+    _buffer=$(dialog --backtitle "$TITLE_BACK" \
         --ok-label "Execute" \
         --cancel-label "Main Menu" \
         --extra-button \
         --extra-label "Help" \
         --no-shadow \
         --title "Enter Command" \
-        --form "$s" 0 0 0 \
+        --form "$_s" 0 0 0 \
         "type help for info" 1 12 "" 1 11 -1 0 \
         "Command:" 2 1 "$USER_DAEMON_COMMAND" 2 11 33 0 \
         "seperated by spaces" 4 12 "" 3 11 -1 0 \
@@ -647,50 +703,51 @@ commandInput() {
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
-    unset s
-    case $exit_status in
-        $DIALOG_CANCEL)
-        refreshMainMenu_GUI;;
-        $DIALOG_ESC)
-        refreshMainMenu_GUI;;
-        $DIALOG_EXTRA)
-        executeCURL "help" "" "u"
-        commandInput;;
-        $DIALOG_OK)
-        i=0
-        unset USER_DAEMON_COMMAND
-        unset USER_DAEMON_PARAMS
-        for _itemBuffer in $buffer; do
-            i=$(( $i + 1 ))
-            if [ $i -eq 1 ]; then
-                USER_DAEMON_COMMAND="$_itemBuffer"
-            else
-                if [ $i -gt 2 ]; then
-                USER_DAEMON_PARAMS+=','
-                fi
-                if [ "$_itemBuffer" != "true" ] \
-                && [ "$_itemBuffer" != "false" ] \
-                && [[ ! $_itemBuffer =~ ^[0-9]+$ ]]; then
-                    if [[ "$_itemBuffer" != '"'* ]]; then
-                        USER_DAEMON_PARAMS+='"'
-                    fi
-                    USER_DAEMON_PARAMS+="$_itemBuffer"
-                    if [[ "$_itemBuffer" != *'"' ]]; then
-                        USER_DAEMON_PARAMS+='"'
-                    fi
+    case ${exit_status} in
+        ${DIALOG_CANCEL})
+            refreshMainMenu_GUI
+            ;;
+        ${DIALOG_ESC})
+            refreshMainMenu_GUI
+            ;;
+        ${DIALOG_EXTRA})
+            executeCURL "help" "" "u"
+            commandInput
+            ;;
+        ${DIALOG_OK})
+            _i=0
+            for _itemBuffer in ${_buffer}; do
+                _i=$(( $_i + 1 ))
+                if [ ${_i} -eq 1 ]; then
+                    USER_DAEMON_COMMAND="$_itemBuffer"
                 else
-                    USER_DAEMON_PARAMS+="$_itemBuffer"
+                    if [ ${_i} -gt 2 ]; then
+                    USER_DAEMON_PARAMS+=','
+                    fi
+                    if [ "$_itemBuffer" != "true" ] \
+                    && [ "$_itemBuffer" != "false" ] \
+                    && [[ ! ${_itemBuffer} =~ ^[0-9]+$ ]]; then
+                        if [[ "$_itemBuffer" != '"'* ]]; then
+                            USER_DAEMON_PARAMS+='"'
+                        fi
+                        USER_DAEMON_PARAMS+="$_itemBuffer"
+                        if [[ "$_itemBuffer" != *'"' ]]; then
+                            USER_DAEMON_PARAMS+='"'
+                        fi
+                    else
+                        USER_DAEMON_PARAMS+="$_itemBuffer"
+                    fi
                 fi
-            fi
-        done
-        unset i
-        unset _itemBuffer
-        unset buffer
-        executeCURL "$USER_DAEMON_COMMAND" "$USER_DAEMON_PARAMS" "u"
-        commandInput;;
+            done
+            executeCURL "$USER_DAEMON_COMMAND" "$USER_DAEMON_PARAMS" "u"
+            commandInput
+            ;;
     esac
 }
 
+# ============================================================================
+# Simple output for any CURL command the user entered
+# Input: $1 will be displayed as CURL response msg
 curlFeedbackHandling() {
     dialog \
         --backtitle "$TITLE_BACK" \
@@ -701,6 +758,10 @@ curlFeedbackHandling() {
         --msgbox "$1" 0 0
 }
 
+# ============================================================================
+# Helper function that decides whether if LOCK or UNLOCK will be displayed
+#
+# Input: $MENU_WALLET_UNLOCKED indicates if wallet is open
 mainMenu_helper() {
     if [ "$MENU_WALLET_UNLOCKED" = "true" ]; then
         echo 'Lock'
@@ -709,34 +770,35 @@ mainMenu_helper() {
     fi
 }
 
+# ============================================================================
+# This function draws the main menu to the terminal
 refreshMainMenu_GUI() {
-    local max_buff
+    local _max_buff
     POSY_MENU=0
-    max_buff=$(($(tput cols) / 2))
-    max_buff=$((45>$max_buff?"45":$max_buff))
-    SIZEX_MENU=$((60<$max_buff?"60":$max_buff))
+    _max_buff=$(($(tput cols) / 2))
+    _max_buff=$((45>$_max_buff?"45":$_max_buff))
+    SIZEX_MENU=$((60<$_max_buff?"60":$_max_buff))
     SIZEY_MENU=13
-    max_buff=$(($(tput cols) - $SIZEX_MENU))
-    SIZEX_TRANSACTIONS=$((85<$max_buff?"85":$max_buff))
+    _max_buff=$(($(tput cols) - $SIZEX_MENU))
+    SIZEX_TRANSACTIONS=$((85<$_max_buff?"85":$_max_buff))
     SIZEY_TRANSACTIONS=$(($(tput lines) - $POSY_MENU))
-    unset max_buff
-    SIZEX_INFO=$SIZEX_MENU
+    SIZEX_INFO=${SIZEX_MENU}
     SIZEY_INFO=$(($(tput lines) - $POSY_MENU - $SIZEY_MENU))
     POSX_MENU=$(($(($(tput cols) - $SIZEX_MENU - $SIZEX_TRANSACTIONS)) / 2))
     POSX_TRANSACTIONS=$(($POSX_MENU + $SIZEX_MENU))
-    POSY_TRANSACTIONS=$POSY_MENU
-    POSX_INFO=$POSX_MENU
+    POSY_TRANSACTIONS=${POSY_MENU}
+    POSX_INFO=${POSX_MENU}
     POSY_INFO=$(($POSY_MENU + $SIZEY_MENU))
     TEXTWIDTH_TRANS=$(($SIZEX_TRANSACTIONS - 4))
     TEXTWIDTH_INFO=$(($SIZEX_INFO - 5))
-    WIDTHTEXT_MENU=$TEXTWIDTH_INFO
+    WIDTHTEXT_MENU=${TEXTWIDTH_INFO}
     TEXTHIGHT_TRANS=$(($(tput lines) - 2 - $POSY_TRANSACTIONS))
     TEXTHIGHT_INFO=$(($(tput lines) - 2 - $POSY_INFO - $SIZEY_MENU))
     TITLE_TRANSACTIONS='RECENT TRANSACTIONS'
     TITLE_INFO=''
     TITLE_MENU="$TITLE_BACK"
     exec 3>&1
-    local mainMenuPick=$(dialog --no-shadow \
+    local _mainMenuPick=$(dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
         --infobox "" "$(tput lines)" "$(tput cols)" \
@@ -746,7 +808,7 @@ refreshMainMenu_GUI() {
         --begin "$POSY_TRANSACTIONS" "$POSX_TRANSACTIONS" \
         --title "$TITLE_TRANSACTIONS" \
         --no-collapse \
-        --infobox "$(makeOutputTransactions $TEXTWIDTH_TRANS $TEXTHIGHT_TRANS)" "$SIZEY_TRANSACTIONS" "$SIZEX_TRANSACTIONS" \
+        --infobox "$(makeOutputTransactions ${TEXTWIDTH_TRANS} ${TEXTHIGHT_TRANS})" "$SIZEY_TRANSACTIONS" "$SIZEX_TRANSACTIONS" \
         \
         --and-widget \
         --colors \
@@ -754,7 +816,7 @@ refreshMainMenu_GUI() {
         --title "$TITLE_INFO" \
         --no-shadow \
         --no-collapse \
-        --infobox "$(makeOutputInfo $TEXTWIDTH_INFO $TEXTHIGHT_INFO)" "$SIZEY_INFO" "$SIZEX_INFO" \
+        --infobox "$(makeOutputInfo ${TEXTWIDTH_INFO} ${TEXTHIGHT_INFO})" "$SIZEY_INFO" "$SIZEX_INFO" \
         \
         --and-widget \
         --colors \
@@ -774,54 +836,69 @@ refreshMainMenu_GUI() {
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
-    case $exit_status in
-        $DIALOG_ESC)
+    case ${exit_status} in
+        ${DIALOG_ESC})
             goodbye
-        ;;
+            ;;
     esac
-    case $mainMenuPick in
-        Refresh) refreshMainMenu_DATA;;
-        Unlock) unlockWalletForStaking;;
-        Lock) lockWallet;;
-        Transaktions) viewAllTransactions "0" "true";;
-        Send) sry;;
-        Command) commandInput;;
-        Quit) goodbye;;
+    case ${_mainMenuPick} in
+        Refresh)
+            refreshMainMenu_DATA;;
+        Unlock)
+            unlockWalletForStaking;;
+        Lock)
+            lockWallet;;
+        Transaktions)
+            viewAllTransactions "0" "true";;
+        Send)
+            sry;;
+        Command)
+            commandInput;;
+        Quit)
+            goodbye;;
     esac
-    unset mainMenuPick
 }
 
+# ============================================================================
+# Reading script.conf to get values RPCUSER, RPCPASSWORD, IP, PORT, CURL
+#
+# Input: $1 [optional] The filepath can be parsed as parameter
 readConfig() {
-    local file
+    local _file
     if [ -z "$1" ]; then
-        file="script.conf"
+        _file="script.conf"
     else
-        file=$1
+        _file=$1
     fi
-    if [ ! -f "$file" ]; then
-        local s="Config file for this interface missing. The file $file was not found."
-        errorHandling "$s" 1
-        unset s
+    if [ ! -f "$_file" ]; then
+        local _s="Config file for this interface missing. The file $_file was not found."
+        errorHandling "$_s" 1
     fi
-    input=`cat "$file"|grep -v "^#"`
-    set -- $input
+    _input=`cat "$_file"|grep -v "^#"`
+    set -- ${_input}
     while [ $1 ]; do
         eval $1
         shift 1
     done
-    unset file
 }
 
+# ============================================================================
+# Goal: lock the wallet
 lockWallet() {
     executeCURL "walletlock"
     refreshMainMenu_DATA
 }
 
+# ============================================================================
+# Goal: unlock the wallet for staking only
 unlockWalletForStaking() {
     passwordDialog "999999999" "true"
     refreshMainMenu_DATA
 }
 
+# ============================================================================
+# Goal: Refresh the main menu - which means we must gather new data
+# and redraw gui
 refreshMainMenu_DATA() {
     executeCURL "getstakinginfo"
     executeCURL "getinfo"
@@ -831,7 +908,6 @@ refreshMainMenu_DATA() {
 
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
-VERSION='v1.8alpha'
 TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
 readConfig $1
 warning
