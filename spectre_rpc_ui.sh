@@ -26,6 +26,7 @@ scriptName=$(basename $0)
 cd ${ownLocation}
 . include/helpers_console.sh
 rtc=0
+_init
 
 # ============================================================================
 # Show some cmdline help without dialog or else
