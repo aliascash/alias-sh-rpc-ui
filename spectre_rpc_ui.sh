@@ -182,13 +182,13 @@ fillLine() {
             else
                 filler=${filler}' '
             fi
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         done
     else
         filler='\n'
     fi
-    output=${output//'-_-'/"$filler"}
-    echo ${output}
+    _output=${_output//'-_-'/"$filler"}
+    echo ${_output}
 }
 
 # ============================================================================
@@ -241,19 +241,19 @@ getInfo() {
                 # set boolean for main menu option to lock the wallet
                 MENU_WALLET_UNLOCKED="false"
             fi
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
             if [ "${_itemBuffer#*':'}" != "none" ]; then
                 info_global[_i]="\Z1""${_itemBuffer#*':'}""\Zn"
             else
                 info_global[_i]="${_itemBuffer#*':'}"
             fi
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'version'* || ${_itemBuffer} == *'balance'* || \
             ${_itemBuffer} == 'stake'* || ${_itemBuffer} == 'connections'* || \
             ${_itemBuffer} == 'data'* || ${_itemBuffer} == 'ip'* ]]; then
             info_global[_i]="${_itemBuffer#*':'}"
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         fi
     done
     IFS=${_oldIFS}
@@ -274,14 +274,14 @@ getStakingInfo() {
         if [[ ${_itemBuffer} == 'expectedtime:'* ]]; then
             _time="${_itemBuffer#*':'}"
             stakinginfo_global[_i]=$(secToHumanReadable ${_time})
-            _i=$(( ${_i} + 1 ))
+            _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'staking'* ]]; then
             if [ "${_itemBuffer#*':'}" == "true" ]; then
                 stakinginfo_global[_i]="\Z4ON\Zn"
             else
                 stakinginfo_global[_i]="\Z1OFF\Zn"
             fi
-            _i=$(( ${_i} + 1 ))
+            _i=$((_i+1))
         fi
     done
     IFS=${_oldIFS}
@@ -340,7 +340,7 @@ getTransactions() {
             fi
             _unixtime=$(date -d "@$_unixtime" +%d-%m-%Y" at "%H:%M:%S)
             transactions_global[_i]=${_unixtime}
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'category'* ]]; then
             _valueBuffer="${_itemBuffer#*':'}"
             _thisWasAStake="false"
@@ -354,11 +354,11 @@ getTransactions() {
             else
                 transactions_global[_i]='\Z1TRANSFERRED\Zn'
             fi
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'address'* || ${_itemBuffer} == 'amount'* \
             || ${_itemBuffer} == 'confirmations'* || ${_itemBuffer} == 'txid'* ]]; then
             transactions_global[_i]="${_itemBuffer#*':'}"
-            _i=$(( $_i + 1 ))
+            _i=$((_i+1))
         fi
     done
     IFS=${_oldIFS}
@@ -707,7 +707,7 @@ commandInput() {
     IFS=','
     local _i=0
     for _itemBuffer in ${USER_DAEMON_PARAMS}; do
-        _i=$(( $_i + 1 ))
+        _i=$((_i+1))
         if [ ${_i} -gt 1 ]; then
             _buffer+=' '
         fi
@@ -747,7 +747,7 @@ commandInput() {
         ${DIALOG_OK})
             _i=0
             for _itemBuffer in ${_buffer}; do
-                _i=$(( $_i + 1 ))
+                _i=$((_i+1))
                 if [ ${_i} -eq 1 ]; then
                     USER_DAEMON_COMMAND="$_itemBuffer"
                 else
