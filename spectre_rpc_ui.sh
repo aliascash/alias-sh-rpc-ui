@@ -17,6 +17,35 @@
 # ============================================================================
 
 VERSION='v1.8alpha'
+SETTINGSFILE_TO_USE=script.conf
+
+# Backup where we came from
+callDir=$(pwd)
+ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+scriptName=$(basename $0)
+cd ${ownLocation}
+. include/helpers_console.sh
+rtc=0
+
+# ============================================================================
+# Show some cmdline help without dialog or else
+helpMe ()
+{
+    echo "
+
+    This script opens a dialog based UI to handle a Spectrecoin wallet.
+
+    Usage:
+    ${0} [options]
+
+    Optional parameters:
+    -s <settingsfile>
+        Settingsfile to use. File respectively its given path must be relative
+        to the location where this script is located! Default: ${SETTINGSFILE_TO_USE}
+    -h  Show this help
+
+    "
+}
 
 # ============================================================================
 # This function is the beating heart, it interacts via CURL with the daemon
@@ -864,22 +893,12 @@ refreshMainMenu_GUI() {
 #
 # Input: $1 [optional] The filepath can be parsed as parameter
 readConfig() {
-    local _file
-    if [ -z "$1" ]; then
-        _file="script.conf"
-    else
-        _file=$1
-    fi
+    local _file=$1
     if [ ! -f "$_file" ]; then
-        local _s="Config file for this interface missing. The file $_file was not found."
+        local _s="Config file for this interface missing. The file '$_file' was not found."
         errorHandling "$_s" 1
     fi
-    _input=`cat "$_file"|grep -v "^#"`
-    set -- ${_input}
-    while [ $1 ]; do
-        eval $1
-        shift 1
-    done
+    . ${_file}
 }
 
 # ============================================================================
@@ -906,10 +925,29 @@ refreshMainMenu_DATA() {
     refreshMainMenu_GUI
 }
 
+checkRequirement() {
+    local _toolToCheck=$1
+    ${_toolToCheck} --version > /dev/null 2>&1 ; rtc=$?
+    if [ "$rtc" -ne 0 ] ; then
+        die 20 "Required tool '${_toolToCheck}' not found!"
+    fi
+}
+
+while getopts s:h? option; do
+    case ${option} in
+        s) SETTINGSFILE_TO_USE="${OPTARG}";;
+        h|?) helpMe && exit 0;;
+        *) die 90 "invalid option \"${OPTARG}\"";;
+    esac
+done
+
+checkRequirement dialog
+checkRequirement bc
+
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
-readConfig $1
+readConfig ${SETTINGSFILE_TO_USE}
 warning
 refreshMainMenu_DATA
 goodbye
