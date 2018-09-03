@@ -54,44 +54,22 @@ helpMe ()
 #
 # Input: $1 will be executed by the daemon as command
 #        $2 params for the daemon command
-#        $3 optional parameter to indicate if this was done in the user
-#           command mask ($3="u") - in this case we will just display the
-#           result and do not update the UI (except in case of wallet lock/unlock)
 #
 # Output: global variable curl_result_global (clean and bash optimized)
 executeCURL() {
     local _action=$1
     local _parameter1=$2
-    local _parameter2=$3
     curl_login="--user $RPCUSER:$RPCPASSWORD"
     curl_connection_parameters="-H content-type:text/plain; http://$IP:$PORT"
     curl_command="--silent --data-binary "
     curl_command+='{"jsonrpc":"1.0","id":"curltext","method":"'"$_action"'","params":['"$_parameter1"']}'
     curl_result_global=$( ${CURL} ${curl_login} ${curl_command} ${curl_connection_parameters} )
+    if [ -z "$curl_result_global" ]; then
+        # starting daemon
+        startDaemon
+    fi
     # clean the result (curl_result_global) and optimize it for bash
     cutCURLresult
-    if [ "$_action" = "listtransactions" ] && [ "$_parameter2" != "u" ]; then
-        getTransactions
-    elif [ "$_action" = "getinfo" ] && [ "$_parameter2" != "u" ]; then
-        getInfo
-    elif [ "$_action" = "getstakinginfo" ] && [ "$_parameter2" != "u" ]; then
-        getStakingInfo
-    elif [ "$_action" = "walletlock" ]; then
-        # no error occurred, since cutCURLresult checked it
-        walletLockedFeedback
-    elif [ "$_action" = "walletpassphrase" ]; then
-        # no error occurred, since cutCURLresult checked it
-        : # literally nothing to do here since daemon responds is excellent
-    else
-        # User command
-        # let's display the result of the user command, if there is any
-        # if we had a CURL error the msg was already displayed
-        if [[ "$curl_result_global" != '{"result":null'* ]]; then
-            curl_result_global=${curl_result_global//','/'\n'}
-#            curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
-            curlFeedbackHandling "$curl_result_global"
-        fi
-    fi
 }
 
 # ============================================================================
@@ -128,8 +106,9 @@ cutCURLresult() {
             curl_result_global="${curl_result_global%',"error"'*}"
             curl_result_global="${curl_result_global#*':'}"
         fi
-        # typically the wallet daemon gives feedback about errors within the daemon
+        # the daemon gives feedback about errors
         # if there was no error, just display none instead of ""
+        # (this holds also if the wallet.dat is not encrypted)
         curl_result_global=${curl_result_global//'""'/'none'}
         # optimize string for bash
         # get rid of the "
@@ -156,6 +135,19 @@ cutCURLresult() {
         msg="${msg#*'message":"'}"
         errorHandling "CURL error message:\n\n$msg"
     fi
+}
+
+# ============================================================================
+# starts the daemon (spectrecoind)
+#
+startDaemon() {
+  printf "\nDaemon is not running.\n"
+  printf "starting Daemon "'\e[0;32m'"(will take 1 min)"'\e[0m\n\n'"..."
+  /usr/local/bin/spectrecoind '--daemon'
+  sleep 60
+  printf "\nall done.\nStarting Interface...\n"
+  sleep .1
+  refreshMainMenu_DATA
 }
 
 # ============================================================================
@@ -297,7 +289,7 @@ getStakingInfo() {
 #        $2 - desired hight - not used yet
 makeOutputInfo() {
     echo "Wallet Info\n"
-    echo $(fillLine "Balance:-_-`echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc` XSPEC" $1)"\n"
+    echo $(fillLine "Balance:-_-$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc) XSPEC" $1)"\n"
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" $1)"\n"
 
     echo "\nStaking Info\n"
@@ -333,7 +325,7 @@ getTransactions() {
             _unixtime="${_itemBuffer#*':'}"
             if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -lt ${_oldestStakeDate} ]); then
                 _oldestStakeDate=${_unixtime}
-                _firstStakeIndex="$_i"
+                _firstStakeIndex="${_i}"
             fi
             if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -gt ${_newestStakeDate} ]); then
                 _newestStakeDate=${_unixtime}
@@ -523,15 +515,15 @@ goodbye() {
 
 # ============================================================================
 # Simple warning checkbox for the user at startup
-warning() {
-    WARNING="\nUse at your own risc!!!\n\nYou are using Terminal: $(tput longname)\n\n\
+welcomeMsg() {
+    local _WARNING="\nUse at your own risc!!!\n\nYou are using Terminal: $(tput longname)\n\n\
     Interface version: $VERSION"
     dialog --backtitle "$TITLE_BACK" \
         --colors \
         --title "WARNING" \
         --ok-label 'YES - I´ve understood' \
         --no-shadow \
-        --msgbox "$WARNING" 0 0
+        --msgbox "$_WARNING" 0 0
 }
 
 # ============================================================================
@@ -578,6 +570,7 @@ viewAllTransactions() {
     else
         executeCURL "listtransactions" '"*",'${_count}','${_start}',"0"'
     fi
+    getTransactions
     dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
@@ -689,6 +682,7 @@ passwordDialog() {
             ;;
     esac
     executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2"
+    # literally nothing to do here since daemon responds is excellent
 }
 
 # ============================================================================
@@ -723,7 +717,7 @@ commandInput() {
         --cancel-label "Main Menu" \
         --extra-button \
         --extra-label "Help" \
-        --no-shadow \
+        --no-shadow --colors \
         --title "Enter Command" \
         --form "$_s" 0 0 0 \
         "type help for info" 1 12 "" 1 11 -1 0 \
@@ -741,35 +735,47 @@ commandInput() {
             refreshMainMenu_GUI
             ;;
         ${DIALOG_EXTRA})
-            executeCURL "help" "" "u"
+            executeCURL "help" ""
+            curlUserFeedbackHandling
             commandInput
             ;;
         ${DIALOG_OK})
             _i=0
+            local _argContainsSpaces="false"
+            unset USER_DAEMON_PARAMS
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
                 if [ ${_i} -eq 1 ]; then
                     USER_DAEMON_COMMAND="$_itemBuffer"
                 else
                     if [ ${_i} -gt 2 ]; then
-                    USER_DAEMON_PARAMS+=','
+                      if [ ${_argContainsSpaces} != "true" ]; then
+                        USER_DAEMON_PARAMS+=','
+                      else
+                        USER_DAEMON_PARAMS+=' '
+                      fi
                     fi
                     if [ "$_itemBuffer" != "true" ] \
                     && [ "$_itemBuffer" != "false" ] \
                     && [[ ! ${_itemBuffer} =~ ^[0-9]+$ ]]; then
-                        if [[ "$_itemBuffer" != '"'* ]]; then
+                        if [[ "$_itemBuffer" != '"'* ]] && [ ${_argContainsSpaces} != "true" ]; then
                             USER_DAEMON_PARAMS+='"'
+                        else
+                            _argContainsSpaces="true"
                         fi
                         USER_DAEMON_PARAMS+="$_itemBuffer"
-                        if [[ "$_itemBuffer" != *'"' ]]; then
+                        if [[ "$_itemBuffer" != *'"' ]] && [ ${_argContainsSpaces} != "true" ]; then
                             USER_DAEMON_PARAMS+='"'
+                        elif [[ "$_itemBuffer" == *'"' ]]; then
+                            _argContainsSpaces="false"
                         fi
                     else
                         USER_DAEMON_PARAMS+="$_itemBuffer"
                     fi
                 fi
             done
-            executeCURL "$USER_DAEMON_COMMAND" "$USER_DAEMON_PARAMS" "u"
+            executeCURL "$USER_DAEMON_COMMAND" "$USER_DAEMON_PARAMS"
+            curlUserFeedbackHandling
             commandInput
             ;;
     esac
@@ -777,15 +783,18 @@ commandInput() {
 
 # ============================================================================
 # Simple output for any CURL command the user entered
-# Input: $1 will be displayed as CURL response msg
-curlFeedbackHandling() {
-    dialog \
-        --backtitle "$TITLE_BACK" \
-        --colors \
-        --title "CURL result" \
-        --ok-label 'Continue' \
-        --no-shadow \
-        --msgbox "$1" 0 0
+curlUserFeedbackHandling() {
+    if [[ "$curl_result_global" != '{"result":null'* ]]; then
+        curl_result_global=${curl_result_global//','/'\n'}
+#        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
+        dialog \
+          --backtitle "$TITLE_BACK" \
+          --colors \
+          --title "CURL result" \
+          --ok-label 'Continue' \
+          --no-shadow \
+          --msgbox "$curl_result_global" 0 0
+    fi
 }
 
 # ============================================================================
@@ -906,6 +915,7 @@ readConfig() {
 # Goal: lock the wallet
 lockWallet() {
     executeCURL "walletlock"
+    walletLockedFeedback
     refreshMainMenu_DATA
 }
 
@@ -920,10 +930,20 @@ unlockWalletForStaking() {
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
-    executeCURL "getstakinginfo"
-    executeCURL "getinfo"
-    executeCURL "listtransactions" '"*",7,0,"1"'
-    refreshMainMenu_GUI
+  echo "0" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  executeCURL "getstakinginfo"
+  echo "15" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  getStakingInfo
+  echo "33" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  executeCURL "getinfo"
+  echo "48" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  getInfo
+  echo "66" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  executeCURL "listtransactions" '"*",7,0,"1"'
+  echo "85" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  getTransactions
+  echo "100" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+  refreshMainMenu_GUI
 }
 
 checkRequirement() {
@@ -949,6 +969,6 @@ export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
 readConfig ${SETTINGSFILE_TO_USE}
-warning
+welcomeMsg
 refreshMainMenu_DATA
 goodbye
