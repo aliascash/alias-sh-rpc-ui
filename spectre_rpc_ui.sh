@@ -23,7 +23,7 @@ SETTINGSFILE_TO_USE=script.conf
 callDir=$(pwd)
 ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scriptName=$(basename $0)
-cd ${ownLocation}
+cd "${ownLocation}"
 . include/helpers_console.sh
 rtc=0
 _init
