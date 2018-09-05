@@ -1,3 +1,5 @@
+WARINING: send command is not tested yet
+
 Make sure the RPC login info matches the "spectrecoin.conf" settings.
 
 In case you didn't have such .conf file, there is an example placed
