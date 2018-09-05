@@ -138,13 +138,13 @@ cutCURLresult() {
 # starts the daemon (spectrecoind)
 #
 startDaemon() {
-  printf "\nDaemon is not running.\n"
-  printf "starting Daemon "'\e[0;32m'"(will take 1 min)"'\e[0m\n\n'"..."
-  /usr/local/bin/spectrecoind '--daemon'
-  sleep 60
-  printf "\nall done.\nStarting Interface...\n"
-  sleep .1
-  refreshMainMenu_DATA
+    printf "\nDaemon is not running.\n"
+    printf "starting Daemon "'\e[0;32m'"(will take 1 min)"'\e[0m\n\n'"..."
+    /usr/local/bin/spectrecoind '--daemon'
+    sleep 60
+    printf "\nall done.\nStarting Interface...\n"
+    sleep .1
+    refreshMainMenu_DATA
 }
 
 # ============================================================================
@@ -298,7 +298,7 @@ makeOutputInfo() {
     echo $(fillLine "Expected time: ${stakinginfo_global[1]}" $1)"\n"
 
     echo "\nClient info\n"
-    echo $(fillLine "Deamon: ${info_global[0]}-_-Errors: ${info_global[9]}" $1)"\n"
+    echo $(fillLine "Daemon: ${info_global[0]}-_-Errors: ${info_global[9]}" $1)"\n"
     echo $(fillLine "IP: ${info_global[7]}-_-Peers: ${info_global[4]}" $1)"\n"
     echo $(fillLine "Download: ${info_global[5]}-_-Upload: ${info_global[6]}" $1)"\n"
 }
@@ -626,9 +626,9 @@ advancedMainMenu() {
 
 # getpeerinfo
 
-# deamon management
-  # start / stop deamon ? (script startet bisher nicht wenn deamon nicht läuft!!!)
-  # set deamon niceness ? (befehl? - problem tasks müssen auch angepasst werden)
+# daemon management
+  # start / stop daemon ? (script startet bisher nicht wenn daemon nicht läuft!!!)
+  # set daemon niceness ? (befehl? - problem tasks müssen auch angepasst werden)
   # rewind chain
   # addnode
 
@@ -654,13 +654,13 @@ advancedMainMenu() {
 # Input $1 - address (important for address book functionality)
 #
 sendCoins() {
-  local _amount
-  local _destinationAddress=$1
-  local _buffer
-  local _s="Enter the destination address.\n"
+    local _amount
+    local _destinationAddress=$1
+    local _buffer
+    local _s="Enter the destination address.\n"
         _s+="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
-  exec 3>&1
-  _buffer=$(dialog --backtitle "$TITLE_BACK" \
+    exec 3>&1
+    _buffer=$(dialog --backtitle "$TITLE_BACK" \
         --ok-label "Send" \
         --cancel-label "Main Menu" \
         --extra-button \
@@ -673,58 +673,62 @@ sendCoins() {
         "Amount of XSPEC" 4 12 "" 3 11 -1 0 \
         "Amount:" 5 1 "${_amount}" 5 11 20 0 \
         2>&1 1>&3)
-   exit_status=$?
-   exec 3>&-
-   case ${exit_status} in
-      ${DIALOG_CANCEL})
-          refreshMainMenu_GUI;;
-      ${DIALOG_ESC})
-          refreshMainMenu_GUI;;
-      ${DIALOG_EXTRA})
-          sry
-          sendCoins "test1";;
-      ${DIALOG_OK})
-          _i=0
-          local _itemBuffer
-          for _itemBuffer in ${_buffer}; do
-              _i=$((_i+1))
-              if [ ${_i} -eq 1 ]; then
-                if [[ ${_itemBuffer} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
-                  _destinationAddress="${_itemBuffer}"
+    exit_status=$?
+    exec 3>&-
+    case ${exit_status} in
+        ${DIALOG_CANCEL})
+            refreshMainMenu_GUI
+            ;;
+        ${DIALOG_ESC})
+            refreshMainMenu_GUI
+            ;;
+        ${DIALOG_EXTRA})
+            sry
+            sendCoins "test1"
+            ;;
+        ${DIALOG_OK})
+            _i=0
+            local _itemBuffer
+            for _itemBuffer in ${_buffer}; do
+                _i=$((_i+1))
+                if [ ${_i} -eq 1 ]; then
+                    if [[ ${_itemBuffer} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
+                        _destinationAddress="${_itemBuffer}"
+                    else
+                        local _s="\Z1You entered an invalid address.\Zn\n\n"
+                        _s+="A valid Spectrecoin address must be in the form:"
+                        _s+="\n- beginning with \"S\""
+                        _s+="\n- length 27-34"
+                        _s+="\n- uppercase letter \"O\", \"I\", "
+                        _s+="lowercase letter \"l\", and the number \"0\" "
+                        _s+="are never used to prevent visual ambiguity"
+                        errorHandling "${_s}"
+                        sendCoins
+                    fi
+                elif [ ${_i} -eq 2 ]; then
+                    if [[ ${_itemBuffer} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${_itemBuffer} > 0" | bc)" ]; then
+                        if [ "${info_global[8]}" == "\Z4true\Zn" ]; then
+                        # iff wallet is unlocked, we have to look it first
+                        executeCURL "walletlock"
+                        fi
+                        if [ "${info_global[8]}" != "\Z1no PW\Zn" ]; then
+                        passwordDialog "60" "false"
+                        fi
+                        executeCURL "sendtoaddress" "\"${_destinationAddress}\"" "${_amount}"
+                        if [ "${info_global[8]}" != "\Z1no PW\Zn" ]; then
+                        executeCURL "walletlock"
+                        fi
                 else
-                  local _s="\Z1You entered an invalid address.\Zn\n\n"
-                           _s+="A valid Spectrecoin address must be in the form:"
-                           _s+="\n- beginning with \"S\""
-                           _s+="\n- length 27-34"
-                           _s+="\n- uppercase letter \"O\", \"I\", "
-                           _s+="lowercase letter \"l\", and the number \"0\" "
-                           _s+="are never used to prevent visual ambiguity"
-                  errorHandling "${_s}"
-                  sendCoins
+                    local _s="Amount must be a number, with:"
+                    _s+="\n- greater than 0"
+                    _s+="\n- max. 8 digits behind decimal point"
+                    errorHandling "${_s}"
+                    sendCoins "${_destinationAddress}"
+                    fi
                 fi
-              elif [ ${_i} -eq 2 ]; then
-                  if [[ ${_itemBuffer} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${_itemBuffer} > 0" | bc)" ]; then
-                     if [ "${info_global[8]}" == "\Z4true\Zn" ]; then
-                       # iff wallet is unlocked, we have to look it first
-                       executeCURL "walletlock"
-                     fi
-                     if [ "${info_global[8]}" != "\Z1no PW\Zn" ]; then
-                       passwordDialog "60" "false"
-                     fi
-                     executeCURL "sendtoaddress" "\"${_destinationAddress}\"" "${_amount}"
-                     if [ "${info_global[8]}" != "\Z1no PW\Zn" ]; then
-                       executeCURL "walletlock"
-                     fi
-                  else
-                     local _s="Amount must be a number, with:"
-                           _s+="\n- greater than 0"
-                           _s+="\n- max. 8 digits behind decimal point"
-                     errorHandling "${_s}"
-                     sendCoins "${_destinationAddress}"
-                  fi
-              fi
-          done
-          sendCoins "${_destinationAddress}";;
+            done
+            sendCoins "${_destinationAddress}"
+            ;;
     esac
     refreshMainMenu_DATA
 }
@@ -802,13 +806,16 @@ userCommandInput() {
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
-            refreshMainMenu_GUI;;
+            refreshMainMenu_GUI
+            ;;
         ${DIALOG_ESC})
-            refreshMainMenu_GUI;;
+            refreshMainMenu_GUI
+            ;;
         ${DIALOG_EXTRA})
             executeCURL "help" ""
             curlUserFeedbackHandling
-            userCommandInput;;
+            userCommandInput
+            ;;
         ${DIALOG_OK})
             _i=0
             local _argContainsSpaces="false"
@@ -819,11 +826,11 @@ userCommandInput() {
                     USER_DAEMON_COMMAND="$_itemBuffer"
                 else
                     if [ ${_i} -gt 2 ]; then
-                      if [ ${_argContainsSpaces} != "true" ]; then
-                        USER_DAEMON_PARAMS+=','
-                      else
-                        USER_DAEMON_PARAMS+=' '
-                      fi
+                        if [ ${_argContainsSpaces} != "true" ]; then
+                            USER_DAEMON_PARAMS+=','
+                        else
+                            USER_DAEMON_PARAMS+=' '
+                        fi
                     fi
                     if [ "$_itemBuffer" != "true" ] \
                     && [ "$_itemBuffer" != "false" ] \
@@ -846,7 +853,8 @@ userCommandInput() {
             done
             executeCURL "$USER_DAEMON_COMMAND" "$USER_DAEMON_PARAMS"
             curlUserFeedbackHandling
-            userCommandInput;;
+            userCommandInput
+            ;;
     esac
 }
 
@@ -857,12 +865,12 @@ curlUserFeedbackHandling() {
         curl_result_global=${curl_result_global//','/'\n'}
 #        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
         dialog \
-          --backtitle "$TITLE_BACK" \
-          --colors \
-          --title "CURL result" \
-          --ok-label 'Continue' \
-          --no-shadow \
-          --msgbox "$curl_result_global" 0 0
+            --backtitle "$TITLE_BACK" \
+            --colors \
+            --title "CURL result" \
+            --ok-label 'Continue' \
+            --no-shadow \
+            --msgbox "$curl_result_global" 0 0
     fi
 }
 
@@ -941,7 +949,7 @@ refreshMainMenu_GUI() {
         $(mainMenu_helper) "Wallet for staking" \
         Transaktions "View all transactions" \
         Send "Send XSPEC from wallet" \
-        Command "Sending commands to deamon" \
+        Command "Sending commands to daemon" \
         Quit "Exit interface" \
         2>&1 1>&3)
     exit_status=$?
@@ -1003,20 +1011,20 @@ unlockWalletForStaking() {
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
-  echo "0" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  executeCURL "getstakinginfo"
-  echo "15" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  getStakingInfo
-  echo "33" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  executeCURL "getinfo"
-  echo "48" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  getInfo
-  echo "66" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  executeCURL "listtransactions" '"*",7,0,"1"'
-  echo "85" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  getTransactions
-  echo "100" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
-  refreshMainMenu_GUI
+    echo "0" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    executeCURL "getstakinginfo"
+    echo "15" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    getStakingInfo
+    echo "33" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    executeCURL "getinfo"
+    echo "48" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    getInfo
+    echo "66" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    executeCURL "listtransactions" '"*",7,0,"1"'
+    echo "85" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    getTransactions
+    echo "100" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    refreshMainMenu_GUI
 }
 
 checkRequirement() {
