@@ -461,12 +461,15 @@ makeOutputTransactions() {
 
 # ============================================================================
 # Define the dialog exit status codes
-: ${DIALOG_OK=0}
-: ${DIALOG_CANCEL=1}
-: ${DIALOG_HELP=2}
-: ${DIALOG_EXTRA=3}
-: ${DIALOG_ITEM_HELP=4}
-: ${DIALOG_ESC=255}
+DIALOG_OK=0
+DIALOG_CANCEL=1
+DIALOG_HELP=2
+DIALOG_EXTRA=3
+DIALOG_ITEM_HELP=4
+DIALOG_ESC=255
+DIALOG_TEXT_CONTINUE='Continue'
+DIALOG_TEXT_OK='OK'
+DIALOG_TEXT_ERROR='ERROR'
 
 # ============================================================================
 # Simple error handling
@@ -479,8 +482,8 @@ errorHandling() {
     if [ -z "$2" ]; then
         dialog --backtitle "$TITLE_BACK" \
             --colors \
-            --title "ERROR" \
-            --ok-label 'OK' \
+            --title "${DIALOG_TEXT_ERROR}" \
+            --ok-label "${DIALOG_TEXT_CONTINUE}" \
             --no-shadow \
             --msgbox "$1" 0 0
     else
@@ -533,8 +536,11 @@ walletLockedFeedback() {
     local s="Wallet successfully locked."
     s+="\n\n\Z5You will not be able to stake anymore.\Zn\n\n"
     s+="Use Unlock in main menu to unlock the wallet for staking only again."
-    dialog --backtitle "$TITLE_BACK" --colors --no-shadow \
-    --ok-label 'Continue' --msgbox "$s" 0 0
+    dialog --backtitle "$TITLE_BACK" \
+    --colors \
+    --no-shadow \
+    --ok-label "${DIALOG_TEXT_CONTINUE}" \
+    --msgbox "$s" 0 0
     unset s
 }
 
@@ -665,7 +671,8 @@ sendCoins() {
         --cancel-label "Main Menu" \
         --extra-button \
         --extra-label "Address Book" \
-        --no-shadow --colors \
+        --no-shadow \
+        --colors \
         --title "Send XSPEC" \
         --form "$_s" 0 0 0 \
         "Destination address" 1 12 "" 1 11 -1 0 \
@@ -794,7 +801,8 @@ userCommandInput() {
         --cancel-label "Main Menu" \
         --extra-button \
         --extra-label "Help" \
-        --no-shadow --colors \
+        --no-shadow \
+        --colors \
         --title "Enter Command" \
         --form "$_s" 0 0 0 \
         "type help for info" 1 12 "" 1 11 -1 0 \
@@ -868,7 +876,7 @@ curlUserFeedbackHandling() {
             --backtitle "$TITLE_BACK" \
             --colors \
             --title "CURL result" \
-            --ok-label 'Continue' \
+            --ok-label "${DIALOG_TEXT_CONTINUE}" \
             --no-shadow \
             --msgbox "$curl_result_global" 0 0
     fi
@@ -1007,23 +1015,29 @@ unlockWalletForStaking() {
     refreshMainMenu_DATA
 }
 
+waitDialog(){
+    echo "$1" | dialog --no-shadow \
+        --title "Please wait" \
+        --gauge "Getting data from daemon..." 7 70 0
+}
+
 # ============================================================================
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
-    echo "0" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "0"
     executeCURL "getstakinginfo"
-    echo "15" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "15"
     getStakingInfo
-    echo "33" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "33"
     executeCURL "getinfo"
-    echo "48" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "48"
     getInfo
-    echo "66" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "66"
     executeCURL "listtransactions" '"*",7,0,"1"'
-    echo "85" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "85"
     getTransactions
-    echo "100" | dialog --no-shadow --title "Please wait" --gauge "Getting data from daemon..." 7 70 0
+    waitDialog "100"
     refreshMainMenu_GUI
 }
 
