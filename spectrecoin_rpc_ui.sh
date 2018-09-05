@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 #
-# FILE: spectre_rpc_ui.sh
+# FILE: spectrecoin_rpc_ui.sh
 #
 # DESCRIPTION: DIALOG RPC interface for Spectrecoin,
 #              It's a lightwight GUI for the spectrecoind (headless) wallet
