@@ -1141,30 +1141,30 @@ drawGauge() {
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
-  # have to recalc layout since it might have changed
-  # (needed for transactions amount to fetch)
-  calculateLayout
-  drawGauge "0" \
+    # have to recalc layout since it might have changed
+    # (needed for transactions amount to fetch)
+    calculateLayout
+    drawGauge "0" \
             "Getting staking data from daemon..."
-  executeCURL "getstakinginfo"
-  drawGauge "15" \
+    executeCURL "getstakinginfo"
+    drawGauge "15" \
             "Processing staking data..."
-  getStakingInfo
-  drawGauge "33" \
+    getStakingInfo
+    drawGauge "33" \
             "Getting general info data from daemon..."
-  executeCURL "getinfo"
-  drawGauge "48" \
+    executeCURL "getinfo"
+    drawGauge "48" \
             "Processing general info data..."
-  getInfo
-  drawGauge "66" \
+    getInfo
+    drawGauge "66" \
             "Getting transactions data from daemon..."
-  executeCURL "listtransactions" '"*",'"$COUNT_TRANS_MENU"',0,"1"'
-  drawGauge "85" \
+    executeCURL "listtransactions" '"*",'"$COUNT_TRANS_MENU"',0,"1"'
+    drawGauge "85" \
             "Processing transactions data..."
-  getTransactions
-  drawGauge "100" \
+    getTransactions
+    drawGauge "100" \
             "All done."
-  refreshMainMenu_GUI
+    refreshMainMenu_GUI
 }
 
 # ============================================================================
