@@ -1191,8 +1191,15 @@ checkRequirement bc
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 readConfig ${SETTINGSFILE_TO_USE}
-simpleMsg "WARNING" \
-          "\nUse at your own risc!!!\n\nYou are using Terminal: $(tput longname)\n\nInterface version: $VERSION\n" \
+
+message="\n"
+message+="        Use at your own risc!!!\n"
+message+="    Terminal: $(tput longname)\n"
+message+="      Interface version: $VERSION\n"
+
+simpleMsg "- --- === WARNING === --- -" \
+          "${message}" \
           'YES - I´ve understood'
+
 refreshMainMenu_DATA
 goodbye
