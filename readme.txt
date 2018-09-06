@@ -1,4 +1,4 @@
-WARINING: send command is not tested yet
+Team should use this version instead of older ones.
 
 Make sure the RPC login info matches the "spectrecoin.conf" settings.
 
