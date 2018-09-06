@@ -12,11 +12,11 @@
 # NOTES: you may resize your terminal to get most of it
 # AUTHOR: dave#0773@discord
 # Project: https://spectreproject.io/ and https://github.com/spectrecoin/spectre
-# VERSION: 2.0alpha
-# CREATED: 06-09-2018
+# VERSION: 2.1alpha
+# CREATED: 05-09-2018
 # ============================================================================
 
-VERSION='v2.0alpha'
+VERSION='v2.1alpha'
 SETTINGSFILE_TO_USE=script.conf
 
 # Backup where we came from
@@ -511,14 +511,46 @@ sry() {
 }
 
 # ============================================================================
-# Simple goodbye checkbox, this marks the regular ending of the script
+# This marks the regular ending of the script
 goodbye() {
+    local _s=""
+    dialog --no-shadow \
+        --colors \
+        --extra-button \
+        --ok-label 'No, just leave' \
+        --extra-label 'Yes, stop deamon' \
+        --cancel-label 'Main Menu' \
+        --default-button 'ok' \
+        --yesno "\Z1Daemon must be stopped, before shutting down the Pi.\Zn\n\nDo you want to stop the daemon?\n\n\Z1This means no more staking.\Zn" 0 0
+    exit_status=$?
+    case ${exit_status} in
+        ${DIALOG_ESC})
+            refreshMainMenu_GUI;;
+        ${DIALOG_OK})
+            _s+="\n\Z2Daemon is still running.\Zn\n";;
+        ${DIALOG_EXTRA})
+            executeCURL "stop"
+            local _t=0
+            while [ ${_t} -lt 100 ]; do
+                drawGauge "${_t}" \
+                          "Waiting for the daemon..."
+                sleep .25
+                _t=$((_t+25))
+            done
+            drawGauge "100" \
+                      "All done."
+            sleep .1
+            _s+="\n\Z1Daemon stopped.\Zn\n";;
+        ${DIALOG_CANCEL})
+            refreshMainMenu_GUI;;
+    esac
+    _s+="\nHope you enjoyed.\n\n\Z4Please give feedback.\Zn\n"
     dialog --backtitle "$TITLE_BACK" \
            --no-shadow \
            --colors \
            --title "GOODBYE" \
            --ok-label 'Leave' \
-           --msgbox  "\nHope you enjoyed.\n" 0 0
+           --msgbox  "${_s}" 0 0
     reset
     exit 0
 }
@@ -567,8 +599,8 @@ viewAllTransactionsHelper() {
 # ============================================================================
 # Gathers the data form the CURL result for the getinfo command
 #
-# Input: $1 - start
-#        $2 - if "true" stakes will be displayed (optional - default true)
+# Input: $1 - start (optional - default "0")
+#        $2 - if "true" stakes will be displayed (optional - default "true")
 viewAllTransactions() {
     local _start
     if [ -z "$1" ]; then
@@ -582,18 +614,17 @@ viewAllTransactions() {
     else
         _displayStakes="$2"
     fi
-    local _SIZEX=$((74<$(tput cols)?"74":$(tput cols)))
-    local _SIZEY=$(tput lines)
+    calculateLayout
     if [ "${_displayStakes}" = "true" ]; then
         executeCURL "listtransactions" \
-                    '"*",'"${TRANSACTIONS_COUNT},${_start}"',"1"'
+                    '"*",'"${COUNT_TRANS_VIEW},${_start}"',"1"'
     else
         executeCURL "listtransactions" \
-                    '"*",'"${TRANSACTIONS_COUNT},${_start}"',"0"'
+                    '"*",'"${COUNT_TRANS_VIEW},${_start}"',"0"'
     fi
     getTransactions
     if [ ${#transactions_global[@]} -eq 0 ]; then
-        viewAllTransactions $(( ${_start} - ${TRANSACTIONS_COUNT} )) \
+        viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
                            "${_displayStakes}"
     fi
     dialog --no-shadow \
@@ -610,21 +641,21 @@ viewAllTransactions() {
         --help-label 'Main Menu' \
         --cancel-label "$(viewAllTransactionsHelper "${_displayStakes}")" \
         --default-button 'extra' \
-        --yesno "$(makeOutputTransactions $(( ${_SIZEX} - 4 )))" "${_SIZEY}" "${_SIZEX}"
+        --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_DATA;;
         ${DIALOG_OK})
-            if [[ ${_start} -ge ${TRANSACTIONS_COUNT} ]]; then
-                viewAllTransactions $(( ${_start} - ${TRANSACTIONS_COUNT} )) \
+            if [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
+                viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
                                    "${_displayStakes}"
             else
                 viewAllTransactions "0" \
                                     "${_displayStakes}"
             fi;;
         ${DIALOG_EXTRA})
-            viewAllTransactions $(( ${_start} + ${TRANSACTIONS_COUNT} )) \
+            viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
                                "${_displayStakes}";;
         ${DIALOG_CANCEL})
             if [ "${_displayStakes}" = "true" ]; then
@@ -901,16 +932,30 @@ curlUserFeedbackHandling() {
 }
 
 # ============================================================================
-# Helper function that decides whether if LOCK or UNLOCK will be displayed
+# Helper function that decides whether if LOCK, UNLOCK or ENCRYPT will be displayed
 #
 # Input: $MENU_WALLET_UNLOCKED indicates if wallet is open
-mainMenu_helper() {
+mainMenu_helper_wallet_cmd() {
     if [ "${info_global[8]}" = "\Z4true\Zn" ]; then
         echo 'Lock'
     elif [ "${info_global[8]}" = "\Z1no PW\Zn" ]; then
         echo 'Encrypt'
     else
         echo 'Unlock'
+    fi
+}
+
+# ============================================================================
+# Helper function that decides what explaination text will be displayed
+#
+# Input: $MENU_WALLET_UNLOCKED indicates if wallet is open
+mainMenu_helper_wallet_cmd_expl() {
+    if [ "${info_global[8]}" = "\Z4true\Zn" ]; then
+        echo "$EXPL_CMD_MAIN_WALLETLOCK"
+    elif [ "${info_global[8]}" = "\Z1no PW\Zn" ]; then
+        echo "$EXPL_CMD_MAIN_WALLETENCRYPT"
+    else
+        echo "$EXPL_CMD_MAIN_WALLETUNLOCK"
     fi
 }
 
@@ -923,46 +968,67 @@ calculateLayout() {
                   "OK"
     fi
     local _max_buff
-    POSY_MENU=0
+    POS_Y_MENU=0
     _max_buff=$(($(tput cols) / 2))
     _max_buff=$((45>${_max_buff}?"45":${_max_buff}))
-    SIZEX_MENU=$((60<${_max_buff}?"60":${_max_buff}))
-    SIZEY_MENU=13
-    _max_buff=$(($(tput cols) - ${SIZEX_MENU}))
-    SIZEX_TRANSACTIONS=$((85<${_max_buff}?"85":${_max_buff}))
+    SIZE_X_MENU=$((60<${_max_buff}?"60":${_max_buff}))
+    SIZE_Y_MENU=13
 
-    SIZEY_TRANSACTIONS=$(($(tput lines) - ${POSY_MENU}))
-    SIZEX_INFO=${SIZEX_MENU}
+    #Size for the displayed transactions in main menu
+    _max_buff=$(($(tput cols) - ${SIZE_X_MENU}))
+    SIZE_X_TRANS=$((85<${_max_buff}?"85":${_max_buff}))
+    SIZE_Y_TRANS=$(($(tput lines) - ${POS_Y_MENU}))
+    
+    # Size for the displayed info in main menu
+    SIZE_X_INFO=${SIZE_X_MENU}
+    _max_buff=$(($(tput lines) - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
+    SIZE_Y_INFO=$((15<${_max_buff}?"15":${_max_buff}))
 
-    _max_buff=$(($(tput lines) - ${POSY_MENU} - ${SIZEY_MENU}))
-    SIZEY_INFO=$((15<${_max_buff}?"15":${_max_buff}))
+    # Size for view all transactions dialog
+    SIZE_X_TRANS_VIEW=$((74<$(tput cols)?"74":$(tput cols)))
+    SIZE_Y_TRANS_VIEW=$(tput lines)
 
-    POSX_MENU=$(($(($(tput cols) - ${SIZEX_MENU} - ${SIZEX_TRANSACTIONS})) / 2))
-    POSX_TRANSACTIONS=$((${POSX_MENU} + ${SIZEX_MENU}))
-    POSY_TRANSACTIONS=${POSY_MENU}
-    POSX_INFO=${POSX_MENU}
-    POSY_INFO=$((${POSY_MENU} + ${SIZEY_MENU}))
-    TEXTWIDTH_TRANS=$((${SIZEX_TRANSACTIONS} - 4))
-    TEXTWIDTH_INFO=$((${SIZEX_INFO} - 5))
+    POS_X_MENU=$(($(($(tput cols) - ${SIZE_X_MENU} - ${SIZE_X_TRANS})) / 2))
+    POS_X_TRANS=$((${POS_X_MENU} + ${SIZE_X_MENU}))
+    POS_Y_TRANS=${POS_Y_MENU}
+    POS_X_INFO=${POS_X_MENU}
+    POS_Y_INFO=$((${POS_Y_MENU} + ${SIZE_Y_MENU}))
+    TEXTWIDTH_TRANS=$((${SIZE_X_TRANS} - 4))
+    TEXTWIDTH_INFO=$((${SIZE_X_INFO} - 5))
     WIDTHTEXT_MENU=${TEXTWIDTH_INFO}
-    TRANSACTIONS_COUNT=$(( ((${SIZEY_TRANSACTIONS} - 5 - ${POSY_TRANSACTIONS}) / 4) + 1 ))
-
-    if [ ${SIZEX_TRANSACTIONS} -lt 29 ]; then
-        SIZEX_TRANSACTIONS=29
+    #
+    # Amount of transactions that can be displayed in main menu
+    COUNT_TRANS_MENU=$(( ((${SIZE_Y_TRANS} - 5 - ${POS_Y_TRANS}) / 4) + 1 ))
+    #
+    # Amount of transactions that can be displayed in the view all transactions dialog
+    COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 7 - ${POS_Y_TRANS}) / 4) + 1 ))
+    #
+    # if we do not have enough place just fuck it and tease by showing only left half
+    if [ ${SIZE_X_TRANS} -lt 29 ]; then
+        SIZE_X_TRANS=29
     fi
 
     # not used yet
-    TEXTHIGHT_INFO=$(( ${SIZEY_INFO} - 2 ))
+    TEXTHIGHT_INFO=$(( ${SIZE_Y_INFO} - 2 ))
 
-    SIZEX_GAUGE=$((60<$(tput cols)?"60":$(tput cols)))
-    SIZEY_GAUGE=0
+    SIZE_X_GAUGE=$((60<$(tput cols)?"60":$(tput cols)))
+    SIZE_Y_GAUGE=0
     #
     TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
-    TITLE_TRANSACTIONS='RECENT TRANSACTIONS'
+    TITLE_TRANS='RECENT TRANSACTIONS'
     TITLE_INFO=''
     TITLE_MENU="$TITLE_BACK"
     TITLE_GAUGE="Please wait"
     TITLE_ERROR="ERROR"
+    #
+    EXPL_CMD_MAIN_EXIT="Exit interface"
+    EXPL_CMD_MAIN_USERCOMMAND="Sending commands to deamon"
+    EXPL_CMD_MAIN_SEND="Send XSPEC from wallet"
+    EXPL_CMD_MAIN_VIEWTRANS="View all transactions"
+    EXPL_CMD_MAIN_REFRESH="Update Interface"
+    EXPL_CMD_MAIN_WALLETLOCK="Wallet, no more staking"
+    EXPL_CMD_MAIN_WALLETUNLOCK="Wallet for staking only"
+    EXPL_CMD_MAIN_WALLETENCRYPT="Wallet, provides Security"
 }
 
 # ============================================================================
@@ -976,45 +1042,43 @@ refreshMainMenu_GUI() {
         \
         --and-widget \
         --colors \
-        --begin "$POSY_TRANSACTIONS" "$POSX_TRANSACTIONS" \
-        --title "$TITLE_TRANSACTIONS" \
+        --begin "${POS_Y_TRANS}" "${POS_X_TRANS}" \
+        --title "${TITLE_TRANS}" \
         --no-collapse \
-        --infobox "$(makeOutputTransactions)" "${SIZEY_TRANSACTIONS}" "$SIZEX_TRANSACTIONS" \
+        --infobox "$(makeOutputTransactions)" "${SIZE_Y_TRANS}" "${SIZE_X_TRANS}" \
         \
         --and-widget \
         --colors \
-        --begin "$POSY_INFO" "$POSX_INFO" \
-        --title "$TITLE_INFO" \
+        --begin "${POS_Y_INFO}" "${POS_X_INFO}" \
+        --title "${TITLE_INFO}" \
         --no-shadow \
         --no-collapse \
-        --infobox "$(makeOutputInfo)" "$SIZEY_INFO" "$SIZEX_INFO" \
+        --infobox "$(makeOutputInfo)" "${SIZE_Y_INFO}" "${SIZE_X_INFO}" \
         \
         --and-widget \
         --colors \
-        --begin "$POSY_MENU" "$POSX_MENU" \
-        --title "$TITLE_MENU" \
+        --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
+        --title "${TITLE_MENU}" \
         --nocancel \
         --ok-label "Enter" \
         --no-shadow \
-        --menu "" "$SIZEY_MENU" "$SIZEX_MENU" 10 \
+        --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
         \
-        Refresh "Update Interface" \
-        $(mainMenu_helper) "Wallet for staking" \
-        Transaktions "View all transactions" \
-        Send "Send XSPEC from wallet" \
-        Command "Sending commands to deamon" \
-        Quit "Exit interface" \
+        Refresh "$EXPL_CMD_MAIN_REFRESH" \
+        "$(mainMenu_helper_wallet_cmd)" "$(mainMenu_helper_wallet_cmd_expl)" \
+        Transaktions "$EXPL_CMD_MAIN_VIEWTRANS" \
+        Send "$EXPL_CMD_MAIN_SEND" \
+        Command "$EXPL_CMD_MAIN_USERCOMMAND" \
+        Quit "$EXPL_CMD_MAIN_EXIT" \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_ESC})
-            goodbye
-            ;;
+            goodbye;;
     esac
     case ${_mainMenuPick} in
         Refresh)
-            calculateLayout
             refreshMainMenu_DATA;;
         Unlock)
             unlockWalletForStaking;;
@@ -1023,7 +1087,7 @@ refreshMainMenu_GUI() {
         Encrypt)
             sry;;
         Transaktions)
-            viewAllTransactions "0";;
+            viewAllTransactions;;
         Send)
             sendCoins;;
         Command)
@@ -1070,13 +1134,16 @@ unlockWalletForStaking() {
 drawGauge() {
     echo "$1" | dialog --no-shadow \
                        --title "$TITLE_GAUGE" \
-                       --gauge "$2" "$SIZEY_GAUGE" "$SIZEX_GAUGE" 0
+                       --gauge "$2" "${SIZE_Y_GAUGE}" "${SIZE_X_GAUGE}" 0
 }
 
 # ============================================================================
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
+  # have to recalc layout since it might have changed
+  # (needed for transactions amount to fetch)
+  calculateLayout
   drawGauge "0" \
             "Getting staking data from daemon..."
   executeCURL "getstakinginfo"
@@ -1091,7 +1158,7 @@ refreshMainMenu_DATA() {
   getInfo
   drawGauge "66" \
             "Getting transactions data from daemon..."
-  executeCURL "listtransactions" '"*",'"$TRANSACTIONS_COUNT"',0,"1"'
+  executeCURL "listtransactions" '"*",'"$COUNT_TRANS_MENU"',0,"1"'
   drawGauge "85" \
             "Processing transactions data..."
   getTransactions
@@ -1121,7 +1188,6 @@ checkRequirement bc
 
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
-calculateLayout
 readConfig ${SETTINGSFILE_TO_USE}
 simpleMsg "WARNING" \
           "\nUse at your own risc!!!\n\nYou are using Terminal: $(tput longname)\n\nInterface version: $VERSION\n" \
