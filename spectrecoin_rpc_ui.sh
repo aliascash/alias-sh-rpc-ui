@@ -154,6 +154,8 @@ startDaemon() {
 # \Z1 etc color commands are ignored
 #
 # Input: $1 will be displayed as CURL response msg
+#        $2 desired length $1 will be pumped up to. If the $1 lenght already
+#        is >= this value, a \n (new line command will be added instead)
 fillLine() {
     local _output=$1
     # remove dialog color commands
@@ -185,25 +187,26 @@ fillLine() {
 # Input: $1 amount in sec
 secToHumanReadable() {
     local _time=$1
+    local _timeHuman=""
     if [ $((_time / 31536000)) -gt 0 ];then
-        timeHuman="$((_time / 31536000))y "
+        _timeHuman="$((_time / 31536000))y "
     fi
     if [ $((_time % 31536000 /604800)) -gt 0 ];then
-        timeHuman+="$((_time % 31536000 /604800))w "
+        _timeHuman+="$((_time % 31536000 /604800))w "
     fi
     if [ $((_time % 604800 /86400)) -gt 0 ];then
-        timeHuman+="$((_time % 604800 /86400))d "
+        _timeHuman+="$((_time % 604800 /86400))d "
     fi
     if [ $((_time % 86400 /3600)) -gt 0 ];then
-        timeHuman+="$((_time % 86400 /3600))h "
+        _timeHuman+="$((_time % 86400 /3600))h "
     fi
     if [ $((_time % 3600 /60)) -gt 0 ];then
-        timeHuman+="$((_time % 3600 /60))m "
+        _timeHuman+="$((_time % 3600 /60))m "
     fi
     if [ $((_time % 60)) -gt 0 ];then
-        timeHuman+="$((_time % 60))s"
+        _timeHuman+="$((_time % 60))s"
     fi
-    echo "$timeHuman"
+    echo "${_timeHuman}"
 }
 
 # ============================================================================
