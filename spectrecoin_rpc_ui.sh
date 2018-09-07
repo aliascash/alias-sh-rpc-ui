@@ -142,8 +142,7 @@ cutCURLresult() {
 startDaemon() {
     printf "\nDaemon is not running.\n"
     printf "starting Daemon "'\e[0;32m'"(will take 1 min)"'\e[0m\n\n'"..."
-    #to do: change this to: sudo service spectrecoind start
-    spectrecoind '--daemon'
+    sudo service spectrecoind start
     sleep 60
     printf "\nall done.\nStarting Interface...\n"
     sleep .1
