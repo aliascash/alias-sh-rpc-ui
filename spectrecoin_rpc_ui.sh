@@ -1186,6 +1186,7 @@ done
 
 checkRequirement dialog
 checkRequirement bc
+checkRequirement curl
 
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
