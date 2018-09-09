@@ -12,12 +12,13 @@
 # NOTES: you may resize your terminal to get most of it
 # AUTHOR: dave#0773@discord
 # Project: https://spectreproject.io/ and https://github.com/spectrecoin/spectre
-# VERSION: 2.1alpha
-# CREATED: 05-09-2018
+# VERSION: 2.2alpha
+# CREATED: 09-09-2018
 # ============================================================================
 
-VERSION='v2.1alpha'
-SETTINGSFILE_TO_USE=script.conf
+VERSION='v2.2alpha'
+#In case you're not running this script on the pi, you can specify a config file
+#SETTINGSFILE_TO_USE="script.conf"
 
 # Backup where we came from
 callDir=$(pwd)
@@ -1132,13 +1133,30 @@ refreshMainMenu_GUI() {
 #
 # Input: $1 [optional] The filepath can be parsed as parameter
 readConfig() {
-    local _file=$1
-    if [ ! -f "$_file" ]; then
-        local _s="Config file for this interface missing. The file '$_file' was not found."
-        errorHandling "$_s" \
-                      "1"
+    if [ -z "$1" ]; then
+        local _line
+        CURL="/usr/bin/curl"
+        IP="127.0.0.1"
+        while read _line; do
+            if [[ ${_line} == 'rpcuser='* ]]; then
+                RPCUSER="${_line#*'='}"
+            elif [[ ${_line} == 'rpcpassword='* ]]; then
+                RPCPASSWORD="${_line#*'='}"
+            elif [[ ${_line} == 'rpcport='* ]]; then
+                PORT="${_line#*'='}"
+            fi
+        done < "/home/$(whoami)/.spectrecoin/spectrecoin.conf"
+    else
+        local _file=$1
+        if [ ! -f "$_file" ]; then
+            local _s="Config file for this interface missing. The file '$_file' was not found."
+                  _s+="Note: this argument is optional. If you leave it out, the data will "
+                  _s+="be read from direcly from the daemons config file."
+            errorHandling "$_s" \
+                          "1"
+        fi
+        . ${_file}
     fi
-    . ${_file}
 }
 
 # ============================================================================
