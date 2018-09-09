@@ -140,11 +140,16 @@ cutCURLresult() {
 # Starts the daemon (spectrecoind)
 #
 startDaemon() {
-    printf "\nDaemon is not running.\n"
-    printf "starting Daemon "'\e[0;32m'"(will take 1 min)"'\e[0m\n\n'"..."
-    sudo service spectrecoind start
-    sleep 60
-    printf "\nall done.\nStarting Interface...\n"
+
+    if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+        printf "\nSpectrecoind already running!\n"
+    else
+        printf "\nSpectrecoind is not running.\n"
+        printf "Starting Daemon "'\e[0;32m'"and waiting 1 minute"'\e[0m'"..."
+        sudo service spectrecoind start
+        sleep 60
+        printf "\nAll done.\nStarting Interface...\n"
+    fi
     sleep .1
     refreshMainMenu_DATA
 }
@@ -301,7 +306,7 @@ makeOutputInfo() {
     echo $(fillLine "Expected time: ${stakinginfo_global[1]}" "${TEXTWIDTH_INFO}")"\n"
 
     echo "\nClient info\n"
-    echo $(fillLine "Deamon: ${info_global[0]}-_-Errors: ${info_global[9]}" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "Daemon: ${info_global[0]}-_-Errors: ${info_global[9]}" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "IP: ${info_global[7]}-_-Peers: ${info_global[4]}" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "Download: ${info_global[5]}-_-Upload: ${info_global[6]}" "${TEXTWIDTH_INFO}")"\n"
 }
@@ -520,10 +525,10 @@ goodbye() {
         --colors \
         --extra-button \
         --ok-label 'No, just leave' \
-        --extra-label 'Yes, stop deamon' \
+        --extra-label 'Yes, stop daemon' \
         --cancel-label 'Main Menu' \
         --default-button 'ok' \
-        --yesno "\Z1Daemon must be stopped, before shutting down the Pi.\Zn\n\nDo you want to stop the daemon?\n\n\Z1This means no more staking.\Zn" 0 0
+        --yesno "\Z1If you plan to shutdown the system, daemon must be stopped before!\Zn\n\nDo you want to stop the daemon (no more staking) or just exit the UI?\n\n\Zn" 0 0
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
@@ -531,17 +536,7 @@ goodbye() {
         ${DIALOG_OK})
             _s+="\n\Z2Daemon is still running.\Zn\n";;
         ${DIALOG_EXTRA})
-            executeCURL "stop"
-            local _t=0
-            while [ ${_t} -lt 100 ]; do
-                drawGauge "${_t}" \
-                          "Waiting for the daemon..."
-                sleep .25
-                _t=$((_t+25))
-            done
-            drawGauge "100" \
-                      "All done."
-            sleep .1
+            sudo service spectrecoind stop
             _s+="\n\Z1Daemon stopped.\Zn\n";;
         ${DIALOG_CANCEL})
             refreshMainMenu_GUI;;
@@ -683,9 +678,9 @@ advancedMainMenu() {
 
 # getpeerinfo
 
-# deamon management
-  # start / stop deamon ? (script startet bisher nicht wenn deamon nicht läuft!!!)
-  # set deamon niceness ? (befehl? - problem tasks müssen auch angepasst werden)
+# daemon management
+  # start / stop daemon ? (script startet bisher nicht wenn daemon nicht läuft!!!)
+  # set daemon niceness ? (befehl? - problem tasks müssen auch angepasst werden)
   # rewind chain
   # addnode
 
@@ -1024,7 +1019,7 @@ calculateLayout() {
     TITLE_ERROR="ERROR"
     #
     EXPL_CMD_MAIN_EXIT="Exit interface"
-    EXPL_CMD_MAIN_USERCOMMAND="Sending commands to deamon"
+    EXPL_CMD_MAIN_USERCOMMAND="Sending commands to daemon"
     EXPL_CMD_MAIN_SEND="Send XSPEC from wallet"
     EXPL_CMD_MAIN_VIEWTRANS="View all transactions"
     EXPL_CMD_MAIN_REFRESH="Update Interface"
