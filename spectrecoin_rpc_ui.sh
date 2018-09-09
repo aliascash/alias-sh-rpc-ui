@@ -17,7 +17,6 @@
 # ============================================================================
 
 VERSION='v2.1alpha'
-SETTINGSFILE_TO_USE=script.conf
 
 # Backup where we came from
 callDir=$(pwd)
@@ -25,6 +24,7 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scriptName=$(basename $0)
 cd "${ownLocation}"
 . include/helpers_console.sh
+. include/init_daemon_configuration.sh
 rtc=0
 _init
 
@@ -59,13 +59,13 @@ helpMe ()
 executeCURL() {
     local _action=$1
     local _parameters=$2
-    curl_result_global=$( ${CURL} \
-                          --user "$RPCUSER:$RPCPASSWORD" \
+    curl_result_global=$( curl \
+                          --user "${rpcuser}:${rpcpassword}" \
                           --silent \
                           --data-binary \
                           "{\"jsonrpc\":\"1.0\",\"id\":\"curltext\",\"method\":\"$_action\",\"params\":[$_parameters]}" \
                           -H "content-type:text/plain;" \
-                          "http://${IP}:${PORT}" )
+                          "http://${rpcconnect}:${rpcport}" )
     if [ -z "$curl_result_global" ]; then
         startDaemon
     fi
@@ -116,14 +116,8 @@ cutCURLresult() {
         curl_result_global=${curl_result_global//'"'/}
     elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
         # The RPC login failed - since the daemon responded it's due to a wrong login
-        s="Error: RPC login failed. Check username and password in script.conf file.\n"
-        s+="sample config could be:\n"
-        s+='RPCUSER="spectrecoinrpc"'"\n"
-        s+='RPCPASSWORD="44_char_pw_(lower_&_upper_letters_&_numbers)"'"\n"
-        s+='IP="127.0.0.1"'"\n"
-        s+='PORT="8332"'"\n"
-        s+='CURL="curl"'"\n\n"
-        s+="IMPORTANT: The login information must match the /.spectrecoin/spectrecoin.conf data."
+        s="Error: RPC login failed.\n"
+        s+="Did you change the password without restarting the daemon?\n"
         errorHandling "$s" 2
     else
         # Most likely a parsing error in the CURL command parameters
@@ -1128,20 +1122,6 @@ refreshMainMenu_GUI() {
 }
 
 # ============================================================================
-# Reading script.conf to get values RPCUSER, RPCPASSWORD, IP, PORT, CURL
-#
-# Input: $1 [optional] The filepath can be parsed as parameter
-readConfig() {
-    local _file=$1
-    if [ ! -f "$_file" ]; then
-        local _s="Config file for this interface missing. The file '$_file' was not found."
-        errorHandling "$_s" \
-                      "1"
-    fi
-    . ${_file}
-}
-
-# ============================================================================
 # Goal: lock the wallet
 lockWallet() {
     executeCURL "walletlock"
@@ -1221,7 +1201,7 @@ checkRequirement curl
 
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
-readConfig ${SETTINGSFILE_TO_USE}
+initDaemonConfiguration
 
 message="\n"
 message+="        Use at your own risc!!!\n"
