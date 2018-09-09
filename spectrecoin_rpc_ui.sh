@@ -134,8 +134,17 @@ cutCURLresult() {
 # Starts the daemon (spectrecoind)
 #
 startDaemon() {
+    if [ "${rpcconnect}" != "127.0.0.1" ]; then
+        local _s="No connection to sprectrecoind could be established.\n"
+              _s+="You may need to check your config.\n\n"
+              _s+="Settings:\n"
+              _s+="RPC USER:${rpcuser}\nRPC PW:${rpcpassword}\n"
+              _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
+        errorHandling "${_s}" \
+                      1
+    fi
     (
-        if [ "${rpcconnect}" = "127.0.0.1" ] && (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+         if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
             echo "Spectrecoind (daemon) already running!"
             echo "But no connection could be established."
             echo "This means the daemon was just started."
