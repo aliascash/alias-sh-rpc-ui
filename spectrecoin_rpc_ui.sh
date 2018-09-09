@@ -135,7 +135,7 @@ cutCURLresult() {
 #
 startDaemon() {
     # this check will only work if the script is running directly on the pi
-    if [ ${rpcconnect} = "127.0.0.1" ] && (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+    if [ "${rpcconnect}" = "127.0.0.1" ] && (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
         local _s="\nSpectrecoind already running!"
               _s+="\nBut no connection can be established."
         errorHandling "${_s}"
