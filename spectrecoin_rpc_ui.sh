@@ -12,13 +12,11 @@
 # NOTES: you may resize your terminal to get most of it
 # AUTHOR: dave#0773@discord
 # Project: https://spectreproject.io/ and https://github.com/spectrecoin/spectre
-# VERSION: 2.2alpha
-# CREATED: 09-09-2018
+# VERSION: 2.1alpha
+# CREATED: 05-09-2018
 # ============================================================================
 
-VERSION='v2.2alpha'
-#In case you're not running this script on the pi, you can specify a config file
-#SETTINGSFILE_TO_USE="script.conf"
+VERSION='v2.1alpha'
 
 # Backup where we came from
 callDir=$(pwd)
@@ -26,6 +24,7 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scriptName=$(basename $0)
 cd "${ownLocation}"
 . include/helpers_console.sh
+. include/init_daemon_configuration.sh
 rtc=0
 _init
 
@@ -60,13 +59,13 @@ helpMe ()
 executeCURL() {
     local _action=$1
     local _parameters=$2
-    curl_result_global=$( ${CURL} \
-                          --user "$RPCUSER:$RPCPASSWORD" \
+    curl_result_global=$( curl \
+                          --user "${rpcuser}:${rpcpassword}" \
                           --silent \
                           --data-binary \
                           "{\"jsonrpc\":\"1.0\",\"id\":\"curltext\",\"method\":\"$_action\",\"params\":[$_parameters]}" \
                           -H "content-type:text/plain;" \
-                          "http://${IP}:${PORT}" )
+                          "http://${rpcconnect}:${rpcport}" )
     if [ -z "$curl_result_global" ]; then
         startDaemon
     fi
@@ -117,14 +116,8 @@ cutCURLresult() {
         curl_result_global=${curl_result_global//'"'/}
     elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
         # The RPC login failed - since the daemon responded it's due to a wrong login
-        s="Error: RPC login failed. Check username and password in script.conf file.\n"
-        s+="sample config could be:\n"
-        s+='RPCUSER="spectrecoinrpc"'"\n"
-        s+='RPCPASSWORD="44_char_pw_(lower_&_upper_letters_&_numbers)"'"\n"
-        s+='IP="127.0.0.1"'"\n"
-        s+='PORT="8332"'"\n"
-        s+='CURL="curl"'"\n\n"
-        s+="IMPORTANT: The login information must match the /.spectrecoin/spectrecoin.conf data."
+        s="Error: RPC login failed.\n"
+        s+="Did you change the password without restarting the daemon?\n"
         errorHandling "$s" 2
     else
         # Most likely a parsing error in the CURL command parameters
@@ -141,31 +134,17 @@ cutCURLresult() {
 # Starts the daemon (spectrecoind)
 #
 startDaemon() {
-    # this check will only work if the script is running directly on the pi
+
     if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-        local _s="\nSpectrecoind already running!"
-              _s+="\nBut no connection can be established."
-        errorHandling "${_s}"
-                      1
-    fi
-    (
-        echo "Spectrecoind is not running."
-        echo "Starting Daemon..."
+        printf "\nSpectrecoind already running!\n"
+    else
+        printf "\nSpectrecoind is not running.\n"
+        printf "Starting Daemon "'\e[0;32m'"and waiting 1 minute"'\e[0m'"..."
         sudo service spectrecoind start
-        echo "Daemon needs some time to initialize"
-        echo "Waiting 1 minute for the daemon..."
-        local _i=60
-        while [ ${_i} -gt 0 ]; do
-            echo "- ${_i} seconds to go..."
-            _i=$((_i-10))
-            sleep 10
-        done
-        echo "All done. Starting Interface..."
-        sleep .1
-    ) | dialog --backtitle "$TITLE_BACK" \
-               --title "Starting Daemon" \
-               --no-shadow \
-               --progressbox 20 45
+        sleep 60
+        printf "\nAll done.\nStarting Interface...\n"
+    fi
+    sleep .1
     refreshMainMenu_DATA
 }
 
@@ -1143,37 +1122,6 @@ refreshMainMenu_GUI() {
 }
 
 # ============================================================================
-# Reading script.conf to get values RPCUSER, RPCPASSWORD, IP, PORT, CURL
-#
-# Input: $1 [optional] The filepath can be parsed as parameter
-readConfig() {
-    if [ -z "$1" ]; then
-        local _line
-        CURL="/usr/bin/curl"
-        IP="127.0.0.1"
-        while read _line; do
-            if [[ ${_line} == 'rpcuser='* ]]; then
-                RPCUSER="${_line#*'='}"
-            elif [[ ${_line} == 'rpcpassword='* ]]; then
-                RPCPASSWORD="${_line#*'='}"
-            elif [[ ${_line} == 'rpcport='* ]]; then
-                PORT="${_line#*'='}"
-            fi
-        done < "/home/$(whoami)/.spectrecoin/spectrecoin.conf"
-    else
-        local _file=$1
-        if [ ! -f "$_file" ]; then
-            local _s="Config file for this interface missing. The file '$_file' was not found."
-                  _s+="Note: this argument is optional. If you leave it out, the data will "
-                  _s+="be read direcly from the daemons config file."
-            errorHandling "$_s" \
-                          "1"
-        fi
-        . ${_file}
-    fi
-}
-
-# ============================================================================
 # Goal: lock the wallet
 lockWallet() {
     executeCURL "walletlock"
@@ -1253,7 +1201,7 @@ checkRequirement curl
 
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
-readConfig ${SETTINGSFILE_TO_USE}
+initDaemonConfiguration
 
 message="\n"
 message+="        Use at your own risc!!!\n"
