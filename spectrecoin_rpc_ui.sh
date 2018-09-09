@@ -967,22 +967,50 @@ calculateLayout() {
     local _max_buff
     POS_Y_MENU=0
     _max_buff=$(($(tput cols) / 2))
-    _max_buff=$((45>${_max_buff}?45:${_max_buff}))
-    SIZE_X_MENU=$((60<${_max_buff}?60:${_max_buff}))
+#    _max_buff=$((45>${_max_buff}?45:${_max_buff}))
+    if [ ${_max_buff} -lt 45 ] ; then
+        _max_buff=45
+    fi
+
+#    SIZE_X_MENU=$((60<${_max_buff}?60:${_max_buff}))
+    if [ ${_max_buff} -gt 60 ] ; then
+        SIZE_X_MENU=60
+    else
+        SIZE_X_MENU=${_max_buff}
+    fi
+
     SIZE_Y_MENU=13
 
     #Size for the displayed transactions in main menu
     _max_buff=$(($(tput cols) - ${SIZE_X_MENU}))
-    SIZE_X_TRANS=$((85<${_max_buff}?85:${_max_buff}))
+#    SIZE_X_TRANS=$((85<${_max_buff}?85:${_max_buff}))
+    if [ ${_max_buff} -gt 85 ] ; then
+        SIZE_X_TRANS=85
+    else
+        SIZE_X_TRANS=${_max_buff}
+    fi
+
+
     SIZE_Y_TRANS=$(($(tput lines) - ${POS_Y_MENU}))
 
     # Size for the displayed info in main menu
     SIZE_X_INFO=${SIZE_X_MENU}
     _max_buff=$(($(tput lines) - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
-    SIZE_Y_INFO=$((15<${_max_buff}?15:${_max_buff}))
+#    SIZE_Y_INFO=$((15<${_max_buff}?15:${_max_buff}))
+    if [ ${_max_buff} -gt 15 ] ; then
+        SIZE_Y_INFO=15
+    else
+        SIZE_Y_INFO=${_max_buff}
+    fi
 
     # Size for view all transactions dialog
-    SIZE_X_TRANS_VIEW=$((74<$(tput cols)?74:$(tput cols)))
+#    SIZE_X_TRANS_VIEW=$((74<$(tput cols)?74:$(tput cols)))
+    currentTPutCols=$(tput cols)
+    if [ ${currentTPutCols} -gt 74 ] ; then
+        SIZE_X_TRANS_VIEW=74
+    else
+        SIZE_X_TRANS_VIEW=${currentTPutCols}
+    fi
     SIZE_Y_TRANS_VIEW=$(tput lines)
 
     POS_X_MENU=$(($(($(tput cols) - ${SIZE_X_MENU} - ${SIZE_X_TRANS})) / 2))
@@ -1008,7 +1036,12 @@ calculateLayout() {
     # not used yet
     TEXTHIGHT_INFO=$(( ${SIZE_Y_INFO} - 2 ))
 
-    SIZE_X_GAUGE=$((60<$(tput cols)?60:$(tput cols)))
+#    SIZE_X_GAUGE=$((60<$(tput cols)?60:$(tput cols)))
+    if [ ${currentTPutCols} -gt 60 ] ; then
+        SIZE_X_GAUGE=60
+    else
+        SIZE_X_GAUGE=${currentTPutCols}
+    fi
     SIZE_Y_GAUGE=0
     #
     TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
