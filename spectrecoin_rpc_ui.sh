@@ -134,17 +134,16 @@ cutCURLresult() {
 # Starts the daemon (spectrecoind)
 #
 startDaemon() {
-    # this check will only work if the script is running directly on the pi
-    if [ "${rpcconnect}" = "127.0.0.1" ] && (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-        local _s="\nSpectrecoind already running!"
-              _s+="\nBut no connection can be established."
-        errorHandling "${_s}"
-                      1
-    fi
     (
-        echo "Spectrecoind is not running."
-        echo "Starting Daemon..."
-        sudo service spectrecoind start
+        if [ "${rpcconnect}" = "127.0.0.1" ] && (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+            echo "Spectrecoind (daemon) already running!"
+            echo "But no connection could be established."
+            echo "This means the daemon was just started."
+        else
+            echo "Spectrecoind is not running."
+            echo "Starting Spectrecoind (daemon)..."
+            sudo service spectrecoind start
+        fi
         echo "Daemon needs some time to initialize"
         echo "Waiting 1 minute for the daemon..."
         local _i=60
