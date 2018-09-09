@@ -141,17 +141,31 @@ cutCURLresult() {
 # Starts the daemon (spectrecoind)
 #
 startDaemon() {
-
+    # this check will only work if the script is running directly on the pi
     if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-        printf "\nSpectrecoind already running!\n"
-    else
-        printf "\nSpectrecoind is not running.\n"
-        printf "Starting Daemon "'\e[0;32m'"and waiting 1 minute"'\e[0m'"..."
-        sudo service spectrecoind start
-        sleep 60
-        printf "\nAll done.\nStarting Interface...\n"
+        local _s="\nSpectrecoind already running!"
+              _s+="\nBut no connection can be established."
+        errorHandling "${_s}"
+                      1
     fi
-    sleep .1
+    (
+        echo "Spectrecoind is not running."
+        echo "Starting Daemon..."
+        sudo service spectrecoind start
+        echo "Daemon needs some time to initialize"
+        echo "Waiting 1 minute for the daemon..."
+        local _i=60
+        while [ ${_i} -gt 0 ]; do
+            echo "- ${_i} seconds to go..."
+            _i=$((_i-10))
+            sleep 10
+        done
+        echo "All done. Starting Interface..."
+        sleep .1
+    ) | dialog --backtitle "$TITLE_BACK" \
+               --title "Starting Daemon" \
+               --no-shadow \
+               --progressbox 20 45
     refreshMainMenu_DATA
 }
 
@@ -1151,7 +1165,7 @@ readConfig() {
         if [ ! -f "$_file" ]; then
             local _s="Config file for this interface missing. The file '$_file' was not found."
                   _s+="Note: this argument is optional. If you leave it out, the data will "
-                  _s+="be read from direcly from the daemons config file."
+                  _s+="be read direcly from the daemons config file."
             errorHandling "$_s" \
                           "1"
         fi
