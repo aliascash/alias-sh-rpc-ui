@@ -342,7 +342,11 @@ getStakingInfo() {
 #        $balance_global
 makeOutputInfo() {
     echo "$TEXT_HEADLINE_WALLET_INFO\n"
-    echo $(fillLine "$TEXT_BALANCE:-_-$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc) $TEXT_CURRENCY" "${TEXTWIDTH_INFO}")"\n"
+    local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
+    if [[ ${_balance} == '.'* ]]; then
+        _balance="0"${_balance}
+    fi
+    echo $(fillLine "$TEXT_BALANCE:-_-${_balance} $TEXT_CURRENCY" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" "${TEXTWIDTH_INFO}")"\n"
 
     echo "\n$TEXT_HEADLINE_STAKING_INFO\n"
@@ -772,7 +776,11 @@ sendCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
-    local _s="$TEXT_BALANCE: $(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc) $TEXT_CURRENCY\n"
+    local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
+    if [[ ${_balance} == '.'* ]]; then
+        _balance="0"${_balance}
+    fi
+    local _s="$TEXT_BALANCE: ${_balance} $TEXT_CURRENCY\n"
           _s+="$TEXT_SEND_EXPL\n"
           _s+="$TEXT_CLIPBOARD_HINT"
     exec 3>&1
