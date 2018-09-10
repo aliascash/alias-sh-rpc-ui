@@ -25,6 +25,10 @@ scriptName=$(basename $0)
 cd "${ownLocation}"
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
+
+# ToDo: Possibility to switch between different language files
+. include/ui_content_en.sh
+
 rtc=0
 _init
 
@@ -1266,8 +1270,6 @@ message+="      Interface version: $VERSION\n"
 simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
           'YES - I´ve understood'
-
-
 
 trap refreshMainMenu_DATA INT
 while :; do
