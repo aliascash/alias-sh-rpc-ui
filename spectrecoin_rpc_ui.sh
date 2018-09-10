@@ -12,11 +12,11 @@
 # NOTES: you may resize your terminal to get most of it
 # AUTHOR: dave#0773@discord
 # Project: https://spectreproject.io/ and https://github.com/spectrecoin/spectre
-# VERSION: 2.1alpha
-# CREATED: 05-09-2018
+# VERSION: 2.2alpha
+# CREATED: 10-09-2018
 # ============================================================================
 
-VERSION='v2.1alpha'
+VERSION='v2.2alpha'
 
 # Backup where we came from
 callDir=$(pwd)
@@ -116,9 +116,7 @@ cutCURLresult() {
         curl_result_global=${curl_result_global//'"'/}
     elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
         # The RPC login failed - since the daemon responded it's due to a wrong login
-        s="Error: RPC login failed.\n"
-        s+="Did you change the password without restarting the daemon?\n"
-        errorHandling "$s" 2
+        errorHandling "$ERROR_401_UNAUTHORIZED" 2
     else
         # Most likely a parsing error in the CURL command parameters
         # Just hand over the error msg. within the CURL reply
@@ -126,7 +124,7 @@ cutCURLresult() {
         msg="${curl_result_global%%'"}'*}"
         # cut left side
         msg="${msg#*'message":"'}"
-        errorHandling "CURL error message:\n\n$msg"
+        errorHandling "$ERROR_CURL_MSG_PROMPT\n\n$msg"
     fi
 }
 
@@ -135,36 +133,42 @@ cutCURLresult() {
 #
 startDaemon() {
     if [ "${rpcconnect}" != "127.0.0.1" ]; then
-        local _s="No connection to sprectrecoind could be established.\n"
-              _s+="You may need to check your config.\n\n"
-              _s+="Settings:\n"
+        local _s="Settings:\n"
               _s+="RPC USER:${rpcuser}\nRPC PW:${rpcpassword}\n"
               _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
-        errorHandling "${_s}" \
+        errorHandling "$ERROR_DAEMON_NO_CONNECT_FROM_REMOTE\n${_s}" \
                       1
     fi
     (
+         local _oldIFS=$IFS
+         local _itemBuffer
+         IFS='\n'
          if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-            echo "Spectrecoind (daemon) already running!"
-            echo "But no connection could be established."
-            echo "This means the daemon was just started."
+            for _itemBuffer in $ERROR_DAEMON_ALREADY_RUNNING; do
+                echo "${_itemBuffer}"
+            done
         else
-            echo "Spectrecoind is not running."
-            echo "Starting Spectrecoind (daemon)..."
+            for _itemBuffer in $ERROR_DAEMON_STARTING; do
+                echo "${_itemBuffer}"
+            done
             sudo service spectrecoind start
         fi
-        echo "Daemon needs some time to initialize"
-        echo "Waiting 1 minute for the daemon..."
+        for _itemBuffer in $ERROR_DAEMON_WAITING_BEGIN; do
+            echo "${_itemBuffer}"
+        done
         local _i=60
         while [ ${_i} -gt 0 ]; do
-            echo "- ${_i} seconds to go..."
+            echo "- ${_i} $ERROR_DAEMON_WAITING_MSG"
             _i=$((_i-10))
-            sleep 10
+            sleep 9
         done
-        echo "All done. Starting Interface..."
-        sleep .1
+        for _itemBuffer in $ERROR_DAEMON_WAITING_END; do
+            echo "${_itemBuffer}"
+        done
+        sleep 1
+        IFS=${_oldIFS}
     ) | dialog --backtitle "$TITLE_BACK" \
-               --title "Starting Daemon" \
+               --title "$TITLE_STARTING_DAEMON" \
                --no-shadow \
                --progressbox 20 45
     refreshMainMenu_DATA
@@ -242,7 +246,7 @@ getInfo() {
     local _unixtime
     IFS=','
     # if wallet is not encrypted
-    info_global[8]="\Z1no PW\Zn"
+    info_global[8]="$TEXT_WALLET_HAS_NO_PW"
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'version'* ]]; then
             info_global[0]="${_itemBuffer#*':'}"
@@ -263,15 +267,15 @@ getInfo() {
         elif [[ ${_itemBuffer} == 'unlocked_until:'* ]]; then
             _unixtime="${_itemBuffer#*':'}"
             if [ "$_unixtime" -gt 0 ]; then
-                info_global[8]="\Z4true\Zn"
+                info_global[8]="$TEXT_WALLET_IS_UNLOCKED"
             else
-                info_global[8]="false"
+                info_global[8]="$TEXT_WALLET_IS_LOCKED"
             fi
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
             if [ "${_itemBuffer#*':'}" != "none" ]; then
                 info_global[9]="\Z1""${_itemBuffer#*':'}""\Zn"
             else
-                info_global[9]="${_itemBuffer#*':'}"
+                info_global[9]="$TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME"
             fi
         fi
     done
@@ -293,9 +297,9 @@ getStakingInfo() {
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
             if [ "${_itemBuffer#*':'}" == "true" ]; then
-                stakinginfo_global[0]="\Z4ON\Zn"
+                stakinginfo_global[0]="$TEXT_STAKING_ON"
             else
-                stakinginfo_global[0]="\Z1OFF\Zn"
+                stakinginfo_global[0]="$TEXT_STAKING_OFF"
             fi
         elif [[ ${_itemBuffer} == 'expectedtime:'* ]]; then
             _time="${_itemBuffer#*':'}"
@@ -312,19 +316,19 @@ getStakingInfo() {
 #        $stakinginfo_global
 #        $balance_global
 makeOutputInfo() {
-    echo "Wallet Info\n"
-    echo $(fillLine "Balance:-_-$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc) XSPEC" "${TEXTWIDTH_INFO}")"\n"
+    echo "$TEXT_HEADLINE_WALLET_INFO\n"
+    echo $(fillLine "$TEXT_BALANCE:-_-$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc) $TEXT_CURRENCY" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" "${TEXTWIDTH_INFO}")"\n"
 
-    echo "\nStaking Info\n"
-    echo $(fillLine "Wallet unlocked: ${info_global[8]}-_-Staking: ${stakinginfo_global[0]}" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "Coins: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn aging)" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "Expected time: ${stakinginfo_global[1]}" "${TEXTWIDTH_INFO}")"\n"
+    echo "\n$TEXT_HEADLINE_STAKING_INFO\n"
+    echo $(fillLine "$TEXT_WALLET_STATE: ${info_global[8]}-_-$TEXT_STAKING_STATE: ${stakinginfo_global[0]}" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_STAKING_COINS: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn $TEXT_MATRUING_COINS)" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_EXP_TIME: ${stakinginfo_global[1]}" "${TEXTWIDTH_INFO}")"\n"
 
-    echo "\nClient info\n"
-    echo $(fillLine "Daemon: ${info_global[0]}-_-Errors: ${info_global[9]}" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "IP: ${info_global[7]}-_-Peers: ${info_global[4]}" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "Download: ${info_global[5]}-_-Upload: ${info_global[6]}" "${TEXTWIDTH_INFO}")"\n"
+    echo "\n$TEXT_HEADLINE_CLIENT_INFO\n"
+    echo $(fillLine "$TEXT_DAEMON_VERSION: ${info_global[0]}-_-$TEXT_DAEMON_ERRORS_DURING_RUNTIME: ${info_global[9]}" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_DAEMON_IP: ${info_global[7]}-_-$TEXT_DAEMON_PEERS: ${info_global[4]}" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_DAEMON_DOWNLOADED_DATA: ${info_global[5]}-_-$TEXT_DAEMON_UPLOADED_DATA: ${info_global[6]}" "${TEXTWIDTH_INFO}")"\n"
 }
 
 # ============================================================================
@@ -362,14 +366,14 @@ getTransactions() {
             _valueBuffer="${_itemBuffer#*':'}"
             _thisWasAStake="false"
             if [[ ${_valueBuffer} == 'receive' ]]; then
-                transactions_global[_i]='\Z2RECEIVED\Zn'
+                transactions_global[_i]="$TEXT_RECEIVED"
             elif [[ ${_valueBuffer} == 'generate' ]]; then
-                transactions_global[_i]='\Z4STAKE\Zn'
+                transactions_global[_i]="$TEXT_STAKE"
                 _thisWasAStake="true"
             elif [[ ${_valueBuffer} == 'immature' ]]; then
-                transactions_global[_i]='\Z5STAKE Pending\Zn'
+                transactions_global[_i]="$TEXT_IMMATURE"
             else
-                transactions_global[_i]='\Z1TRANSFERRED\Zn'
+                transactions_global[_i]="$TEXT_TRANSFERRED"
             fi
             _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'address'* || ${_itemBuffer} == 'amount'* \
@@ -385,7 +389,7 @@ getTransactions() {
         local _i
         local _dataTimeFrame=$(($_newestStakeDate - $_oldestStakeDate))
         for ((_i=$(( $_firstStakeIndex + 1));_i<${#transactions_global[@]};_i=$(( $_i + 6)))); do
-            if [ ${transactions_global[$_i+1]} = '\Z4STAKE\Zn' ]; then
+            if [ ${transactions_global[$_i+1]} = "$TEXT_STAKE" ]; then
                 _stakedAmount=`echo "scale=8; $_stakedAmount + ${transactions_global[$_i+2]}" | bc`
                 _stakeCounter=$(( $_stakeCounter + 1 ))
             fi
@@ -479,13 +483,13 @@ makeOutputTransactions() {
         echo $(fillLine "${transactions_global[$i-4]}: ${transactions_global[$i-3]}-_-${transactions_global[$i]}" \
                         "${_textWidth}")"\n"
         if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "confirmations: ${transactions_global[$i-2]}-_-address: ${transactions_global[$i-5]}" \
+            echo $(fillLine "$TEXT_CONFIRMATIONS: ${transactions_global[$i-2]}-_-$TEXT_ADDRESS: ${transactions_global[$i-5]}" \
                             "${_textWidth}")"\n"
         else
-            echo "confirmations: ${transactions_global[$i-2]}\n"
+            echo "$TEXT_CONFIRMATIONS: ${transactions_global[$i-2]}\n"
         fi
         if (( ${_textWidth} >= 70 ));then
-            echo $(fillLine "txid: ${transactions_global[$i-1]}" \
+            echo $(fillLine "$TEXT_TXID: ${transactions_global[$i-1]}" \
                             "${_textWidth}")"\n"
         fi
         echo "\n"
@@ -513,7 +517,7 @@ errorHandling() {
         dialog --backtitle "$TITLE_BACK" \
                --colors \
                --title "$TITLE_ERROR" \
-               --ok-label 'OK' \
+               --ok-label "$BUTTON_LABEL_OK" \
                --no-shadow \
                --msgbox "$1" 0 0
     else
@@ -542,7 +546,7 @@ goodbye() {
         --extra-button \
         --ok-label 'No, just leave' \
         --extra-label 'Yes, stop daemon' \
-        --cancel-label 'Main Menu' \
+        --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
         --default-button 'ok' \
         --yesno "\Z1If you plan to shutdown the system, daemon must be stopped before!\Zn\n\nDo you want to stop the daemon (no more staking) or just exit the UI?\n\n\Zn" 0 0
     exit_status=$?
@@ -561,8 +565,8 @@ goodbye() {
     dialog --backtitle "$TITLE_BACK" \
            --no-shadow \
            --colors \
-           --title "GOODBYE" \
-           --ok-label 'Leave' \
+           --title "$TITEL_GOODBYE" \
+           --ok-label "$BUTTON_LABEL_LEAVE" \
            --msgbox  "${_s}" 0 0
     reset
     exit 0
@@ -587,14 +591,14 @@ simpleMsg() {
 # Goal: Give a visual feedback for the user that the wallet is now locked
 #       and there will be no staking anymore.
 walletLockedFeedback() {
-    local s="Wallet successfully locked."
-          s+="\n\n\Z5You will not be able to stake anymore.\Zn\n\n"
-          s+="Use Unlock in main menu to unlock the wallet for staking only again."
+    local _s="Wallet successfully locked."
+          _s+="\n\n\Z5You will not be able to stake anymore.\Zn\n\n"
+          _s+="Use Unlock in main menu to unlock the wallet for staking only again."
     dialog --backtitle "$TITLE_BACK" \
            --colors \
            --no-shadow \
-           --ok-label 'Continue' \
-           --msgbox "$s" 0 0
+           --ok-label "$BUTTON_LABEL_CONTINUE" \
+           --msgbox "${_s}" 0 0
 }
 
 # ============================================================================
@@ -603,9 +607,9 @@ walletLockedFeedback() {
 # Input: $1
 viewAllTransactionsHelper() {
     if [ "$1" = "true" ]; then
-        echo 'Hide Stakes'
+        echo "$BUTTON_LABEL_HIDE_STAKES"
     else
-        echo 'Show Stakes'
+        echo "$BUTTON_LABEL_SHOW_STAKES"
     fi
 }
 
@@ -649,9 +653,9 @@ viewAllTransactions() {
         --colors \
         --extra-button \
         --help-button \
-        --ok-label 'Previous' \
-        --extra-label 'Next' \
-        --help-label 'Main Menu' \
+        --ok-label "$BUTTON_LABEL_PREVIOUS" \
+        --extra-label "$BUTTON_LABEL_NEXT" \
+        --help-label "$BUTTON_LABEL_MAIN_MENU" \
         --cancel-label "$(viewAllTransactionsHelper "${_displayStakes}")" \
         --default-button 'extra' \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
@@ -681,7 +685,7 @@ viewAllTransactions() {
         ${DIALOG_HELP})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "Error while displaying transactions."
+    errorHandling "$ERROR_TRANS"
 }
 
 # ============================================================================
@@ -715,6 +719,24 @@ advancedMainMenu() {
 }
 
 # ============================================================================
+# Goal: Display the wallets addresses for the "Default Address"-account (equals default addr)
+#
+receiveCoins() {
+    executeCURL "getaddressesbyaccount" "\"Default Address\""
+    curl_result_global=${curl_result_global//','/'\n'}
+    curl_result_global=${curl_result_global//'['/''}
+    curl_result_global=${curl_result_global//']'/''}
+#        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
+    dialog --backtitle "$TITLE_BACK" \
+               --colors \
+               --title "Wallet Addresses" \
+               --no-shadow \
+               --infobox "Marking the text will copy it to clipboard.\nPress any key or right mouse-button to continue.\n\nDefault wallet addresses:\n$curl_result_global" 0 0
+    read -n 1 -s -r -p ""
+    refreshMainMenu_GUI
+}
+
+# ============================================================================
 # Goal: Display form for the user to enter transaction details
 #       Check if a valid address was entered
 #       Check if a valid amount was entered
@@ -725,21 +747,22 @@ sendCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
-    local _s="Enter the destination address.\n"
-        _s+="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
+    local _s="$TEXT_BALANCE: $(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc) $TEXT_CURRENCY\n"
+          _s+="$TEXT_SEND_EXPL\n"
+          _s+="$TEXT_CLIPBOARD_HINT"
     exec 3>&1
     _buffer=$(dialog --backtitle "$TITLE_BACK" \
-        --ok-label "Send" \
-        --cancel-label "Main Menu" \
+        --ok-label "$BUTTON_LABEL_SEND" \
+        --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
         --extra-button \
-        --extra-label "Address Book" \
+        --extra-label "$BUTTON_LABEL_ADDRESS_BOOK" \
         --no-shadow --colors \
-        --title "Send XSPEC" \
+        --title "$TITEL_SEND" \
         --form "$_s" 0 0 0 \
-        "Destination address" 1 12 "" 1 11 -1 0 \
-        "Address:" 2 1 "${_destinationAddress}" 2 11 35 0 \
-        "Amount of XSPEC" 4 12 "" 3 11 -1 0 \
-        "Amount:" 5 1 "${_amount}" 5 11 20 0 \
+        "$TEXT_SEND_DESTINATION_ADDRESS_EXPL" 1 12 "" 1 11 -1 0 \
+        "$TEXT_SEND_DESTINATION_ADDRESS:" 2 1 "${_destinationAddress}" 2 11 35 0 \
+        "$TEXT_SEND_AMOUNT_EXPL" 4 12 "" 3 11 -1 0 \
+        "$TEXT_SEND_AMOUNT:" 5 1 "${_amount}" 5 11 20 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -773,20 +796,23 @@ sendCoins() {
             elif [ ${_i} -eq 2 ]; then
                 if [[ ${_itemBuffer} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${_itemBuffer} > 0" | bc)" ]; then
                     _amount=${_itemBuffer}
-                    if [ "${info_global[8]}" == "\Z4true\Zn" ]; then
+                    if [ "${info_global[8]}" == "$TEXT_WALLET_IS_UNLOCKED" ]; then
                         # iff wallet is unlocked, we have to look it first
                         executeCURL "walletlock"
                     fi
-                    if [ "${info_global[8]}" != "\Z1no PW\Zn" ]; then
+                    if [ "${info_global[8]}" != "$TEXT_WALLET_HAS_NO_PW" ]; then
                         passwordDialog "60" "false"
                     fi
                     executeCURL "sendtoaddress" "\"${_destinationAddress}\",${_amount}"
-                    if [ "${info_global[8]}" != "\Z1no PW\Zn" ]; then
+                    if [ "${info_global[8]}" != "$TEXT_WALLET_HAS_NO_PW" ]; then
                         executeCURL "walletlock"
                     fi
-                    simpleMsg "Notice" \
-                    "\nPlease note:\nYou may have to 'unlock' the wallet for staking again.\n" \
-                    'YES - I´ve understood'
+                    if [ "${info_global[8]}" == "$TEXT_WALLET_IS_UNLOCKED" ]; then
+                        simpleMsg "Notice" \
+                                  "\nPlease note:\nYou have to 'unlock' the wallet for staking again.\n" \
+                                  'YES - I´ve understood'
+                        unlockWalletForStaking
+                    fi
                     refreshMainMenu_DATA
                 else
                     local _s="Amount must be a number, with:"
@@ -814,22 +840,20 @@ passwordDialog() {
     local _wallet_password=$(dialog --backtitle "$TITLE_BACK" \
         --no-shadow \
         --insecure \
-        --passwordbox "Enter wallet password" 0 0  \
+        --passwordbox "$TEXT_PW_EXPL" 0 0  \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
-            refreshMainMenu_DATA
-            ;;
+            refreshMainMenu_DATA;;
         ${DIALOG_ESC})
-            refreshMainMenu_DATA
-            ;;
+            refreshMainMenu_DATA;;
     esac
     executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2"
     # literally nothing to do here since daemon responds is excellent
 
-    #encryptwallet "\"$_wallet_password\"
+    #encryptwallet "\"$_wallet_password\""
 }
 
 # ============================================================================
@@ -856,21 +880,21 @@ userCommandInput() {
     done
     USER_DAEMON_PARAMS="$_buffer"
     IFS=${_oldIFS}
-    local _s="Here you can enter commands that will be send to the Daemon.\n"
-    _s+="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
+    local _s="$TEXT_USERCOMMAND_EXPL\n"
+         _s+="$TEXT_CLIPBOARD_HINT"
     exec 3>&1
     _buffer=$(dialog --backtitle "$TITLE_BACK" \
-        --ok-label "Execute" \
-        --cancel-label "Main Menu" \
+        --ok-label "$BUTTON_LABEL_EXECUTE" \
+        --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
         --extra-button \
-        --extra-label "Help" \
+        --extra-label "$BUTTON_LABEL_HELP" \
         --no-shadow --colors \
-        --title "Enter Command" \
+        --title "$TITEL_USERCOMMAND" \
         --form "$_s" 0 0 0 \
-        "type help for info" 1 12 "" 1 11 -1 0 \
-        "Command:" 2 1 "$USER_DAEMON_COMMAND" 2 11 33 0 \
-        "seperated by spaces" 4 12 "" 3 11 -1 0 \
-        "Parameter:" 5 1 "$USER_DAEMON_PARAMS" 5 11 65 0 \
+        "$TEXT_USERCOMMAND_CMD_EXPL" 1 12 "" 1 11 -1 0 \
+        "$TEXT_USERCOMMAND_CMD:" 2 1 "$USER_DAEMON_COMMAND" 2 11 33 0 \
+        "$TEXT_USERCOMMAND_PARAMS_EXPL" 4 12 "" 3 11 -1 0 \
+        "$TEXT_USERCOMMAND_PARAMS:" 5 1 "$USER_DAEMON_PARAMS" 5 11 65 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -919,11 +943,11 @@ userCommandInput() {
                 fi
             done
             drawGauge "0" \
-                      "Getting data from daemon..."
+                      "$TEXT_GAUGE_DEFAULT"
             executeCURL "$USER_DAEMON_COMMAND" \
                         "$USER_DAEMON_PARAMS"
             drawGauge "100" \
-                      "All done."
+                      "$TEXT_GAUGE_ALLDONE"
             curlUserFeedbackHandling
             userCommandInput;;
     esac
@@ -937,38 +961,10 @@ curlUserFeedbackHandling() {
 #        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
         dialog --backtitle "$TITLE_BACK" \
                --colors \
-               --title "CURL result" \
-               --ok-label 'Continue' \
+               --title "$TITEL_CURL_RESULT" \
+               --ok-label "$BUTTON_LABEL_CONTINUE" \
                --no-shadow \
                --msgbox "$curl_result_global" 0 0
-    fi
-}
-
-# ============================================================================
-# Helper function that decides whether if LOCK, UNLOCK or ENCRYPT will be displayed
-#
-# Input: $MENU_WALLET_UNLOCKED indicates if wallet is open
-mainMenu_helper_wallet_cmd() {
-    if [ "${info_global[8]}" = "\Z4true\Zn" ]; then
-        echo 'Lock'
-    elif [ "${info_global[8]}" = "\Z1no PW\Zn" ]; then
-        echo 'Encrypt'
-    else
-        echo 'Unlock'
-    fi
-}
-
-# ============================================================================
-# Helper function that decides what explaination text will be displayed
-#
-# Input: $MENU_WALLET_UNLOCKED indicates if wallet is open
-mainMenu_helper_wallet_cmd_expl() {
-    if [ "${info_global[8]}" = "\Z4true\Zn" ]; then
-        echo "$EXPL_CMD_MAIN_WALLETLOCK"
-    elif [ "${info_global[8]}" = "\Z1no PW\Zn" ]; then
-        echo "$EXPL_CMD_MAIN_WALLETENCRYPT"
-    else
-        echo "$EXPL_CMD_MAIN_WALLETUNLOCK"
     fi
 }
 
@@ -1060,21 +1056,34 @@ calculateLayout() {
     fi
     SIZE_Y_GAUGE=0
     #
-    TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
-    TITLE_TRANS='RECENT TRANSACTIONS'
-    TITLE_INFO=''
-    TITLE_MENU="$TITLE_BACK"
-    TITLE_GAUGE="Please wait"
-    TITLE_ERROR="ERROR"
-    #
-    EXPL_CMD_MAIN_EXIT="Exit interface"
-    EXPL_CMD_MAIN_USERCOMMAND="Sending commands to daemon"
-    EXPL_CMD_MAIN_SEND="Send XSPEC from wallet"
-    EXPL_CMD_MAIN_VIEWTRANS="View all transactions"
-    EXPL_CMD_MAIN_REFRESH="Update Interface"
-    EXPL_CMD_MAIN_WALLETLOCK="Wallet, no more staking"
-    EXPL_CMD_MAIN_WALLETUNLOCK="Wallet for staking only"
-    EXPL_CMD_MAIN_WALLETENCRYPT="Wallet, provides Security"
+}
+
+# ============================================================================
+# Helper function that decides whether if LOCK, UNLOCK or ENCRYPT will be displayed
+#
+# Input: ${info_global[8]} indicates if wallet is open
+mainMenu_helper_wallet_cmd() {
+    if [ "${info_global[8]}" = "$TEXT_WALLET_IS_UNLOCKED" ]; then
+        echo "$CMD_MAIN_LOCK_WALLET"
+    elif [ "${info_global[8]}" = "$TEXT_WALLET_HAS_NO_PW" ]; then
+        echo "$CMD_MAIN_ENCRYPT_WALLET"
+    else
+        echo "$CMD_MAIN_UNLOCK_WALLET"
+    fi
+}
+
+# ============================================================================
+# Helper function that decides what explaination text will be displayed
+#
+# Input: ${info_global[8]} indicates if wallet is open
+mainMenu_helper_wallet_cmd_expl() {
+    if [ "${info_global[8]}" = "$TEXT_WALLET_IS_UNLOCKED" ]; then
+        echo "$EXPL_CMD_MAIN_WALLETLOCK"
+    elif [ "${info_global[8]}" = "$TEXT_WALLET_HAS_NO_PW" ]; then
+        echo "$EXPL_CMD_MAIN_WALLETENCRYPT"
+    else
+        echo "$EXPL_CMD_MAIN_WALLETUNLOCK"
+    fi
 }
 
 # ============================================================================
@@ -1106,16 +1115,17 @@ refreshMainMenu_GUI() {
         --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
         --title "${TITLE_MENU}" \
         --nocancel \
-        --ok-label "Enter" \
+        --ok-label "$BUTTON_LABEL_ENTER" \
         --no-shadow \
         --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
         \
-        Refresh "$EXPL_CMD_MAIN_REFRESH" \
+        "$CMD_MAIN_REFRESH" "$EXPL_CMD_MAIN_REFRESH" \
         "$(mainMenu_helper_wallet_cmd)" "$(mainMenu_helper_wallet_cmd_expl)" \
-        Transaktions "$EXPL_CMD_MAIN_VIEWTRANS" \
-        Send "$EXPL_CMD_MAIN_SEND" \
-        Command "$EXPL_CMD_MAIN_USERCOMMAND" \
-        Quit "$EXPL_CMD_MAIN_EXIT" \
+        "$CMD_MAIN_TRANS" "$EXPL_CMD_MAIN_VIEWTRANS" \
+        "$CMD_MAIN_SEND" "$EXPL_CMD_MAIN_SEND" \
+        "$CMD_MAIN_RECEIVE" "$EXPL_CMD_MAIN_RECEIVE" \
+        "$CMD_MAIN_COMMAND" "$EXPL_CMD_MAIN_USERCOMMAND" \
+        "$CMD_MAIN_QUIT" "$EXPL_CMD_MAIN_EXIT" \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -1124,23 +1134,55 @@ refreshMainMenu_GUI() {
             goodbye;;
     esac
     case ${_mainMenuPick} in
-        Refresh)
+        "$CMD_MAIN_REFRESH")
             refreshMainMenu_DATA;;
-        Unlock)
+        "$CMD_MAIN_UNLOCK_WALLET")
             unlockWalletForStaking;;
-        Lock)
+        "$CMD_MAIN_LOCK_WALLET")
             lockWallet;;
-        Encrypt)
+        "$CMD_MAIN_ENCRYPT_WALLET")
             sry;;
-        Transaktions)
+        "$CMD_MAIN_TRANS")
             viewAllTransactions;;
-        Send)
+        "$CMD_MAIN_SEND")
             sendCoins;;
-        Command)
+        "$CMD_MAIN_RECEIVE")
+            receiveCoins;;
+        "$CMD_MAIN_COMMAND")
             userCommandInput;;
-        Quit)
+        "$CMD_MAIN_QUIT")
             goodbye;;
     esac
+}
+
+# ============================================================================
+# Goal: Refresh the main menu - which means we must gather new data
+# and redraw gui
+refreshMainMenu_DATA() {
+    # have to recalc layout since it might have changed
+    # (needed for transactions amount to fetch)
+    calculateLayout
+    drawGauge "0" \
+            "$TEXT_GAUGE_GET_STAKING_DATA"
+    executeCURL "getstakinginfo"
+    drawGauge "15" \
+            "$TEXT_GAUGE_PROCESS_STAKING_DATA"
+    getStakingInfo
+    drawGauge "33" \
+            "$TEXT_GAUGE_GET_INFO"
+    executeCURL "getinfo"
+    drawGauge "48" \
+            "$TEXT_GAUGE_PROCESS_INFO"
+    getInfo
+    drawGauge "66" \
+            "$TEXT_GAUGE_GET_TRANS"
+    executeCURL "listtransactions" '"*",'"$COUNT_TRANS_MENU"',0,"1"'
+    drawGauge "85" \
+            "$TEXT_GAUGE_PROCESS_TRANS"
+    getTransactions
+    drawGauge "100" \
+            "$TEXT_GAUGE_ALLDONE"
+    refreshMainMenu_GUI
 }
 
 # ============================================================================
@@ -1167,36 +1209,6 @@ drawGauge() {
     echo "$1" | dialog --no-shadow \
                        --title "$TITLE_GAUGE" \
                        --gauge "$2" "${SIZE_Y_GAUGE}" "${SIZE_X_GAUGE}" 0
-}
-
-# ============================================================================
-# Goal: Refresh the main menu - which means we must gather new data
-# and redraw gui
-refreshMainMenu_DATA() {
-    # have to recalc layout since it might have changed
-    # (needed for transactions amount to fetch)
-    calculateLayout
-    drawGauge "0" \
-            "Getting staking data from daemon..."
-    executeCURL "getstakinginfo"
-    drawGauge "15" \
-            "Processing staking data..."
-    getStakingInfo
-    drawGauge "33" \
-            "Getting general info data from daemon..."
-    executeCURL "getinfo"
-    drawGauge "48" \
-            "Processing general info data..."
-    getInfo
-    drawGauge "66" \
-            "Getting transactions data from daemon..."
-    executeCURL "listtransactions" '"*",'"$COUNT_TRANS_MENU"',0,"1"'
-    drawGauge "85" \
-            "Processing transactions data..."
-    getTransactions
-    drawGauge "100" \
-            "All done."
-    refreshMainMenu_GUI
 }
 
 # ============================================================================
@@ -1234,5 +1246,129 @@ simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
           'YES - I´ve understood'
 
+# ============================================================================
+# Set global variables for text output(i.e. for main menu).
+#
+# Interpret embedded "\Z" sequences in the dialog text by the following character,
+# which tells dialog to set colors or video attributes: 0 through 7 are the ANSI
+# used in curses: black, red, green, yellow, blue, magenta, cyan and white respectively.
+# Bold is set by 'b', reset by 'B'.
+# Reverse is set by 'r', reset by 'R'.
+# Underline is set by 'u', reset by 'U'.
+# The settings are cumulative,
+# e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
+# Restore normal settings with "\Zn".
+TITLE_BACK="Spectrecoin Bash RPC Wallet Interface ($VERSION)"
+TITLE_TRANS="RECENT TRANSACTIONS"
+TITLE_INFO=""
+TITLE_MENU="$TITLE_BACK"
+TITLE_GAUGE="Please wait"
+TITLE_ERROR="ERROR"
+TITLE_STARTING_DAEMON="Starting Daemon"
+TITEL_GOODBYE="GOODBYE"
+TITEL_SEND="Send XSPEC"
+TITEL_USERCOMMAND="Enter Command"
+TITEL_CURL_RESULT="cURL result"
+#
+BUTTON_LABEL_ENTER="Enter"
+BUTTON_LABEL_OK="OK"
+BUTTON_LABEL_LEAVE="Leave"
+BUTTON_LABEL_CONTINUE="Continue"
+BUTTON_LABEL_PREVIOUS="Previous"
+BUTTON_LABEL_NEXT="Next"
+BUTTON_LABEL_SEND="Send"
+BUTTON_LABEL_EXECUTE="Execute"
+BUTTON_LABEL_HELP="Help"
+BUTTON_LABEL_ADDRESS_BOOK="Address Book"
+BUTTON_LABEL_MAIN_MENU="Main Menu"
+BUTTON_LABEL_SHOW_STAKES="Show Stakes"
+BUTTON_LABEL_HIDE_STAKES="Hide Stakes"
+#
+CMD_MAIN_LOCK_WALLET="Lock"
+CMD_MAIN_UNLOCK_WALLET="Unlock"
+CMD_MAIN_ENCRYPT_WALLET="Encrypt"
+CMD_MAIN_REFRESH="Refresh"
+CMD_MAIN_TRANS="Transactions"
+CMD_MAIN_SEND="Send"
+CMD_MAIN_RECEIVE="Receive"
+CMD_MAIN_COMMAND="Command"
+CMD_MAIN_QUIT="Quit"
+#
+EXPL_CMD_MAIN_EXIT="Exit interface"
+EXPL_CMD_MAIN_USERCOMMAND="Sending commands to daemon"
+EXPL_CMD_MAIN_SEND="Send XSPEC from wallet"
+EXPL_CMD_MAIN_VIEWTRANS="View all transactions"
+EXPL_CMD_MAIN_REFRESH="Update Interface"
+EXPL_CMD_MAIN_WALLETLOCK="Wallet, no more staking"
+EXPL_CMD_MAIN_WALLETUNLOCK="Wallet for staking only"
+EXPL_CMD_MAIN_WALLETENCRYPT="Wallet, provides Security"
+EXPL_CMD_MAIN_RECEIVE="Show wallet addresses"
+#
+ERROR_CURL_MSG_PROMPT="CURL error message:"
+ERROR_401_UNAUTHORIZED="Error: RPC login failed.\nDid you change the password without restarting the daemon?\n"
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to sprectrecoind could be established.\nYou may need to check your config."
+ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) already running!\nBut no connection could be established.\nThis means the daemon was just started."
+ERROR_DAEMON_STARTING="Spectrecoind is not running.\nStarting Spectrecoind (daemon)..."
+ERROR_DAEMON_WAITING_BEGIN="Daemon needs some time to initialize.\nWaiting 1 minute for the daemon..."
+ERROR_DAEMON_WAITING_MSG="seconds to go..."
+ERROR_DAEMON_WAITING_END="All done. Starting Interface..."
+ERROR_TRANS="Error while displaying transactions."
+#
+TEXT_HEADLINE_WALLET_INFO="Wallet Info"
+TEXT_BALANCE="Balance"
+TEXT_CURRENCY="XSPEC"
+TEXT_WALLET_STATE="Wallet"
+TEXT_WALLET_HAS_NO_PW="\Z1no PW\Zn"
+TEXT_WALLET_IS_UNLOCKED="\Z4unlocked\Zn"
+TEXT_WALLET_IS_LOCKED="\Z1locked\Zn"
+#
+TEXT_HEADLINE_CLIENT_INFO="Client info"
+TEXT_DAEMON_VERSION="Daemon"
+TEXT_DAEMON_ERRORS_DURING_RUNTIME="Errors"
+TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME="none"
+TEXT_DAEMON_IP="IP"
+TEXT_DAEMON_PEERS="Peers"
+TEXT_DAEMON_DOWNLOADED_DATA="Download"
+TEXT_DAEMON_UPLOADED_DATA="Upload"
+#
+TEXT_HEADLINE_STAKING_INFO="Staking Info"
+TEXT_STAKING_STATE="Staking"
+TEXT_STAKING_ON="\Z4ON\Zn"
+TEXT_STAKING_OFF="\Z1OFF\Zn"
+TEXT_STAKING_COINS="Coins"
+TEXT_MATRUING_COINS="aging"
+TEXT_EXP_TIME="Expected time"
+#
+TEXT_STAKE="\Z4STAKE\Zn"
+TEXT_IMMATURE="\Z5STAKE Pending\Zn"
+TEXT_RECEIVED="\Z2RECEIVED\Zn"
+TEXT_TRANSFERRED="\Z1TRANSFERRED\Zn"
+TEXT_CONFIRMATIONS="confirmations"
+TEXT_ADDRESS="address"
+TEXT_TXID="txid"
+#
+TEXT_CLIPBOARD_HINT="Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
+TEXT_SEND_DESTINATION_ADDRESS_EXPL="Destination address"
+TEXT_SEND_DESTINATION_ADDRESS="Address"
+TEXT_SEND_AMOUNT_EXPL="Amount of XSPEC"
+TEXT_SEND_AMOUNT="Amount"
+TEXT_SEND_EXPL="Enter the destination address."
+#
+TEXT_PW_EXPL="Enter wallet password"
+#
+TEXT_USERCOMMAND_EXPL="Here you can enter commands that will be send to the Daemon."
+TEXT_USERCOMMAND_CMD_EXPL="type help for info"
+TEXT_USERCOMMAND_CMD="Command"
+TEXT_USERCOMMAND_PARAMS_EXPL="seperated by spaces"
+TEXT_USERCOMMAND_PARAMS="Parameter"
+#
+TEXT_GAUGE_ALLDONE="All done."
+TEXT_GAUGE_DEFAULT="Getting data from daemon..."
+TEXT_GAUGE_GET_INFO="Getting general info data from daemon..."
+TEXT_GAUGE_PROCESS_INFO="Processing general info data..."
+TEXT_GAUGE_GET_STAKING_DATA="Getting staking data from daemon..."
+TEXT_GAUGE_PROCESS_STAKING_DATA="Processing staking data..."
+TEXT_GAUGE_GET_TRANS="Getting transactions data from daemon..."
+TEXT_GAUGE_PROCESS_TRANS="Processing transactions data..."
 refreshMainMenu_DATA
 goodbye
