@@ -60,11 +60,16 @@ EXPL_CMD_MAIN_RECEIVE="Show wallet addresses"
 ERROR_CURL_MSG_PROMPT="CURL error message:"
 ERROR_401_UNAUTHORIZED="Error: RPC login failed.\nDid you change the password without restarting the daemon?\n"
 ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to sprectrecoind could be established.\nYou may need to check your config."
-ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) already running!\nBut no connection could be established.\nThis means the daemon was just started."
-ERROR_DAEMON_STARTING="Spectrecoind is not running.\nStarting Spectrecoind (daemon)..."
-ERROR_DAEMON_WAITING_BEGIN="Daemon needs some time to initialize.\nWaiting 1 minute for the daemon..."
+ERROR_DAEMON_NO_CONNECT="Daemon did not respond within 60 sec.\nNo connection to sprectrecoind could be established.\nYou may need to check your config."
+#
+# use \ for a new line - note: there will be no auto line breaking
+ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) already running!\But no connection could be established.\This means the daemon was just started."
+ERROR_DAEMON_STARTING="Spectrecoind is not running.\Starting Spectrecoind (daemon)..."
+ERROR_DAEMON_WAITING_BEGIN="Daemon needs some time to initialize.\Waiting 1 minute for the daemon..."
 ERROR_DAEMON_WAITING_MSG="seconds to go..."
+ERROR_DAEMON_WAITING_MSG_SUCCESS="Daemon connected.\Everythings fine."
 ERROR_DAEMON_WAITING_END="All done. Starting Interface..."
+#
 ERROR_TRANS="Error while displaying transactions."
 #
 TEXT_HEADLINE_WALLET_INFO="Wallet Info"
