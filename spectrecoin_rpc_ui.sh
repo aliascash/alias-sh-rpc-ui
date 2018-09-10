@@ -102,19 +102,21 @@ connectToDaemon() {
 cutCURLresult() {
     # check if curl_result_global contains error msg
     # if there was an error print it and exit
+    # NOTE: at this point the cURL result will either exactly contain
+    #       one(!) substring "error":null or a substring "error":<errormsg>
     if [[ ${curl_result_global} == *'"error":null,'* ]]; then
         # goal: cut the result string so only the real output is left
         # problem: there exist special results that are 2-dimensional
-        if [[ "$curl_result_global" == '{"result":[{'* ]]; then
+        if [[ "$curl_result_global" == '{"result":['* ]]; then
             #cut right side in case of 2-dim. result
             #cut left side in case of 2-dim. result
-            curl_result_global="${curl_result_global%'}],"error"'*}"
-            curl_result_global="${curl_result_global#*'":[{'}"
-        elif [[ "$curl_result_global" == '{"result":{'* ]]; then
-            #cut right side
-            #cut left side
-            curl_result_global="${curl_result_global%'},"error"'*}"
-            curl_result_global="${curl_result_global#*'":{'}"
+            curl_result_global="${curl_result_global%'],"error"'*}"
+            curl_result_global="${curl_result_global#*'":['}"
+#        elif [[ "$curl_result_global" == '{"result":{'* ]]; then
+#            #cut right side
+#            #cut left side
+#            curl_result_global="${curl_result_global%'},"error"'*}"
+#            curl_result_global="${curl_result_global#*'":{'}"
         else
             #curl feedback in the form of {"result":<blabla>,"error":null,"id":"curltext"}
             #cut right side
@@ -348,12 +350,12 @@ makeOutputInfo() {
     fi
     echo $(fillLine "$TEXT_BALANCE:-_-${_balance} $TEXT_CURRENCY" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" "${TEXTWIDTH_INFO}")"\n"
-
+    #
     echo "\n$TEXT_HEADLINE_STAKING_INFO\n"
     echo $(fillLine "$TEXT_WALLET_STATE: ${info_global[8]}-_-$TEXT_STAKING_STATE: ${stakinginfo_global[0]}" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "$TEXT_STAKING_COINS: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn $TEXT_MATRUING_COINS)" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "$TEXT_EXP_TIME: ${stakinginfo_global[1]}" "${TEXTWIDTH_INFO}")"\n"
-
+    #
     echo "\n$TEXT_HEADLINE_CLIENT_INFO\n"
     echo $(fillLine "$TEXT_DAEMON_VERSION: ${info_global[0]}-_-$TEXT_DAEMON_ERRORS_DURING_RUNTIME: ${info_global[9]}" "${TEXTWIDTH_INFO}")"\n"
     echo $(fillLine "$TEXT_DAEMON_IP: ${info_global[7]}-_-$TEXT_DAEMON_PEERS: ${info_global[4]}" "${TEXTWIDTH_INFO}")"\n"
@@ -738,7 +740,6 @@ advancedMainMenu() {
   # get wallet addresses (inkl. stealth)
   # backup wallet
   # add address to account
-  # encryptwallet
   # change password of wallet
 
 # command execution  <-- add help command ( = help text zu bereits eingegeben command)
@@ -755,7 +756,6 @@ receiveCoins() {
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
     curl_result_global=${curl_result_global//']'/''}
-#        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
     dialog --backtitle "$TITLE_BACK" \
                --colors \
                --title "Wallet Addresses" \
@@ -873,8 +873,40 @@ passwordDialog() {
     local _wallet_password=$(dialog --backtitle "$TITLE_BACK" \
         --no-shadow \
         --insecure \
-        --passwordbox "$TEXT_PW_EXPL" 0 0  \
+        --passwordbox "$TEXT_PW_EXPL" 0 0 \
         2>&1 1>&3)
+    exit_status=$?
+    exec 3>&-
+    case ${exit_status} in
+        ${DIALOG_CANCEL})
+            # abort and reload main menu
+            refreshMainMenu_DATA;;
+        ${DIALOG_ESC})
+            # abort and reload main menu
+            refreshMainMenu_DATA;;
+    esac
+    executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2"
+    # literally nothing to do here since daemon responds is excellent
+}
+
+# ============================================================================
+# Goal: ask for a new wallet password
+#       Password will never leave this function.
+#
+# Input $1 - title of the dialog
+#
+# Return: nothing
+setWalletPW() {
+    exec 3>&1
+    local _buffer=$(dialog --backtitle "$TITLE_BACK" \
+                           --no-shadow \
+                           --insecure \
+                           --title "$1" \
+                           --mixedform "Enter new wallet password:" 15 50 0 \
+                                       "User name:" 1 1 "user" 1 20 20 0 0 \
+                                       "Password:" 2 1 "pass1" 2 20 20 0 1 \
+                                       "Retype Password:" 3 1 "pass2" 3 20 20 0 1 \
+                         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
@@ -883,10 +915,8 @@ passwordDialog() {
         ${DIALOG_ESC})
             refreshMainMenu_DATA;;
     esac
-    executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2"
-    # literally nothing to do here since daemon responds is excellent
-
     #encryptwallet "\"$_wallet_password\""
+
 }
 
 # ============================================================================
@@ -990,8 +1020,13 @@ userCommandInput() {
 # Simple output for any CURL command the user entered
 curlUserFeedbackHandling() {
     if [[ "$curl_result_global" != '{"result":null'* ]]; then
+        # split the string between the values using ',' as indicator
         curl_result_global=${curl_result_global//','/'\n'}
-#        curl_result_global=${curl_result_global//'}\n{'/'\n\n'}
+        # if several values are grouped by {},{} we ended up with {}\n{}
+        # now we split using '{' as indicator
+#        curl_result_global=${curl_result_global//'{'/'\n'}
+        # just get rid of the left over '}'
+#        curl_result_global=${curl_result_global//'}'/' '}
         dialog --backtitle "$TITLE_BACK" \
                --colors \
                --title "$TITEL_CURL_RESULT" \
