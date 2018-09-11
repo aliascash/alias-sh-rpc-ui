@@ -758,7 +758,7 @@ receiveCoins() {
                --title "Wallet Addresses" \
                --no-shadow \
                --infobox "Marking the text will automatically copy it to clipboard.\nPress return to continue to main menu.\n\nDefault wallet addresses:\n$curl_result_global" 0 0
-    read a
+    read -s
     refreshMainMenu_GUI
 }
 
