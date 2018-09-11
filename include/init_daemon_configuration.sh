@@ -35,7 +35,7 @@ initDaemonConfiguration(){
                 warning "You are using the default rpc password! Consider changing it!"
                 warning "============================================================="
                 info "Press return to continue"
-                read a
+                read -s
             fi
         else
             echo ''
