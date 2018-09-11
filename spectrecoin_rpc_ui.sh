@@ -44,9 +44,6 @@ helpMe ()
     ${0} [options]
 
     Optional parameters:
-    -s <settingsfile>
-        Settingsfile to use. File respectively its given path must be relative
-        to the location where this script is located! Default: ${SETTINGSFILE_TO_USE}
     -h  Show this help
 
     "
@@ -161,16 +158,16 @@ startDaemon() {
          local _itemBuffer
          IFS='\\'
          if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-            for _itemBuffer in $ERROR_DAEMON_ALREADY_RUNNING; do
+            for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
                 echo "${_itemBuffer}"
             done
         else
-            for _itemBuffer in $ERROR_DAEMON_STARTING; do
+            for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
                 echo "${_itemBuffer}"
             done
             sudo service spectrecoind start
         fi
-        for _itemBuffer in $ERROR_DAEMON_WAITING_BEGIN; do
+        for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
         done
         local _i=60
@@ -185,11 +182,11 @@ startDaemon() {
             errorHandling "$ERROR_DAEMON_NO_CONNECT"
                           1
         else
-            for _itemBuffer in $ERROR_DAEMON_WAITING_MSG_SUCCESS; do
+            for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
                 echo "${_itemBuffer}"
             done
         fi
-        for _itemBuffer in $ERROR_DAEMON_WAITING_END; do
+        for _itemBuffer in ${ERROR_DAEMON_WAITING_END}; do
             echo "${_itemBuffer}"
         done
         sleep 1
@@ -1289,9 +1286,8 @@ checkRequirement() {
     fi
 }
 
-while getopts s:h? option; do
+while getopts h? option; do
     case ${option} in
-        s) SETTINGSFILE_TO_USE="${OPTARG}";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
