@@ -585,8 +585,8 @@ sry() {
     dialog --backtitle "$TITLE_BACK" \
            --no-shadow \
            --colors \
-           --title "SRY" \
-           --msgbox  "\nUnder construction...\n\nSry right now this is a placeholder." 0 0
+           --title "$TITLE_PLACEHOLDER_FUNCTION" \
+           --msgbox  "$TEXT_PLACEHOLDER_FUNCTION" 0 0
     refreshMainMenu_GUI
 }
 
@@ -597,27 +597,27 @@ goodbye() {
     dialog --no-shadow \
         --colors \
         --extra-button \
-        --ok-label 'No, just leave' \
-        --extra-label 'Yes, stop daemon' \
+        --ok-label "$BUTTON_LABEL_JUST_LEAVE" \
+        --extra-label "$BUTTON_LABEL_STOP_DAEMON" \
         --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
         --default-button 'ok' \
-        --yesno "\Z1If you plan to shutdown the system, daemon must be stopped before!\Zn\n\nDo you want to stop the daemon (no more staking) or just exit the UI?\n\n\Zn" 0 0
+        --yesno "$TEXT_GOODBYE_WARNING" 0 0
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_GUI;;
         ${DIALOG_OK})
-            _s+="\n\Z2Daemon is still running.\Zn\n";;
+            _s+="$TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING";;
         ${DIALOG_EXTRA})
             sudo service spectrecoind stop
-            _s+="\n\Z1Daemon stopped.\Zn\n";;
+            _s+="$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED";;
         ${DIALOG_CANCEL})
             refreshMainMenu_GUI;;
         *)
-            errorHandling "Error in daemon stop dialog (goodybe function)" \
-                  1;;
+            errorHandling "$ERROR_GOODBYE_FATAL" \
+                          1;;
     esac
-    _s+="\nHope you enjoyed.\n\n\Z4Please give feedback.\Zn\n"
+    _s+="$TEXT_GOODBYE_FEEDBACK_EXIT"
     dialog --backtitle "$TITLE_BACK" \
            --no-shadow \
            --colors \
@@ -647,14 +647,11 @@ simpleMsg() {
 # Goal: Give a visual feedback for the user that the wallet is now locked
 #       and there will be no staking anymore.
 walletLockedFeedback() {
-    local _s="Wallet successfully locked."
-          _s+="\n\n\Z5You will not be able to stake anymore.\Zn\n\n"
-          _s+="Use Unlock in main menu to unlock the wallet for staking only again."
     dialog --backtitle "$TITLE_BACK" \
            --colors \
            --no-shadow \
            --ok-label "$BUTTON_LABEL_CONTINUE" \
-           --msgbox "${_s}" 0 0
+           --msgbox "$TEXT_FEEDBACK_WALLET_LOCKED" 0 0
 }
 
 # ============================================================================
@@ -675,8 +672,6 @@ viewAllTransactionsHelper() {
 # Input: $1 - start (optional - default "0")
 #        $2 - if "true" stakes will be displayed (optional - default "true")
 viewAllTransactions() {
-    # todo: fix empty transaction list
-    # todo: get rid of helper function
     local _start
     if [ -z "$1" ]; then
         _start="0"
@@ -684,10 +679,12 @@ viewAllTransactions() {
         _start="$1"
     fi
     local _displayStakes
-    if [ -z "$2" ]; then
+    if [ -z "$2" ] || [ "$2" = "true" ]; then
         _displayStakes="true"
+        _displayStakesButton="$BUTTON_LABEL_HIDE_STAKES"
     else
-        _displayStakes="$2"
+        _displayStakes="false"
+        _displayStakesButton="$BUTTON_LABEL_SHOW_STAKES"
     fi
     calculateLayout
     if [ "${_displayStakes}" = "true" ]; then
@@ -698,7 +695,7 @@ viewAllTransactions() {
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"0"'
     fi
     getTransactions
-    if [ ${#transactions_global[@]} -eq 0 ]; then
+    if [ ${#transactions_global[@]} -eq 0 ] && [ ${_start} -ge ${COUNT_TRANS_VIEW} ]; then
         viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
                            "${_displayStakes}"
     fi
@@ -714,7 +711,7 @@ viewAllTransactions() {
         --ok-label "$BUTTON_LABEL_PREVIOUS" \
         --extra-label "$BUTTON_LABEL_NEXT" \
         --help-label "$BUTTON_LABEL_MAIN_MENU" \
-        --cancel-label "$(viewAllTransactionsHelper "${_displayStakes}")" \
+        --cancel-label "${_displayStakesButton}" \
         --default-button 'extra' \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
     exit_status=$?
@@ -743,7 +740,7 @@ viewAllTransactions() {
         ${DIALOG_HELP})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "$ERROR_TRANS"
+    errorHandling "$ERROR_TRANS_FATAL"
 }
 
 # ============================================================================
@@ -785,9 +782,9 @@ receiveCoins() {
     curl_result_global=${curl_result_global//']'/''}
     dialog --backtitle "$TITLE_BACK" \
                --colors \
-               --title "Wallet Addresses" \
+               --title "$TITEL_RECEIVE" \
                --no-shadow \
-               --infobox "Marking the text will automatically copy it to clipboard.\nPress return to continue to main menu.\n\nDefault wallet addresses:\n$curl_result_global" 0 0
+               --infobox "$TEXT_FEEDBACK_RECEIVE\n$curl_result_global" 0 0
     read -s
     refreshMainMenu_GUI
 }
@@ -843,14 +840,7 @@ sendCoins() {
             if [[ ${_itemBuffer} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
                 _destinationAddress="${_itemBuffer}"
             else
-                local _s="\Z1You entered an invalid address.\Zn\n\n"
-                    _s+="A valid Spectrecoin address must be in the form:"
-                    _s+="\n- beginning with \"S\""
-                    _s+="\n- length 27-34"
-                    _s+="\n- uppercase letter \"O\", \"I\", "
-                    _s+="lowercase letter \"l\", and the number \"0\" "
-                    _s+="are never used to prevent visual ambiguity"
-                errorHandling "${_s}"
+                errorHandling "$ERROR_SEND_INVALID_ADDRESS"
                 sendCoins
             fi
             elif [ ${_i} -eq 2 ]; then
@@ -868,24 +858,20 @@ sendCoins() {
                         executeCURL "walletlock"
                     fi
                     if [ "${info_global[8]}" == "$TEXT_WALLET_IS_UNLOCKED" ]; then
-                        simpleMsg "Notice" \
-                                  "\nPlease note:\nYou have to 'unlock' the wallet for staking again.\n" \
-                                  'YES - I´ve understood'
+                        simpleMsg "$TEXT_SEND_UNLOCK_WALLET_AGAIN" \
+                                  "$BUTTON_LABEL_I_HAVE_UNDERSTOOD"
                         unlockWalletForStaking
                     fi
                     refreshMainMenu_DATA
                 else
-                    local _s="Amount must be a number, with:"
-                        _s+="\n- greater than 0"
-                        _s+="\n- max. 8 digits behind decimal point"
-                    errorHandling "${_s}"
+                    errorHandling "$ERROR_SEND_INVALID_AMOUNT"
                     sendCoins "${_destinationAddress}"
                 fi
             fi
         done
         sendCoins "${_destinationAddress}";;
     esac
-    errorHandling "Error in send coins Dialog" \
+    errorHandling "$ERROR_SEND_FATAL" \
               1
 }
 
@@ -918,8 +904,8 @@ passwordDialog() {
             # the user will be guided back to main menu by function which exceuted passwordDialog()
             executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2";;
         *)
-            errorHandling "Error in PW dialog" \
-                  1;;
+            errorHandling "$ERROR_PW_FATAL" \
+                          1;;
     esac
 }
 
@@ -935,9 +921,9 @@ setWalletPW() {
     local _buffer=$(dialog --backtitle "$TITLE_BACK" \
                            --no-shadow \
                            --insecure \
-                           --title "Encrypt Wallet" \
-                           --ok-label "Encrypt" \
-                           --cancel-label "Main Menu" \
+                           --title "$TITLE_ENCRYPT_WALLET" \
+                           --ok-label "$BUTTON_LABEL_ENCRYPT" \
+                           --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
                            --mixedform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
                                        "Password:" 1 1 "" 1 11 30 0 1 \
                                        "Retype:" 3 1 "" 3 11 30 0 1 \
@@ -1079,7 +1065,7 @@ userCommandInput() {
             curlUserFeedbackHandling
             userCommandInput;;
     esac
-    errorHandling "Error in USER COMMAND dialog" \
+    errorHandling "$ERROR_USERCOMMAND_FATAL" \
                   1
 }
 
@@ -1103,9 +1089,9 @@ curlUserFeedbackHandling() {
 # This function calculates global arrangement variables (i.e. for main menu).
 calculateLayout() {
     if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
-        simpleMsg "Suggestion" \
-                  "\nIncrease the terminal size to at least 45x28.\n" \
-                  "OK"
+        simpleMsg "$TITEL_SUGGESTION" \
+                  "$TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE 45x28.\n" \
+                  "$BUTTON_LABEL_CONTINUE"
     fi
     local _max_buff
     POS_Y_MENU=0
@@ -1359,7 +1345,7 @@ message+="      Interface version: $VERSION\n"
 
 simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
-          'YES - I´ve understood'
+          "$BUTTON_LABEL_I_HAVE_UNDERSTOOD"
 
 trap refreshMainMenu_DATA INT
 while :; do
