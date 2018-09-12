@@ -1329,7 +1329,7 @@ initDaemonConfiguration
 message="\n"
 message+="        Use at your own risc!!!\n"
 message+="    Terminal: $(tput longname)\n"
-message+="    Dialog: $(dialog --version)\n"
+message+="    Dialog $(dialog --version)\n"
 message+="      Interface version: $VERSION\n"
 
 simpleMsg "- --- === WARNING === --- -" \
