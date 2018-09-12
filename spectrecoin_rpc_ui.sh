@@ -1073,7 +1073,9 @@ userCommandInput() {
 curlUserFeedbackHandling() {
     if [[ "$curl_result_global" != '{"result":null'* ]]; then
         # split the string between the values using ',' as indicator
-        curl_result_global=${curl_result_global//','/'\n'}
+#        curl_result_global=${curl_result_global//','/'\n'}
+        # todo instead of replacing every ',' with '\n' just replace those followed by [a-z]
+        curl_result_global=$(echo ${curl_result_global} | sed 's/,[a-z]/\n[a-z]/g')
         # if several values are grouped by {},{} we ended up with {}\n{}
         # now we split using '{' as indicator
 #        curl_result_global=${curl_result_global//'{'/'\n'}
