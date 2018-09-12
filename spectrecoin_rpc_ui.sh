@@ -1167,36 +1167,21 @@ calculateLayout() {
 }
 
 # ============================================================================
-# Helper function that decides whether if LOCK, UNLOCK or ENCRYPT will be displayed
-#
-# Input: ${info_global[8]} indicates if wallet is open
-mainMenu_helper_wallet_cmd() {
-    if [ "${info_global[8]}" = "$TEXT_WALLET_IS_UNLOCKED" ]; then
-        echo "$CMD_MAIN_LOCK_WALLET"
-    elif [ "${info_global[8]}" = "$TEXT_WALLET_HAS_NO_PW" ]; then
-        echo "$CMD_MAIN_ENCRYPT_WALLET"
-    else
-        echo "$CMD_MAIN_UNLOCK_WALLET"
-    fi
-}
-
-# ============================================================================
-# Helper function that decides what explaination text will be displayed
-#
-# Input: ${info_global[8]} indicates if wallet is open
-mainMenu_helper_wallet_cmd_expl() {
-    if [ "${info_global[8]}" = "$TEXT_WALLET_IS_UNLOCKED" ]; then
-        echo "$EXPL_CMD_MAIN_WALLETLOCK"
-    elif [ "${info_global[8]}" = "$TEXT_WALLET_HAS_NO_PW" ]; then
-        echo "$EXPL_CMD_MAIN_WALLETENCRYPT"
-    else
-        echo "$EXPL_CMD_MAIN_WALLETUNLOCK"
-    fi
-}
-
-# ============================================================================
 # This function draws the main menu to the terminal
 refreshMainMenu_GUI() {
+    local _explWalletStatus
+    local _cmdWallet
+    # ${info_global[8]} indicates if wallet is open
+    if [ "${info_global[8]}" = "$TEXT_WALLET_IS_UNLOCKED" ]; then
+        _cmdWallet="$CMD_MAIN_LOCK_WALLET"
+        _explWalletStatus="$EXPL_CMD_MAIN_WALLETLOCK"
+    elif [ "${info_global[8]}" = "$TEXT_WALLET_HAS_NO_PW" ]; then
+        _cmdWallet="$CMD_MAIN_ENCRYPT_WALLET"
+        _explWalletStatus="$EXPL_CMD_MAIN_WALLETENCRYPT"
+    else
+        _cmdWallet="$CMD_MAIN_UNLOCK_WALLET"
+        _explWalletStatus="$EXPL_CMD_MAIN_WALLETUNLOCK"
+    fi
     exec 3>&1
     local _mainMenuPick=$(dialog --no-shadow \
         --begin 0 0 \
@@ -1228,7 +1213,7 @@ refreshMainMenu_GUI() {
         --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
         \
         "$CMD_MAIN_REFRESH" "$EXPL_CMD_MAIN_REFRESH" \
-        "$(mainMenu_helper_wallet_cmd)" "$(mainMenu_helper_wallet_cmd_expl)" \
+        "${_cmdWallet}" "${_explWalletStatus}" \
         "$CMD_MAIN_TRANS" "$EXPL_CMD_MAIN_VIEWTRANS" \
         "$CMD_MAIN_SEND" "$EXPL_CMD_MAIN_SEND" \
         "$CMD_MAIN_RECEIVE" "$EXPL_CMD_MAIN_RECEIVE" \
