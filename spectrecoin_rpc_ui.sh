@@ -59,7 +59,7 @@ helpMe ()
 # Output: global variable curl_result_global (clean and bash optimized)
 executeCURL() {
     connectToDaemon "$1" "$2"
-    if [ -z "$curl_result_global" ]; then
+    if [ -z "${curl_result_global}" ]; then
         startDaemon
     fi
     # clean the result (curl_result_global) and optimize it for bash
@@ -1063,7 +1063,7 @@ curlUserFeedbackHandling() {
     if [[ "${curl_result_global}" != '{"result":null'* ]]; then
         # split the string between the values using ',' as indicator
         # instead of replacing every ',' with '\n' just replace those followed by [a-z]
-        curl_result_global=$(echo ${curl_result_global} | sed 's/,[a-z]/\n[a-z]/g')
+        curl_result_global=$(echo ${curl_result_global} | sed 's/,\([a-z]\)/\n\2/g')
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --title "${TITEL_CURL_RESULT}" \
