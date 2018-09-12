@@ -323,6 +323,8 @@ getStakingInfo() {
     local _oldIFS=$IFS
     local _itemBuffer
     local _time
+    curl_result_global=${curl_result_global#'{'}
+    curl_result_global=${curl_result_global%'}'}
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
