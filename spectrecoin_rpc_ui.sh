@@ -271,6 +271,8 @@ getInfo() {
     local _oldIFS=$IFS
     local _itemBuffer
     local _unixtime
+    curl_result_global=${curl_result_global%'{'}
+    curl_result_global=${curl_result_global#'}'}
     IFS=','
     # if wallet is not encrypted
     info_global[8]="$TEXT_WALLET_HAS_NO_PW"
@@ -299,7 +301,7 @@ getInfo() {
                 info_global[8]="$TEXT_WALLET_IS_LOCKED"
             fi
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
-            if [[ "${_itemBuffer#*':'}" == 'none'* ]]; then
+            if [ "${_itemBuffer#*':'}" == 'none' ]; then
                 info_global[9]="$TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME"
             else
                 #todo remove } at the end of error msg
