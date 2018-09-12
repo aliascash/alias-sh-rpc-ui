@@ -589,6 +589,9 @@ goodbye() {
             _s+="\n\Z1Daemon stopped.\Zn\n";;
         ${DIALOG_CANCEL})
             refreshMainMenu_GUI;;
+        *)
+            errorHandling "Error in daemon stop dialog (goodybe function)" \
+                  1;;
     esac
     _s+="\nHope you enjoyed.\n\n\Z4Please give feedback.\Zn\n"
     dialog --backtitle "$TITLE_BACK" \
@@ -856,6 +859,8 @@ sendCoins() {
         done
         sendCoins "${_destinationAddress}";;
     esac
+    errorHandling "Error in send coins Dialog" \
+              1
 }
 
 # ============================================================================
@@ -887,7 +892,7 @@ passwordDialog() {
             # the user will be guided back to main menu by function which exceuted passwordDialog()
             executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2";;
     esac
-    errorHandling "Error in PW Dialog" \
+    errorHandling "Error in PW dialog" \
                   1
 }
 
@@ -1047,6 +1052,8 @@ userCommandInput() {
             curlUserFeedbackHandling
             userCommandInput;;
     esac
+    errorHandling "Error in USER COMMAND dialog" \
+                  1
 }
 
 # ============================================================================
