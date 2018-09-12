@@ -941,9 +941,16 @@ setWalletPW() {
                 fi
                 elif [ ${_i} -eq 2 ]; then
                     if [ ${_itemBuffer} == ${_pw} ]; then
-                        executeCURL encryptwallet "\"${_pw}\""
+                        executeCURL "encryptwallet" "\"${_pw}\""
                         #walletpassphrasechange "oldpassphrase" "newpassphrase"
                         # maybe stops daemon?
+                        sudo service spectrecoind stop
+                        dialog --backtitle "${TITLE_BACK}" \
+                               --no-shadow \
+                               --colors \
+                               --ok-label "${BUTTON_LABEL_RESTART_DAEMON}" \
+                               --msgbox  "$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED" 0 0
+                        refreshMainMenu_DATA
                     else
                         local _s="Passwords do not match."
                         errorHandling "${_s}"
