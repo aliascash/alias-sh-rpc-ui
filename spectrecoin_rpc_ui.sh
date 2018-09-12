@@ -893,9 +893,10 @@ passwordDialog() {
             # literally nothing to do here since daemon responds is excellent
             # the user will be guided back to main menu by function which exceuted passwordDialog()
             executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2";;
+        *)
+            errorHandling "Error in PW dialog" \
+                  1;;
     esac
-    errorHandling "Error in PW dialog" \
-                  1
 }
 
 # ============================================================================
