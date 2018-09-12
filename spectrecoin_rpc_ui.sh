@@ -1063,7 +1063,7 @@ curlUserFeedbackHandling() {
     if [[ "${curl_result_global}" != '{"result":null'* ]]; then
         # split the string between the values using ',' as indicator
         # instead of replacing every ',' with '\n' just replace those followed by [a-z]
-        curl_result_global=$(echo ${curl_result_global} | sed 's/,\([a-z]\)/\n\2/g')
+        curl_result_global=$(echo ${curl_result_global} | sed 's/\(,\)\([a-z]\)/\n\2/g')
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --title "${TITEL_CURL_RESULT}" \
