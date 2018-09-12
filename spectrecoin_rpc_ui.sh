@@ -80,7 +80,7 @@ connectToDaemon() {
                           --user "${rpcuser}:${rpcpassword}" \
                           --silent \
                           --data-binary \
-                          "{\"jsonrpc\":\"1.0\",\"id\":\"curltext\",\"method\":\"$_action\",\"params\":[$_parameters]}" \
+                          "{\"jsonrpc\":\"1.0\",\"id\":\"curltext\",\"method\":\"${_action}\",\"params\":[${_parameters}]}" \
                           -H "content-type:text/plain;" \
                           "http://${rpcconnect}:${rpcport}" )
 }
@@ -104,12 +104,12 @@ cutCURLresult() {
     if [[ ${curl_result_global} == *'"error":null,'* ]]; then
         # goal: cut the result string so only the real output is left
         # problem: there exist special results that are 2-dimensional
-        if [[ "$curl_result_global" == '{"result":['* ]]; then
+        if [[ "${curl_result_global}" == '{"result":['* ]]; then
             #cut right side in case of 2-dim. result
             #cut left side in case of 2-dim. result
             curl_result_global="${curl_result_global%'],"error"'*}"
             curl_result_global="${curl_result_global#*'":['}"
-#        elif [[ "$curl_result_global" == '{"result":{'* ]]; then
+#        elif [[ "${curl_result_global}" == '{"result":{'* ]]; then
 #            #cut right side
 #            #cut left side
 #            curl_result_global="${curl_result_global%'},"error"'*}"
@@ -128,9 +128,9 @@ cutCURLresult() {
         # optimize string for bash
         # get rid of the "
         curl_result_global=${curl_result_global//'"'/}
-    elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
+    elif [[ "${curl_result_global}" == *'401 Unauthorized'* ]]; then
         # The RPC login failed - since the daemon responded it's due to a wrong login
-        errorHandling "$ERROR_401_UNAUTHORIZED" \
+        errorHandling "${ERROR_401_UNAUTHORIZED}" \
                       2
     else
         # Most likely a parsing error in the CURL command parameters
@@ -139,7 +139,7 @@ cutCURLresult() {
         msg="${curl_result_global%%'"}'*}"
         # cut left side
         msg="${msg#*'message":"'}"
-        errorHandling "$ERROR_CURL_MSG_PROMPT\n\n$msg"
+        errorHandling "${ERROR_CURL_MSG_PROMPT}\n\n${msg}"
     fi
 }
 
@@ -151,7 +151,7 @@ startDaemon() {
         local _s="Settings:\n"
               _s+="RPC USER:${rpcuser}\nRPC PW:${rpcpassword}\n"
               _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
-        errorHandling "$ERROR_DAEMON_NO_CONNECT_FROM_REMOTE\n${_s}" \
+        errorHandling "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" \
                       1
     fi
     (
@@ -172,15 +172,15 @@ startDaemon() {
             echo "${_itemBuffer}"
         done
         local _i=60
-        while [ -z "$curl_result_global" ] && [ ${_i} -gt 0 ]; do
-            echo "- ${_i} $ERROR_DAEMON_WAITING_MSG"
+        while [ -z "${curl_result_global}" ] && [ ${_i} -gt 0 ]; do
+            echo "- ${_i} ${ERROR_DAEMON_WAITING_MSG}"
             _i=$((_i-5))
             sleep 5
             connectToDaemon "getinfo"
         done
-        if [ -z "$curl_result_global" ]; then
+        if [ -z "${curl_result_global}" ]; then
             # exit script
-            errorHandling "$ERROR_DAEMON_NO_CONNECT" \
+            errorHandling "${ERROR_DAEMON_NO_CONNECT}" \
                           1
         else
             for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
@@ -192,8 +192,8 @@ startDaemon() {
         done
         sleep 1
         IFS=${_oldIFS}
-    ) | dialog --backtitle "$TITLE_BACK" \
-               --title "$TITLE_STARTING_DAEMON" \
+    ) | dialog --backtitle "${TITLE_BACK}" \
+               --title "${TITLE_STARTING_DAEMON}" \
                --no-shadow \
                --progressbox 20 45
     refreshMainMenu_DATA
@@ -275,7 +275,7 @@ getInfo() {
     curl_result_global=${curl_result_global%'}'}
     IFS=','
     # if wallet is not encrypted
-    info_global[8]="$TEXT_WALLET_HAS_NO_PW"
+    info_global[8]="${TEXT_WALLET_HAS_NO_PW}"
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'version'* ]]; then
             info_global[0]="${_itemBuffer#*':'}"
@@ -296,13 +296,13 @@ getInfo() {
         elif [[ ${_itemBuffer} == 'unlocked_until:'* ]]; then
             _unixtime="${_itemBuffer#*':'}"
             if [ "$_unixtime" -gt 0 ]; then
-                info_global[8]="$TEXT_WALLET_IS_UNLOCKED"
+                info_global[8]="${TEXT_WALLET_IS_UNLOCKED}"
             else
-                info_global[8]="$TEXT_WALLET_IS_LOCKED"
+                info_global[8]="${TEXT_WALLET_IS_LOCKED}"
             fi
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
             if [ "${_itemBuffer#*':'}" == 'none' ]; then
-                info_global[9]="$TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME"
+                info_global[9]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
             else
                 #todo remove } at the end of error msg
                 info_global[9]="\Z1""${_itemBuffer#*':'}""\Zn"
@@ -329,9 +329,9 @@ getStakingInfo() {
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
             if [ "${_itemBuffer#*':'}" == "true" ]; then
-                stakinginfo_global[0]="$TEXT_STAKING_ON"
+                stakinginfo_global[0]="${TEXT_STAKING_ON}"
             else
-                stakinginfo_global[0]="$TEXT_STAKING_OFF"
+                stakinginfo_global[0]="${TEXT_STAKING_OFF}"
             fi
         elif [[ ${_itemBuffer} == 'expectedtime:'* ]]; then
             _time="${_itemBuffer#*':'}"
@@ -355,30 +355,30 @@ makeOutputInfo() {
     else
         _textWidth="$1"
     fi
-    echo "$TEXT_HEADLINE_WALLET_INFO\n"
+    echo "${TEXT_HEADLINE_WALLET_INFO}\n"
     local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    echo $(fillLine "$TEXT_BALANCE:-_-${_balance} $TEXT_CURRENCY" \
+    echo $(fillLine "${TEXT_BALANCE}:-_-${_balance} ${TEXT_CURRENCY}" \
                     "${_textWidth}")"\n"
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" \
                     "${_textWidth}")"\n"
     #
-    echo "\n$TEXT_HEADLINE_STAKING_INFO\n"
-    echo $(fillLine "$TEXT_WALLET_STATE: ${info_global[8]}-_-$TEXT_STAKING_STATE: ${stakinginfo_global[0]}" \
+    echo "\n${TEXT_HEADLINE_STAKING_INFO}\n"
+    echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "$TEXT_STAKING_COINS: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn $TEXT_MATRUING_COINS)" \
+    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn ${TEXT_MATRUING_COINS})" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "$TEXT_EXP_TIME: ${stakinginfo_global[1]}" \
+    echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
     #
-    echo "\n$TEXT_HEADLINE_CLIENT_INFO\n"
-    echo $(fillLine "$TEXT_DAEMON_VERSION: ${info_global[0]}-_-$TEXT_DAEMON_ERRORS_DURING_RUNTIME: ${info_global[9]}" \
+    echo "\n${TEXT_HEADLINE_CLIENT_INFO}\n"
+    echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[0]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[9]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "$TEXT_DAEMON_IP: ${info_global[7]}-_-$TEXT_DAEMON_PEERS: ${info_global[4]}" \
+    echo $(fillLine "${TEXT_DAEMON_IP}: ${info_global[7]}-_-${TEXT_DAEMON_PEERS}: ${info_global[4]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "$TEXT_DAEMON_DOWNLOADED_DATA: ${info_global[5]}-_-$TEXT_DAEMON_UPLOADED_DATA: ${info_global[6]}" \
+    echo $(fillLine "${TEXT_DAEMON_DOWNLOADED_DATA}: ${info_global[5]}-_-${TEXT_DAEMON_UPLOADED_DATA}: ${info_global[6]}" \
                     "${_textWidth}")"\n"
 }
 
@@ -419,14 +419,14 @@ getTransactions() {
             _valueBuffer="${_itemBuffer#*':'}"
             _thisWasAStake="false"
             if [[ ${_valueBuffer} == 'receive' ]]; then
-                transactions_global[_i]="$TEXT_RECEIVED"
+                transactions_global[_i]="${TEXT_RECEIVED}"
             elif [[ ${_valueBuffer} == 'generate' ]]; then
-                transactions_global[_i]="$TEXT_STAKE"
+                transactions_global[_i]="${TEXT_STAKE}"
                 _thisWasAStake="true"
             elif [[ ${_valueBuffer} == 'immature' ]]; then
-                transactions_global[_i]="$TEXT_IMMATURE"
+                transactions_global[_i]="${TEXT_IMMATURE}"
             else
-                transactions_global[_i]="$TEXT_TRANSFERRED"
+                transactions_global[_i]="${TEXT_TRANSFERRED}"
             fi
             _i=$((_i+1))
         elif [[ ${_itemBuffer} == 'address'* || ${_itemBuffer} == 'amount'* \
@@ -440,51 +440,51 @@ getTransactions() {
         local _stakedAmount=0
         local _stakeCounter=0
         local _i
-        local _dataTimeFrame=$(($_newestStakeDate - $_oldestStakeDate))
-        for ((_i=$(( $_firstStakeIndex + 1));_i<${#transactions_global[@]};_i=$(( $_i + 6)))); do
-            if [ ${transactions_global[$_i+1]} = "$TEXT_STAKE" ]; then
-                _stakedAmount=`echo "scale=8; $_stakedAmount + ${transactions_global[$_i+2]}" | bc`
-                _stakeCounter=$(( $_stakeCounter + 1 ))
+        local _dataTimeFrame=$((${_newestStakeDate} - ${_oldestStakeDate}))
+        for ((_i=$(( ${_firstStakeIndex} + 1));_i<${#transactions_global[@]};_i=$(( ${_i} + 6)))); do
+            if [ ${transactions_global[$_i+1]} = "${TEXT_STAKE}" ]; then
+                _stakedAmount=$(echo "scale=8; ${_stakedAmount} + ${transactions_global[$_i+2]}" | bc)
+                _stakeCounter=$(( ${_stakeCounter} + 1 ))
             fi
         done
-        local _totalCoins=`echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc`
-        local _stakedCoinRate=`echo "scale=16 ; $_stakedAmount / $_totalCoins" | bc`
-        local _buff=`echo "scale=16 ; $_stakedCoinRate + 1" | bc`
-        local _buff2=`echo "scale=16 ; 31536000 / $_dataTimeFrame" | bc`
-        local _buff3=`echo "scale=16 ; e($_buff2*l($_buff))" | bc -l`
-        local _estCoinsY1=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainY1=`echo "scale=8 ; $_estCoinsY1 - $_totalCoins" | bc`
-        local _estStakingRatePerYear=`echo "scale=2 ; $_estGainY1 * 100 / $_totalCoins" | bc`
-        _buff3=`echo "scale=16 ; e(2*$_buff2*l($_buff))" | bc -l`
-        local _estCoinsY2=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainY2=`echo "scale=8 ; $_estCoinsY2 - $_totalCoins" | bc`
-        _buff3=`echo "scale=16 ; e(3*$_buff2*l($_buff))" | bc -l`
-        local _estCoinsY3=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainY3=`echo "scale=8 ; $_estCoinsY3 - $_totalCoins" | bc`
-        _buff3=`echo "scale=16 ; e(4*$_buff2*l($_buff))" | bc -l`
-        local _estCoinsY4=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainY4=`echo "scale=8 ; $_estCoinsY4 - $_totalCoins" | bc`
-        _buff3=`echo "scale=16 ; e(5*$_buff2*l($_buff))" | bc -l`
-        local _estCoinsY5=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainY5=`echo "scale=8; $_estCoinsY5 - $_totalCoins" | bc`
-        _buff3=`echo "scale=16 ; e(1/12*$_buff2*l($_buff))" | bc -l`
-        local _estCoinsM1=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainM1=`echo "scale=8; $_estCoinsM1 - $_totalCoins" | bc`
-        _buff3=`echo "scale=16 ; e(1/2*$_buff2*l($_buff))" | bc -l`
-        local _estCoinsM6=`echo "scale=8 ; $_buff3 * $_totalCoins" | bc`
-        local _estGainM6=`echo "scale=8; $_estCoinsM6 - $_totalCoins" | bc`
-        _stakedAmount=`echo "scale=8; $_stakedAmount + ${transactions_global[$_firstStakeIndex-3]}" | bc`
-        _stakeCounter=$(( $_stakeCounter + 1 ))
+        local _totalCoins=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
+        local _stakedCoinRate=$(echo "scale=16 ; $_stakedAmount / $_totalCoins" | bc)
+        local _buff=$(echo "scale=16 ; ${_stakedCoinRate} + 1" | bc)
+        local _buff2=$(echo "scale=16 ; 31536000 / ${_dataTimeFrame}" | bc)
+        local _buff3=$(echo "scale=16 ; e(${_buff2}*l($_buff))" | bc -l)
+        local _estCoinsY1=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainY1=$(echo "scale=8 ; ${_estCoinsY1} - ${_totalCoins}" | bc)
+        local _estStakingRatePerYear=$(echo "scale=2 ; ${_estGainY1} * 100 / ${_totalCoins}" | bc)
+        _buff3=$(echo "scale=16 ; e(2*${_buff2}*l(${_buff}))" | bc -l)
+        local _estCoinsY2=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainY2=$(echo "scale=8 ; ${_estCoinsY2} - ${_totalCoins}" | bc)
+        _buff3=$(echo "scale=16 ; e(3*${_buff2}*l(${_buff}))" | bc -l)
+        local _estCoinsY3=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainY3=$(echo "scale=8 ; ${_estCoinsY3} - ${_totalCoins}" | bc)
+        _buff3=$(echo "scale=16 ; e(4*${_buff2}*l(${_buff}))" | bc -l)
+        local _estCoinsY4=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainY4=$(echo "scale=8 ; ${_estCoinsY4} - ${_totalCoins}" | bc)
+        _buff3=$(echo "scale=16 ; e(5*${_buff2}*l(${_buff}))" | bc -l)
+        local _estCoinsY5=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainY5=$(echo "scale=8; ${_estCoinsY5} - ${_totalCoins}" | bc)
+        _buff3=$(echo "scale=16 ; e(1/12*${_buff2}*l(${_buff}))" | bc -l)
+        local _estCoinsM1=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainM1=$(echo "scale=8; ${_estCoinsM1} - ${_totalCoins}" | bc)
+        _buff3=$(echo "scale=16 ; e(1/2*${_buff2}*l(${_buff}))" | bc -l)
+        local _estCoinsM6=$(echo "scale=8 ; ${_buff3} * ${_totalCoins}" | bc)
+        local _estGainM6=$(echo "scale=8; ${_estCoinsM6} - ${_totalCoins}" | bc)
+        _stakedAmount=$(echo "scale=8; ${_stakedAmount} + ${transactions_global[${_firstStakeIndex}-3]}" | bc)
+        _stakeCounter=$(( ${_stakeCounter} + 1 ))
         staking_analysis[1]="analysis time frame for estimation"
         staking_analysis[2]=$(secToHumanReadable ${_dataTimeFrame})
         staking_analysis[3]="times wallet staked within the last 1000 transactions"
-        staking_analysis[4]="$_stakeCounter"
+        staking_analysis[4]="${_stakeCounter}"
         staking_analysis[5]="total staking reward within the last 1000 transactions"
-        staking_analysis[6]="$_stakedAmount"
+        staking_analysis[6]="${_stakedAmount}"
         staking_analysis[7]="total coins today"
-        staking_analysis[8]="$_totalCoins"
+        staking_analysis[8]="${_totalCoins}"
         staking_analysis[9]="est. staking reward rate per year"
-        staking_analysis[10]="$_estStakingRatePerYear"
+        staking_analysis[10]="${_estStakingRatePerYear}"
         staking_analysis[11]="est. total coins in one month"
         staking_analysis[12]="${_estCoinsM1%.*}"
         staking_analysis[13]="est. staked coins in one month"
@@ -536,13 +536,13 @@ makeOutputTransactions() {
         echo $(fillLine "${transactions_global[$i-4]}: ${transactions_global[$i-3]}-_-${transactions_global[$i]}" \
                         "${_textWidth}")"\n"
         if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "$TEXT_CONFIRMATIONS: ${transactions_global[$i-2]}-_-$TEXT_ADDRESS: ${transactions_global[$i-5]}" \
+            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}-_-${TEXT_ADDRESS}: ${transactions_global[$i-5]}" \
                             "${_textWidth}")"\n"
         else
-            echo "$TEXT_CONFIRMATIONS: ${transactions_global[$i-2]}\n"
+            echo "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}\n"
         fi
         if (( ${_textWidth} >= 70 ));then
-            echo $(fillLine "$TEXT_TXID: ${transactions_global[$i-1]}" \
+            echo $(fillLine "${TEXT_TXID}: ${transactions_global[$i-1]}" \
                             "${_textWidth}")"\n"
         fi
         echo "\n"
@@ -567,10 +567,10 @@ makeOutputTransactions() {
 # instead of prompting to terminal and exiting
 errorHandling() {
     if [ -z "$2" ]; then
-        dialog --backtitle "$TITLE_BACK" \
+        dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --title "$TITLE_ERROR" \
-               --ok-label "$BUTTON_LABEL_OK" \
+               --title "${TITLE_ERROR}" \
+               --ok-label "${BUTTON_LABEL_OK}" \
                --no-shadow \
                --msgbox "$1" 0 0
     else
@@ -582,11 +582,11 @@ errorHandling() {
 # ============================================================================
 # Placeholder checkbox just give the user visual feedback
 sry() {
-    dialog --backtitle "$TITLE_BACK" \
+    dialog --backtitle "${TITLE_BACK}" \
            --no-shadow \
            --colors \
-           --title "$TITLE_PLACEHOLDER_FUNCTION" \
-           --msgbox  "$TEXT_PLACEHOLDER_FUNCTION" 0 0
+           --title "${TITLE_PLACEHOLDER_FUNCTION}" \
+           --msgbox  "${TEXT_PLACEHOLDER_FUNCTION}" 0 0
     refreshMainMenu_GUI
 }
 
@@ -597,32 +597,32 @@ goodbye() {
     dialog --no-shadow \
         --colors \
         --extra-button \
-        --ok-label "$BUTTON_LABEL_JUST_LEAVE" \
-        --extra-label "$BUTTON_LABEL_STOP_DAEMON" \
-        --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
+        --ok-label "${BUTTON_LABEL_JUST_LEAVE}" \
+        --extra-label "${BUTTON_LABEL_STOP_DAEMON}" \
+        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button 'ok' \
-        --yesno "$TEXT_GOODBYE_WARNING" 0 0
+        --yesno "${TEXT_GOODBYE_WARNING}" 0 0
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_GUI;;
         ${DIALOG_OK})
-            _s+="$TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING";;
+            _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             sudo service spectrecoind stop
-            _s+="$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED";;
+            _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
             refreshMainMenu_GUI;;
         *)
-            errorHandling "$ERROR_GOODBYE_FATAL" \
+            errorHandling "${ERROR_GOODBYE_FATAL}" \
                           1;;
     esac
-    _s+="$TEXT_GOODBYE_FEEDBACK_EXIT"
-    dialog --backtitle "$TITLE_BACK" \
+    _s+="${TEXT_GOODBYE_FEEDBACK_EXIT}"
+    dialog --backtitle "${TITLE_BACK}" \
            --no-shadow \
            --colors \
-           --title "$TITEL_GOODBYE" \
-           --ok-label "$BUTTON_LABEL_LEAVE" \
+           --title "${TITEL_GOODBYE}" \
+           --ok-label "${BUTTON_LABEL_LEAVE}" \
            --msgbox  "${_s}" 0 0
     reset
     exit 0
@@ -635,7 +635,7 @@ goodbye() {
 #       $3 - button text
 #
 simpleMsg() {
-    dialog --backtitle "$TITLE_BACK" \
+    dialog --backtitle "${TITLE_BACK}" \
         --colors \
         --title "$1" \
         --ok-label "$3" \
@@ -647,11 +647,11 @@ simpleMsg() {
 # Goal: Give a visual feedback for the user that the wallet is now locked
 #       and there will be no staking anymore.
 walletLockedFeedback() {
-    dialog --backtitle "$TITLE_BACK" \
+    dialog --backtitle "${TITLE_BACK}" \
            --colors \
            --no-shadow \
-           --ok-label "$BUTTON_LABEL_CONTINUE" \
-           --msgbox "$TEXT_FEEDBACK_WALLET_LOCKED" 0 0
+           --ok-label "${BUTTON_LABEL_CONTINUE}" \
+           --msgbox "${TEXT_FEEDBACK_WALLET_LOCKED}" 0 0
 }
 
 # ============================================================================
@@ -669,10 +669,10 @@ viewAllTransactions() {
     local _displayStakes
     if [ -z "$2" ] || [ "$2" = "true" ]; then
         _displayStakes="true"
-        _displayStakesButton="$BUTTON_LABEL_HIDE_STAKES"
+        _displayStakesButton="${BUTTON_LABEL_HIDE_STAKES}"
     else
         _displayStakes="false"
-        _displayStakesButton="$BUTTON_LABEL_SHOW_STAKES"
+        _displayStakesButton="${BUTTON_LABEL_SHOW_STAKES}"
     fi
     calculateLayout
     if [ "${_displayStakes}" = "true" ]; then
@@ -696,9 +696,9 @@ viewAllTransactions() {
         --colors \
         --extra-button \
         --help-button \
-        --ok-label "$BUTTON_LABEL_PREVIOUS" \
-        --extra-label "$BUTTON_LABEL_NEXT" \
-        --help-label "$BUTTON_LABEL_MAIN_MENU" \
+        --ok-label "${BUTTON_LABEL_PREVIOUS}" \
+        --extra-label "${BUTTON_LABEL_NEXT}" \
+        --help-label "${BUTTON_LABEL_MAIN_MENU}" \
         --cancel-label "${_displayStakesButton}" \
         --default-button 'extra' \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
@@ -728,7 +728,7 @@ viewAllTransactions() {
         ${DIALOG_HELP})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "$ERROR_TRANS_FATAL"
+    errorHandling "${ERROR_TRANS_FATAL}"
 }
 
 # ============================================================================
@@ -768,11 +768,11 @@ receiveCoins() {
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
     curl_result_global=${curl_result_global//']'/''}
-    dialog --backtitle "$TITLE_BACK" \
+    dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --title "$TITEL_RECEIVE" \
+               --title "${TITEL_RECEIVE}" \
                --no-shadow \
-               --infobox "$TEXT_FEEDBACK_RECEIVE\n$curl_result_global" 0 0
+               --infobox "${TEXT_FEEDBACK_RECEIVE}\n${curl_result_global}" 0 0
     read -s
     refreshMainMenu_GUI
 }
@@ -792,22 +792,22 @@ sendCoins() {
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    local _s="$TEXT_BALANCE: ${_balance} $TEXT_CURRENCY\n"
-          _s+="$TEXT_SEND_EXPL\n"
-          _s+="$TEXT_CLIPBOARD_HINT"
+    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}\n"
+          _s+="${TEXT_SEND_EXPL}\n"
+          _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
-    _buffer=$(dialog --backtitle "$TITLE_BACK" \
-        --ok-label "$BUTTON_LABEL_SEND" \
-        --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
+    _buffer=$(dialog --backtitle "${TITLE_BACK}" \
+        --ok-label "${BUTTON_LABEL_SEND}" \
+        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
         --extra-button \
-        --extra-label "$BUTTON_LABEL_ADDRESS_BOOK" \
+        --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow --colors \
-        --title "$TITEL_SEND" \
-        --form "$_s" 0 0 0 \
-        "$TEXT_SEND_DESTINATION_ADDRESS_EXPL" 1 12 "" 1 11 -1 0 \
-        "$TEXT_SEND_DESTINATION_ADDRESS:" 2 1 "${_destinationAddress}" 2 11 35 0 \
-        "$TEXT_SEND_AMOUNT_EXPL" 4 12 "" 3 11 -1 0 \
-        "$TEXT_SEND_AMOUNT:" 5 1 "${_amount}" 5 11 20 0 \
+        --title "${TITEL_SEND}" \
+        --form "${_s}" 0 0 0 \
+        "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}" 1 12 "" 1 11 -1 0 \
+        "${TEXT_SEND_DESTINATION_ADDRESS}:" 2 1 "${_destinationAddress}" 2 11 35 0 \
+        "${TEXT_SEND_AMOUNT_EXPL}" 4 12 "" 3 11 -1 0 \
+        "${TEXT_SEND_AMOUNT}:" 5 1 "${_amount}" 5 11 20 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -828,31 +828,31 @@ sendCoins() {
             if [[ ${_itemBuffer} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
                 _destinationAddress="${_itemBuffer}"
             else
-                errorHandling "$ERROR_SEND_INVALID_ADDRESS"
+                errorHandling "${ERROR_SEND_INVALID_ADDRESS}"
                 sendCoins
             fi
             elif [ ${_i} -eq 2 ]; then
                 if [[ ${_itemBuffer} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${_itemBuffer} > 0" | bc)" ]; then
                     _amount=${_itemBuffer}
-                    if [ "${info_global[8]}" == "$TEXT_WALLET_IS_UNLOCKED" ]; then
+                    if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
                         # iff wallet is unlocked, we have to look it first
                         executeCURL "walletlock"
                     fi
-                    if [ "${info_global[8]}" != "$TEXT_WALLET_HAS_NO_PW" ]; then
+                    if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
                         passwordDialog "60" "false"
                     fi
                     executeCURL "sendtoaddress" "\"${_destinationAddress}\",${_amount}"
-                    if [ "${info_global[8]}" != "$TEXT_WALLET_HAS_NO_PW" ]; then
+                    if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
                         executeCURL "walletlock"
                     fi
-                    if [ "${info_global[8]}" == "$TEXT_WALLET_IS_UNLOCKED" ]; then
-                        simpleMsg "$TEXT_SEND_UNLOCK_WALLET_AGAIN" \
-                                  "$BUTTON_LABEL_I_HAVE_UNDERSTOOD"
+                    if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
+                        simpleMsg "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
+                                  "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
                         unlockWalletForStaking
                     fi
                     refreshMainMenu_DATA
                 else
-                    errorHandling "$ERROR_SEND_INVALID_AMOUNT"
+                    errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
                     sendCoins "${_destinationAddress}"
                 fi
             fi
@@ -873,10 +873,10 @@ sendCoins() {
 # Return: nothing
 passwordDialog() {
     exec 3>&1
-    local _wallet_password=$(dialog --backtitle "$TITLE_BACK" \
+    local _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
         --no-shadow \
         --insecure \
-        --passwordbox "$TEXT_PW_EXPL" 0 0 \
+        --passwordbox "${TEXT_PW_EXPL}" 0 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -890,9 +890,9 @@ passwordDialog() {
         ${DIALOG_OK})
             # literally nothing to do here since daemon responds is excellent
             # the user will be guided back to main menu by function which exceuted passwordDialog()
-            executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2";;
+            executeCURL "walletpassphrase" "\"${_wallet_password}\",$1,$2";;
         *)
-            errorHandling "$ERROR_PW_FATAL" \
+            errorHandling "${ERROR_PW_FATAL}" \
                           1;;
     esac
 }
@@ -906,12 +906,12 @@ passwordDialog() {
 # Return: nothing
 setWalletPW() {
     exec 3>&1
-    local _buffer=$(dialog --backtitle "$TITLE_BACK" \
+    local _buffer=$(dialog --backtitle "${TITLE_BACK}" \
                            --no-shadow \
                            --insecure \
-                           --title "$TITLE_ENCRYPT_WALLET" \
-                           --ok-label "$BUTTON_LABEL_ENCRYPT" \
-                           --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
+                           --title "${TITLE_ENCRYPT_WALLET}" \
+                           --ok-label "${BUTTON_LABEL_ENCRYPT}" \
+                           --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
                            --mixedform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
                                        "Password:" 1 1 "" 1 11 30 0 1 \
                                        "Retype:" 3 1 "" 3 11 30 0 1 \
@@ -978,25 +978,25 @@ userCommandInput() {
         if [ ${_i} -gt 1 ]; then
             _buffer+=' '
         fi
-        _buffer+="$_itemBuffer"
+        _buffer+="${_itemBuffer}"
     done
-    USER_DAEMON_PARAMS="$_buffer"
+    USER_DAEMON_PARAMS="${_buffer}"
     IFS=${_oldIFS}
-    local _s="$TEXT_USERCOMMAND_EXPL\n"
-         _s+="$TEXT_CLIPBOARD_HINT"
+    local _s="${TEXT_USERCOMMAND_EXPL}\n"
+         _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
-    _buffer=$(dialog --backtitle "$TITLE_BACK" \
-        --ok-label "$BUTTON_LABEL_EXECUTE" \
-        --cancel-label "$BUTTON_LABEL_MAIN_MENU" \
+    _buffer=$(dialog --backtitle "${TITLE_BACK}" \
+        --ok-label "${BUTTON_LABEL_EXECUTE}" \
+        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
         --extra-button \
-        --extra-label "$BUTTON_LABEL_HELP" \
+        --extra-label "${BUTTON_LABEL_HELP}" \
         --no-shadow --colors \
-        --title "$TITEL_USERCOMMAND" \
+        --title "${TITEL_USERCOMMAND}" \
         --form "$_s" 0 0 0 \
-        "$TEXT_USERCOMMAND_CMD_EXPL" 1 12 "" 1 11 -1 0 \
-        "$TEXT_USERCOMMAND_CMD:" 2 1 "$USER_DAEMON_COMMAND" 2 11 33 0 \
-        "$TEXT_USERCOMMAND_PARAMS_EXPL" 4 12 "" 3 11 -1 0 \
-        "$TEXT_USERCOMMAND_PARAMS:" 5 1 "$USER_DAEMON_PARAMS" 5 11 65 0 \
+        "${TEXT_USERCOMMAND_CMD_EXPL}" 1 12 "" 1 11 -1 0 \
+        "${TEXT_USERCOMMAND_CMD}:" 2 1 "${USER_DAEMON_COMMAND}" 2 11 33 0 \
+        "${TEXT_USERCOMMAND_PARAMS_EXPL}" 4 12 "" 3 11 -1 0 \
+        "${TEXT_USERCOMMAND_PARAMS}:" 5 1 "${USER_DAEMON_PARAMS}" 5 11 65 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -1016,7 +1016,7 @@ userCommandInput() {
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
                 if [ ${_i} -eq 1 ]; then
-                    USER_DAEMON_COMMAND="$_itemBuffer"
+                    USER_DAEMON_COMMAND="${_itemBuffer}"
                 else
                     if [ ${_i} -gt 2 ]; then
                         if [ ${_argContainsSpaces} != "true" ]; then
@@ -1025,51 +1025,51 @@ userCommandInput() {
                             USER_DAEMON_PARAMS+=' '
                         fi
                     fi
-                    if [ "$_itemBuffer" != "true" ] \
-                    && [ "$_itemBuffer" != "false" ] \
+                    if [ "${_itemBuffer}" != "true" ] \
+                    && [ "${_itemBuffer}" != "false" ] \
                     && [[ ! ${_itemBuffer} =~ ^[0-9]+$ ]]; then
-                        if [[ "$_itemBuffer" != '"'* ]] && [ ${_argContainsSpaces} != "true" ]; then
+                        if [[ "${_itemBuffer}" != '"'* ]] && [ ${_argContainsSpaces} != "true" ]; then
                             USER_DAEMON_PARAMS+='"'
                         else
                             _argContainsSpaces="true"
                         fi
-                        USER_DAEMON_PARAMS+="$_itemBuffer"
-                        if [[ "$_itemBuffer" != *'"' ]] && [ ${_argContainsSpaces} != "true" ]; then
+                        USER_DAEMON_PARAMS+="${_itemBuffer}"
+                        if [[ "${_itemBuffer}" != *'"' ]] && [ ${_argContainsSpaces} != "true" ]; then
                             USER_DAEMON_PARAMS+='"'
-                        elif [[ "$_itemBuffer" == *'"' ]]; then
+                        elif [[ "${_itemBuffer}" == *'"' ]]; then
                             _argContainsSpaces="false"
                         fi
                     else
-                        USER_DAEMON_PARAMS+="$_itemBuffer"
+                        USER_DAEMON_PARAMS+="${_itemBuffer}"
                     fi
                 fi
             done
             drawGauge "0" \
-                      "$TEXT_GAUGE_DEFAULT"
-            executeCURL "$USER_DAEMON_COMMAND" \
-                        "$USER_DAEMON_PARAMS"
+                      "${TEXT_GAUGE_DEFAULT}"
+            executeCURL "${USER_DAEMON_COMMAND}" \
+                        "${USER_DAEMON_PARAMS}"
             drawGauge "100" \
-                      "$TEXT_GAUGE_ALLDONE"
+                      "${TEXT_GAUGE_ALLDONE}"
             curlUserFeedbackHandling
             userCommandInput;;
     esac
-    errorHandling "$ERROR_USERCOMMAND_FATAL" \
+    errorHandling "${ERROR_USERCOMMAND_FATAL}" \
                   1
 }
 
 # ============================================================================
 # Simple output for any CURL command the user entered
 curlUserFeedbackHandling() {
-    if [[ "$curl_result_global" != '{"result":null'* ]]; then
+    if [[ "${curl_result_global}" != '{"result":null'* ]]; then
         # split the string between the values using ',' as indicator
         # instead of replacing every ',' with '\n' just replace those followed by [a-z]
         curl_result_global=$(echo ${curl_result_global} | sed 's/,[a-z]/\n[a-z]/g')
-        dialog --backtitle "$TITLE_BACK" \
+        dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --title "$TITEL_CURL_RESULT" \
-               --ok-label "$BUTTON_LABEL_CONTINUE" \
+               --title "${TITEL_CURL_RESULT}" \
+               --ok-label "${BUTTON_LABEL_CONTINUE}" \
                --no-shadow \
-               --msgbox "$curl_result_global" 0 0
+               --msgbox "${curl_result_global}" 0 0
     fi
 }
 
@@ -1077,9 +1077,9 @@ curlUserFeedbackHandling() {
 # This function calculates global arrangement variables (i.e. for main menu).
 calculateLayout() {
     if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
-        simpleMsg "$TITEL_SUGGESTION" \
-                  "$TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE 45x28.\n" \
-                  "$BUTTON_LABEL_CONTINUE"
+        simpleMsg "${TITEL_SUGGESTION}" \
+                  "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
+                  "${BUTTON_LABEL_CONTINUE}"
     fi
     local _max_buff
     POS_Y_MENU=0
@@ -1169,15 +1169,15 @@ refreshMainMenu_GUI() {
     local _explWalletStatus
     local _cmdWallet
     # ${info_global[8]} indicates if wallet is open
-    if [ "${info_global[8]}" = "$TEXT_WALLET_IS_UNLOCKED" ]; then
-        _cmdWallet="$CMD_MAIN_LOCK_WALLET"
-        _explWalletStatus="$EXPL_CMD_MAIN_WALLETLOCK"
-    elif [ "${info_global[8]}" = "$TEXT_WALLET_HAS_NO_PW" ]; then
-        _cmdWallet="$CMD_MAIN_ENCRYPT_WALLET"
-        _explWalletStatus="$EXPL_CMD_MAIN_WALLETENCRYPT"
+    if [ "${info_global[8]}" = "${TEXT_WALLET_IS_UNLOCKED}" ]; then
+        _cmdWallet="${CMD_MAIN_LOCK_WALLET}"
+        _explWalletStatus="${EXPL_CMD_MAIN_WALLETLOCK}"
+    elif [ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]; then
+        _cmdWallet="${CMD_MAIN_ENCRYPT_WALLET}"
+        _explWalletStatus="${EXPL_CMD_MAIN_WALLETENCRYPT}"
     else
-        _cmdWallet="$CMD_MAIN_UNLOCK_WALLET"
-        _explWalletStatus="$EXPL_CMD_MAIN_WALLETUNLOCK"
+        _cmdWallet="${CMD_MAIN_UNLOCK_WALLET}"
+        _explWalletStatus="${EXPL_CMD_MAIN_WALLETUNLOCK}"
     fi
     exec 3>&1
     local _mainMenuPick=$(dialog --no-shadow \
@@ -1205,17 +1205,17 @@ refreshMainMenu_GUI() {
         --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
         --title "${TITLE_MENU}" \
         --nocancel \
-        --ok-label "$BUTTON_LABEL_ENTER" \
+        --ok-label "${BUTTON_LABEL_ENTER}" \
         --no-shadow \
         --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
         \
-        "$CMD_MAIN_REFRESH" "$EXPL_CMD_MAIN_REFRESH" \
+        "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
         "${_cmdWallet}" "${_explWalletStatus}" \
-        "$CMD_MAIN_TRANS" "$EXPL_CMD_MAIN_VIEWTRANS" \
-        "$CMD_MAIN_SEND" "$EXPL_CMD_MAIN_SEND" \
-        "$CMD_MAIN_RECEIVE" "$EXPL_CMD_MAIN_RECEIVE" \
-        "$CMD_MAIN_COMMAND" "$EXPL_CMD_MAIN_USERCOMMAND" \
-        "$CMD_MAIN_QUIT" "$EXPL_CMD_MAIN_EXIT" \
+        "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
+        "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+        "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
+        "${CMD_MAIN_COMMAND}" "${EXPL_CMD_MAIN_USERCOMMAND}" \
+        "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -1224,23 +1224,23 @@ refreshMainMenu_GUI() {
             goodbye;;
     esac
     case ${_mainMenuPick} in
-        "$CMD_MAIN_REFRESH")
+        "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
-        "$CMD_MAIN_UNLOCK_WALLET")
+        "${CMD_MAIN_UNLOCK_WALLET}")
             unlockWalletForStaking;;
-        "$CMD_MAIN_LOCK_WALLET")
+        "${CMD_MAIN_LOCK_WALLET}")
             lockWallet;;
-        "$CMD_MAIN_ENCRYPT_WALLET")
+        "${CMD_MAIN_ENCRYPT_WALLET}")
             sry;;
-        "$CMD_MAIN_TRANS")
+        "${CMD_MAIN_TRANS}")
             viewAllTransactions;;
-        "$CMD_MAIN_SEND")
+        "${CMD_MAIN_SEND}")
             sendCoins;;
-        "$CMD_MAIN_RECEIVE")
+        "${CMD_MAIN_RECEIVE}")
             receiveCoins;;
-        "$CMD_MAIN_COMMAND")
+        "${CMD_MAIN_COMMAND}")
             userCommandInput;;
-        "$CMD_MAIN_QUIT")
+        "${CMD_MAIN_QUIT}")
             goodbye;;
     esac
 }
@@ -1253,25 +1253,25 @@ refreshMainMenu_DATA() {
     # (needed for transactions amount to fetch)
     calculateLayout
     drawGauge "0" \
-            "$TEXT_GAUGE_GET_STAKING_DATA"
+            "${TEXT_GAUGE_GET_STAKING_DATA}"
     executeCURL "getstakinginfo"
     drawGauge "15" \
-            "$TEXT_GAUGE_PROCESS_STAKING_DATA"
+            "${TEXT_GAUGE_PROCESS_STAKING_DATA}"
     getStakingInfo
     drawGauge "33" \
-            "$TEXT_GAUGE_GET_INFO"
+            "${TEXT_GAUGE_GET_INFO}"
     executeCURL "getinfo"
     drawGauge "48" \
-            "$TEXT_GAUGE_PROCESS_INFO"
+            "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
     drawGauge "66" \
-            "$TEXT_GAUGE_GET_TRANS"
-    executeCURL "listtransactions" '"*",'"$COUNT_TRANS_MENU"',0,"1"'
+            "${TEXT_GAUGE_GET_TRANS}"
+    executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
     drawGauge "85" \
-            "$TEXT_GAUGE_PROCESS_TRANS"
+            "${TEXT_GAUGE_PROCESS_TRANS}"
     getTransactions
     drawGauge "100" \
-            "$TEXT_GAUGE_ALLDONE"
+            "${TEXT_GAUGE_ALLDONE}"
     refreshMainMenu_GUI
 }
 
@@ -1297,7 +1297,7 @@ unlockWalletForStaking() {
 #       $2 - text in the gauge box
 drawGauge() {
     echo "$1" | dialog --no-shadow \
-                       --title "$TITLE_GAUGE" \
+                       --title "${TITLE_GAUGE}" \
                        --gauge "$2" "${SIZE_Y_GAUGE}" "${SIZE_X_GAUGE}" 0
 }
 
@@ -1330,11 +1330,11 @@ message="\n"
 message+="        Use at your own risc!!!\n"
 message+="    Terminal: $(tput longname)\n"
 message+="    Dialog $(dialog --version)\n"
-message+="      Interface version: $VERSION\n"
+message+="      Interface version: ${VERSION}\n"
 
 simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
-          "$BUTTON_LABEL_I_HAVE_UNDERSTOOD"
+          "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
 
 trap refreshMainMenu_DATA INT
 while :; do
