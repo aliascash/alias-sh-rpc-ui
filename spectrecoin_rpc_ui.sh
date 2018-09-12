@@ -882,9 +882,13 @@ passwordDialog() {
         ${DIALOG_ESC})
             # abort and reload main menu
             refreshMainMenu_DATA;;
+        ${DIALOG_OK})
+            # literally nothing to do here since daemon responds is excellent
+            # the user will be guided back to main menu by function which exceuted passwordDialog()
+            executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2";;
     esac
-    executeCURL "walletpassphrase" "\"$_wallet_password\",$1,$2"
-    # literally nothing to do here since daemon responds is excellent
+    errorHandling "Error in PW Dialog" \
+                  1
 }
 
 # ============================================================================
