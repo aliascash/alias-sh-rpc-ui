@@ -297,7 +297,8 @@ getInfo() {
                 info_global[8]="$TEXT_WALLET_IS_LOCKED"
             fi
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
-            if [ "${_itemBuffer#*':'}" != "none" ]; then
+            if [ "${_itemBuffer#*':'}" != 'none'* ]; then
+                #todo remove } at the end of error msg
                 info_global[9]="\Z1""${_itemBuffer#*':'}""\Zn"
             else
                 info_global[9]="$TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME"
