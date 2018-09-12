@@ -655,18 +655,6 @@ walletLockedFeedback() {
 }
 
 # ============================================================================
-# decides whether if Hide Stakes or Show Stakes will be displayed
-#
-# Input: $1
-viewAllTransactionsHelper() {
-    if [ "$1" = "true" ]; then
-        echo "$BUTTON_LABEL_HIDE_STAKES"
-    else
-        echo "$BUTTON_LABEL_SHOW_STAKES"
-    fi
-}
-
-# ============================================================================
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input: $1 - start (optional - default "0")
