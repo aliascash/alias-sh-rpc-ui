@@ -271,8 +271,8 @@ getInfo() {
     local _oldIFS=$IFS
     local _itemBuffer
     local _unixtime
-    curl_result_global=${curl_result_global%'{'}
-    curl_result_global=${curl_result_global#'}'}
+    curl_result_global=${curl_result_global#'{'}
+    curl_result_global=${curl_result_global%'}'}
     IFS=','
     # if wallet is not encrypted
     info_global[8]="$TEXT_WALLET_HAS_NO_PW"
