@@ -344,27 +344,42 @@ getStakingInfo() {
 # ============================================================================
 # Gathers the data form the CURL result for the getinfo command
 #
-# Input: $info_global
-#        $stakinginfo_global
-#        $balance_global
+# Input:  $1  - optional var determing the text width (default: TEXTWIDTH_INFO)
+#
+# Operating with:  $info_global
+#                  $stakinginfo_global
 makeOutputInfo() {
+    local _textWidth
+    if [ -z "$1" ]; then
+        _textWidth="${TEXTWIDTH_INFO}"
+    else
+        _textWidth="$1"
+    fi
     echo "$TEXT_HEADLINE_WALLET_INFO\n"
     local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    echo $(fillLine "$TEXT_BALANCE:-_-${_balance} $TEXT_CURRENCY" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_BALANCE:-_-${_balance} $TEXT_CURRENCY" \
+                    "${_textWidth}")"\n"
+    echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" \
+                    "${_textWidth}")"\n"
     #
     echo "\n$TEXT_HEADLINE_STAKING_INFO\n"
-    echo $(fillLine "$TEXT_WALLET_STATE: ${info_global[8]}-_-$TEXT_STAKING_STATE: ${stakinginfo_global[0]}" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "$TEXT_STAKING_COINS: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn $TEXT_MATRUING_COINS)" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "$TEXT_EXP_TIME: ${stakinginfo_global[1]}" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_WALLET_STATE: ${info_global[8]}-_-$TEXT_STAKING_STATE: ${stakinginfo_global[0]}" \
+                    "${_textWidth}")"\n"
+    echo $(fillLine "$TEXT_STAKING_COINS: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn $TEXT_MATRUING_COINS)" \
+                    "${_textWidth}")"\n"
+    echo $(fillLine "$TEXT_EXP_TIME: ${stakinginfo_global[1]}" \
+                    "${_textWidth}")"\n"
     #
     echo "\n$TEXT_HEADLINE_CLIENT_INFO\n"
-    echo $(fillLine "$TEXT_DAEMON_VERSION: ${info_global[0]}-_-$TEXT_DAEMON_ERRORS_DURING_RUNTIME: ${info_global[9]}" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "$TEXT_DAEMON_IP: ${info_global[7]}-_-$TEXT_DAEMON_PEERS: ${info_global[4]}" "${TEXTWIDTH_INFO}")"\n"
-    echo $(fillLine "$TEXT_DAEMON_DOWNLOADED_DATA: ${info_global[5]}-_-$TEXT_DAEMON_UPLOADED_DATA: ${info_global[6]}" "${TEXTWIDTH_INFO}")"\n"
+    echo $(fillLine "$TEXT_DAEMON_VERSION: ${info_global[0]}-_-$TEXT_DAEMON_ERRORS_DURING_RUNTIME: ${info_global[9]}" \
+                    "${_textWidth}")"\n"
+    echo $(fillLine "$TEXT_DAEMON_IP: ${info_global[7]}-_-$TEXT_DAEMON_PEERS: ${info_global[4]}" \
+                    "${_textWidth}")"\n"
+    echo $(fillLine "$TEXT_DAEMON_DOWNLOADED_DATA: ${info_global[5]}-_-$TEXT_DAEMON_UPLOADED_DATA: ${info_global[6]}" \
+                    "${_textWidth}")"\n"
 }
 
 # ============================================================================
@@ -509,7 +524,7 @@ getTransactions() {
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input:  $1  - optional var determing the text width (default: TEXTWIDTH_TRANS)
-#         $transactions_global
+# Operating with:  $transactions_global
 makeOutputTransactions() {
     local _textWidth
     if [ -z "$1" ]; then
