@@ -208,12 +208,14 @@ startDaemon() {
 #        is >= this value, a \n (new line command will be added instead)
 fillLine() {
     local _output=$1
+    local buff
+    local _len
     # remove dialog color commands
-    buff=${_output//'\Z'?/}
+    _buff=${_output//'\Z'?/}
     # remove expander command
     buff=${buff//'-_-'/}
-    len=${#buff}
-    offset=$(( $2 - $len ))
+    _len=${#buff}
+    offset=$(( $2 - ${_len} ))
     if [ ${offset} -gt 0 ]; then
         local _i=0
         while [ ${_i} -lt ${offset} ]; do
