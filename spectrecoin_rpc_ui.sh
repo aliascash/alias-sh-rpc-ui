@@ -130,7 +130,8 @@ cutCURLresult() {
         curl_result_global=${curl_result_global//'"'/}
     elif [[ "$curl_result_global" == *'401 Unauthorized'* ]]; then
         # The RPC login failed - since the daemon responded it's due to a wrong login
-        errorHandling "$ERROR_401_UNAUTHORIZED" 2
+        errorHandling "$ERROR_401_UNAUTHORIZED" \
+                      2
     else
         # Most likely a parsing error in the CURL command parameters
         # Just hand over the error msg. within the CURL reply
@@ -179,7 +180,7 @@ startDaemon() {
         done
         if [ -z "$curl_result_global" ]; then
             # exit script
-            errorHandling "$ERROR_DAEMON_NO_CONNECT"
+            errorHandling "$ERROR_DAEMON_NO_CONNECT" \
                           1
         else
             for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
@@ -898,22 +899,53 @@ setWalletPW() {
     local _buffer=$(dialog --backtitle "$TITLE_BACK" \
                            --no-shadow \
                            --insecure \
-                           --title "$1" \
-                           --mixedform "Enter new wallet password:" 15 50 0 \
-                                       "User name:" 1 1 "user" 1 20 20 0 0 \
-                                       "Password:" 2 1 "pass1" 2 20 20 0 1 \
-                                       "Retype Password:" 3 1 "pass2" 3 20 20 0 1 \
+                           --title "Encrypt Wallet" \
+                           --ok-label "Encrypt" \
+                           --cancel-label "Main Menu" \
+                           --mixedform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
+                                       "Password:" 1 1 "" 1 11 30 0 1 \
+                                       "Retype:" 3 1 "" 3 11 30 0 1 \
                          2>&1 1>&3)
     exit_status=$?
+    echo "exitstatus: ${exit_status}"
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
-            refreshMainMenu_DATA;;
+            refreshMainMenu_GUI;;
         ${DIALOG_ESC})
-            refreshMainMenu_DATA;;
-    esac
-    #encryptwallet "\"$_wallet_password\""
-
+            refreshMainMenu_GUI;;
+        ${DIALOG_OK})
+            _i=0
+            local _itemBuffer
+            for _itemBuffer in ${_buffer}; do
+                _i=$((_i+1))
+                if [ ${_i} -eq 1 ]; then
+                if [ ${#_itemBuffer} -ge 10 ]; then
+                    _pw="${_itemBuffer}"
+                else
+                    local _s="\Z1You entered an invalid password.\Zn\n\n"
+                        _s+="A valid wallet password must be in the form:"
+                        _s+="\n- at least 10 char long"
+                    errorHandling "${_s}"
+                    setWalletPW
+                fi
+                elif [ ${_i} -eq 2 ]; then
+                    if [ ${_itemBuffer} == ${_pw} ]; then
+                        executeCURL encryptwallet "\"${_pw}\""
+                        #walletpassphrasechange "oldpassphrase" "newpassphrase"
+                        # maybe stops daemon?
+                    else
+                        local _s="Passwords do not match."
+                        errorHandling "${_s}"
+                        setWalletPW
+                    fi
+                fi
+            done;;
+        *)
+            setWalletPW;;
+        esac
+        echo "error: ${exit_status}"
+        exit 1
 }
 
 # ============================================================================
