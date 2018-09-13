@@ -1178,11 +1178,11 @@ calculateLayout() {
     fi
 
     # Size for view all transactions dialog
-    currentTPutCols=$(tput cols)
-    if [ ${currentTPutCols} -gt 74 ] ; then
+    _max_buff=$(tput cols)
+    if [ ${_max_buff} -gt 74 ] ; then
         SIZE_X_TRANS_VIEW=74
     else
-        SIZE_X_TRANS_VIEW=${currentTPutCols}
+        SIZE_X_TRANS_VIEW=${_max_buff}
     fi
     SIZE_Y_TRANS_VIEW=$(tput lines)
 
@@ -1193,7 +1193,7 @@ calculateLayout() {
     POS_Y_INFO=$((${POS_Y_MENU} + ${SIZE_Y_MENU}))
     TEXTWIDTH_TRANS=$((${SIZE_X_TRANS} - 4))
     TEXTWIDTH_INFO=$((${SIZE_X_INFO} - 5))
-    WIDTHTEXT_MENU=${TEXTWIDTH_INFO}
+#   WIDTHTEXT_MENU=${TEXTWIDTH_INFO}
     #
     # Amount of transactions that can be displayed in main menu
     COUNT_TRANS_MENU=$(( ((${SIZE_Y_TRANS} - 5 - ${POS_Y_TRANS}) / 4) + 1 ))
@@ -1231,9 +1231,10 @@ refreshMainMenu_GUI() {
         _cmdWallet="${CMD_MAIN_UNLOCK_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETUNLOCK}"
     fi
+    local _mainMenuPick
     exec 3>&1
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
-        local _mainMenuPick=$(dialog --no-shadow \
+        _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
             --infobox "" "$(tput lines)" "$(tput cols)" \
@@ -1270,8 +1271,9 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
+            exit_status=$?
     else
-        local _mainMenuPick=$(dialog --no-shadow \
+        _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
             --infobox "" "$(tput lines)" "$(tput cols)" \
@@ -1301,8 +1303,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
+            exit_status=$?
     fi
-    exit_status=$?
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_ESC})
