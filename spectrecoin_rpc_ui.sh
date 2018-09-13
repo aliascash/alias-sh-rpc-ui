@@ -1232,43 +1232,76 @@ refreshMainMenu_GUI() {
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETUNLOCK}"
     fi
     exec 3>&1
-    local _mainMenuPick=$(dialog --no-shadow \
-        --begin 0 0 \
-        --no-lines \
-        --infobox "" "$(tput lines)" "$(tput cols)" \
-        \
-        --and-widget \
-        --colors \
-        --begin "${POS_Y_TRANS}" "${POS_X_TRANS}" \
-        --title "${TITLE_TRANS}" \
-        --no-collapse \
-        --infobox "$(makeOutputTransactions)" "${SIZE_Y_TRANS}" "${SIZE_X_TRANS}" \
-        \
-        --and-widget \
-        --colors \
-        --begin "${POS_Y_INFO}" "${POS_X_INFO}" \
-        --title "${TITLE_INFO}" \
-        --no-shadow \
-        --no-collapse \
-        --infobox "$(makeOutputInfo)" "${SIZE_Y_INFO}" "${SIZE_X_INFO}" \
-        \
-        --and-widget \
-        --colors \
-        --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
-        --title "${TITLE_MENU}" \
-        --nocancel \
-        --ok-label "${BUTTON_LABEL_ENTER}" \
-        --no-shadow \
-        --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
-        \
-        "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
-        "${_cmdWallet}" "${_explWalletStatus}" \
-        "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
-        "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
-        "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
-        "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
-        "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
-        2>&1 1>&3)
+    if [ ${SIZE_X_TRANS} -gt 0 ] ; then
+        local _mainMenuPick=$(dialog --no-shadow \
+            --begin 0 0 \
+            --no-lines \
+            --infobox "" "$(tput lines)" "$(tput cols)" \
+            \
+            --and-widget \
+            --colors \
+            --begin "${POS_Y_TRANS}" "${POS_X_TRANS}" \
+            --title "${TITLE_TRANS}" \
+            --no-collapse \
+            --infobox "$(makeOutputTransactions)" "${SIZE_Y_TRANS}" "${SIZE_X_TRANS}" \
+            \
+            --and-widget \
+            --colors \
+            --begin "${POS_Y_INFO}" "${POS_X_INFO}" \
+            --title "${TITLE_INFO}" \
+            --no-shadow \
+            --no-collapse \
+            --infobox "$(makeOutputInfo)" "${SIZE_Y_INFO}" "${SIZE_X_INFO}" \
+            \
+            --and-widget \
+            --colors \
+            --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
+            --title "${TITLE_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
+            \
+            "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
+            "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
+            "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
+            "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
+            2>&1 1>&3)
+    else
+        local _mainMenuPick=$(dialog --no-shadow \
+            --begin 0 0 \
+            --no-lines \
+            --infobox "" "$(tput lines)" "$(tput cols)" \
+            \
+            --and-widget \
+            --colors \
+            --begin "${POS_Y_INFO}" "${POS_X_INFO}" \
+            --title "${TITLE_INFO}" \
+            --no-shadow \
+            --no-collapse \
+            --infobox "$(makeOutputInfo)" "${SIZE_Y_INFO}" "${SIZE_X_INFO}" \
+            \
+            --and-widget \
+            --colors \
+            --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
+            --title "${TITLE_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
+            \
+            "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
+            "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
+            "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
+            "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
+            2>&1 1>&3)
+    fi
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
@@ -1318,12 +1351,14 @@ refreshMainMenu_DATA() {
     drawGauge "48" \
             "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
-    drawGauge "66" \
-            "${TEXT_GAUGE_GET_TRANS}"
-    executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
-    drawGauge "85" \
-            "${TEXT_GAUGE_PROCESS_TRANS}"
-    getTransactions
+    if [ ${SIZE_X_TRANS} -gt 0 ] ; then
+        drawGauge "66" \
+                "${TEXT_GAUGE_GET_TRANS}"
+        executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
+        drawGauge "85" \
+                "${TEXT_GAUGE_PROCESS_TRANS}"
+        getTransactions
+    fi
     drawGauge "100" \
             "${TEXT_GAUGE_ALLDONE}"
     refreshMainMenu_GUI
