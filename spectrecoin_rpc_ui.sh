@@ -61,6 +61,7 @@ helpMe ()
 #
 # Output: global variable curl_result_global (clean and bash optimized)
 executeCURL() {
+    unset msg_global
     connectToDaemon "$1" "$2"
     if [ -z "${curl_result_global}" ]; then
         startDaemon
@@ -139,10 +140,10 @@ cutCURLresult() {
         # Most likely a parsing error in the CURL command parameters
         # Just hand over the error msg. within the CURL reply
         # cut right side
-        msg="${curl_result_global%%'"}'*}"
+        msg_global="${curl_result_global%%'"}'*}"
         # cut left side
-        msg="${msg#*'message":"'}"
-        errorHandling "${ERROR_CURL_MSG_PROMPT}\n\n${msg}"
+        msg_global="${msg_global#*'message":"'}"
+        errorHandling "${ERROR_CURL_MSG_PROMPT}\n\n${msg_global}"
     fi
 }
 
@@ -1346,11 +1347,15 @@ lockWallet() {
 unlockWalletForStaking() {
     passwordDialog "999999999" \
                    "true"
-    dialog --backtitle "${TITLE_BACK}" \
-           --colors \
-           --no-shadow \
-           --ok-label "${BUTTON_LABEL_CONTINUE}" \
-           --msgbox "${TEXT_SUGGESTION_STAKING}" 0 0
+    local _s
+    # if there was no error
+    if [ -z "${msg_global}" ]; then
+        dialog --backtitle "${TITLE_BACK}" \
+               --colors \
+               --no-shadow \
+               --ok-label "${BUTTON_LABEL_CONTINUE}" \
+               --msgbox "${TEXT_FEEDBACK_WALLET_UNLOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
+    fi
     refreshMainMenu_DATA
 }
 
