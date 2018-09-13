@@ -85,7 +85,8 @@ CMD_MAIN_MENU="Main"
 EXPL_CMD_MAIN_MENU="Go back to main menu."
 #
 # Error Feedback
-ERROR_USERCOMMAND_FATAL="Unexpected fatal error in USER COMMAND dialog."
+ERROR_ADVMENU_FATAL="Unexpected fatal error in advanced menu dialog."
+ERROR_USERCOMMAND_FATAL="Unexpected fatal error in user command dialog."
 ERROR_PW_FATAL="Unexpected fatal error in password dialog."
 ERROR_SEND_FATAL="Unexpected fatal error in send dialog."
 ERROR_TRANS_FATAL="Unexpected fatal error in view all transactions dialog."

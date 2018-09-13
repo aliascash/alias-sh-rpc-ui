@@ -814,6 +814,9 @@ advancedmenu() {
             sry;;
         "${CMD_MAIN_QUIT}")
             refreshMainMenu_DATA;;
+        *)
+            errorHandling "${ERROR_ADVMENU_FATAL}"
+                          1
     esac
 }
 
