@@ -413,26 +413,26 @@ getTransactions() {
                 _newestStakeDate=${_unixtime}
             fi
             _unixtime=$(date -d "@$_unixtime" +%d-%m-%Y" at "%H:%M:%S)
-            transactions_global[_i]=${_unixtime}
-            _i=$((_i+1))
+            transactions_global[${_i}]=${_unixtime}
+            _i=$((${_i}+1))
         elif [[ ${_itemBuffer} == 'category'* ]]; then
             _valueBuffer="${_itemBuffer#*':'}"
             _thisWasAStake="false"
             if [[ ${_valueBuffer} == 'receive' ]]; then
-                transactions_global[_i]="${TEXT_RECEIVED}"
+                transactions_global[${_i}]="${TEXT_RECEIVED}"
             elif [[ ${_valueBuffer} == 'generate' ]]; then
-                transactions_global[_i]="${TEXT_STAKE}"
+                transactions_global[${_i}]="${TEXT_STAKE}"
                 _thisWasAStake="true"
             elif [[ ${_valueBuffer} == 'immature' ]]; then
-                transactions_global[_i]="${TEXT_IMMATURE}"
+                transactions_global[${_i}]="${TEXT_IMMATURE}"
             else
-                transactions_global[_i]="${TEXT_TRANSFERRED}"
+                transactions_global[${_i}]="${TEXT_TRANSFERRED}"
             fi
-            _i=$((_i+1))
+            _i=$((${_i}+1))
         elif [[ ${_itemBuffer} == 'address'* || ${_itemBuffer} == 'amount'* \
             || ${_itemBuffer} == 'confirmations'* || ${_itemBuffer} == 'txid'* ]]; then
-            transactions_global[_i]="${_itemBuffer#*':'}"
-            _i=$((_i+1))
+            transactions_global[${_i}]="${_itemBuffer#*':'}"
+            _i=$((${_i}+1))
         fi
     done
     IFS=${_oldIFS}
@@ -1083,11 +1083,6 @@ curlUserFeedbackHandling() {
 # ============================================================================
 # This function calculates global arrangement variables (i.e. for main menu).
 calculateLayout() {
-    if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
-        simpleMsg "${TITEL_SUGGESTION}" \
-                  "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
-                  "${BUTTON_LABEL_CONTINUE}"
-    fi
     local _max_buff
     POS_Y_MENU=0
     _max_buff=$(($(tput cols) / 2))
@@ -1332,7 +1327,11 @@ checkRequirement curl
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 initDaemonConfiguration
-
+if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
+    simpleMsg "${TITEL_SUGGESTION}" \
+              "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
+              "${BUTTON_LABEL_CONTINUE}"
+fi
 message="\n"
 message+="        Use at your own risc!!!\n"
 message+="    Terminal: $(tput longname)\n"
