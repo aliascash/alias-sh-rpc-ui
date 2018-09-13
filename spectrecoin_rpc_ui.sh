@@ -1286,7 +1286,9 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_LOCK_WALLET}")
             lockWallet;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
+            # todo change with new dialog version
             sry;;
+            #setWalletPW;;
         "${CMD_MAIN_TRANS}")
             viewAllTransactions;;
         "${CMD_MAIN_SEND}")
@@ -1357,7 +1359,9 @@ unlockWalletForStaking() {
                --msgbox "${TEXT_FEEDBACK_WALLET_UNLOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
         refreshMainMenu_DATA
     fi
-    unlockWalletForStaking
+    # todo change with new dialog version
+    #unlockWalletForStaking
+    refreshMainMenu_DATA
 }
 
 # ============================================================================
