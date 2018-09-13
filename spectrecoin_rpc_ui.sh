@@ -1160,7 +1160,7 @@ calculateLayout() {
         # if we do not have enough place just fuck it and tease by showing only left half
         if [ ${_max_buff} -lt 29 ]; then
             # hide transactions in main
-            SIZE_X_TRANS=1
+            SIZE_X_TRANS=0
         else
             SIZE_X_TRANS=${_max_buff}
         fi
