@@ -12,11 +12,7 @@
 # NOTES: you may resize your terminal to get most of it
 # AUTHOR: dave#0773@discord
 # Project: https://spectreproject.io/ and https://github.com/spectrecoin/spectre
-# VERSION: 2.2alpha
-# CREATED: 10-09-2018
 # ============================================================================
-
-VERSION='v2.2alpha'
 
 # Backup where we came from
 callDir=$(pwd)
@@ -28,6 +24,13 @@ cd "${ownLocation}"
 
 # ToDo: Possibility to switch between different language files
 . include/ui_content_en.sh
+
+# Handle separate version file
+if [ -e VERSION ] ; then
+    VERSION=$(cat VERSION)
+else
+    VERSION='unknown'
+fi
 
 rtc=0
 _init
