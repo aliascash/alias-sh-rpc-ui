@@ -11,7 +11,7 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK="Spectrecoin Bash RPC Wallet Interface (${VERSION})"
+TITLE_BACK="Spectrecoin Bash RPC Wallet Interface"
 TITLE_TRANS="RECENT TRANSACTIONS"
 TITLE_INFO=""
 TITLE_MENU="${TITLE_BACK}"
