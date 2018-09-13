@@ -1355,8 +1355,9 @@ unlockWalletForStaking() {
                --no-shadow \
                --ok-label "${BUTTON_LABEL_CONTINUE}" \
                --msgbox "${TEXT_FEEDBACK_WALLET_UNLOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
+        refreshMainMenu_DATA
     fi
-    refreshMainMenu_DATA
+    unlockWalletForStaking
 }
 
 # ============================================================================
