@@ -806,7 +806,7 @@ advancedmenu() {
             sry;;
         "${CMD_SETUP_PI}")
             sry;;
-        "${CMD_MAIN_COMMAND}")
+        "${CMD_USER_COMMAND}")
             userCommandInput;;
         "${CMD_GET_PEER_INFO}")
             sry;;
