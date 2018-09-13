@@ -168,11 +168,11 @@ TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING="\n\Z2Daemon is still running.\Zn\n"
 TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED="\n\Z1Daemon stopped.\Zn\n"
 TEXT_GOODBYE_FEEDBACK_EXIT="\nHope you enjoyed.\n\n\Z4Please give feedback.\Zn\n"
 #
-TEXT_FEEDBACK_WALLET_LOCKED="Wallet successfully locked.\n\n\Z5You will not be able to stake anymore.\Zn\n\nUse Unlock in main menu to unlock the wallet for staking only again."
+TEXT_FEEDBACK_WALLET_LOCKED="Wallet successfully locked.\n\n\Z5You will not be able to stake anymore.\Zn\n\nUse \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn in main menu to unlock the wallet for staking only again."
+TEXT_SUGGESTION_STAKING="It will take a short amount of time for the daemon to update the staking status, after the wallet was unlocked/locked.\nUse the \Z4${CMD_MAIN_REFRESH}\Zn command in main menu to refresh the screen."
 TEXT_FEEDBACK_RECEIVE="Marking the text will automatically copy it to clipboard.\nPress return to continue to main menu.\n\nDefault wallet addresses:"
 #
 TEXT_SEND_UNLOCK_WALLET_AGAIN="Notice\nPlease note:\nYou have to 'unlock' the wallet for staking again.\n"
 TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE="\nIncrease the terminal size to at least"
 TEXT_PLACEHOLDER_FUNCTION="\nUnder construction...\n\nSry right now this is a placeholder."
 #
-TEXT_SUGGESTION_STAKING="It will take a short amount of time for the daemon to start staking, after the wallet was unlocked.\nUse the \Z4${CMD_MAIN_REFRESH}\Zn command in main menu to refresh the screen."

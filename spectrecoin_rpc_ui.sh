@@ -644,17 +644,6 @@ simpleMsg() {
 }
 
 # ============================================================================
-# Goal: Give a visual feedback for the user that the wallet is now locked
-#       and there will be no staking anymore.
-walletLockedFeedback() {
-    dialog --backtitle "${TITLE_BACK}" \
-           --colors \
-           --no-shadow \
-           --ok-label "${BUTTON_LABEL_CONTINUE}" \
-           --msgbox "${TEXT_FEEDBACK_WALLET_LOCKED}" 0 0
-}
-
-# ============================================================================
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input: $1 - start (optional - default "0")
@@ -1341,7 +1330,11 @@ refreshMainMenu_DATA() {
 # Goal: lock the wallet
 lockWallet() {
     executeCURL "walletlock"
-    walletLockedFeedback
+    dialog --backtitle "${TITLE_BACK}" \
+           --colors \
+           --no-shadow \
+           --ok-label "${BUTTON_LABEL_CONTINUE}" \
+           --msgbox "${TEXT_FEEDBACK_WALLET_LOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
     refreshMainMenu_DATA
 }
 
