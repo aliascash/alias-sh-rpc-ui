@@ -157,7 +157,7 @@ startDaemon() {
     (
          local _oldIFS=$IFS
          local _itemBuffer
-         IFS=$'\n'
+         IFS='\n'
          if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
             for _itemBuffer in "${ERROR_DAEMON_ALREADY_RUNNING}"; do
                 echo "${_itemBuffer}"
