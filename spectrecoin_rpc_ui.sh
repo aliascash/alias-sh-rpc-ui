@@ -621,7 +621,7 @@ goodbye() {
             errorHandling "${ERROR_GOODBYE_FATAL}" \
                           1;;
     esac
-    _s+="${TEXT_GOODBYE_FEEDBACK_EXIT}"
+    _s+="\n\n${TEXT_GOODBYE_FEEDBACK_EXIT}"
     dialog --backtitle "${TITLE_BACK}" \
            --no-shadow \
            --colors \
