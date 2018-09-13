@@ -94,7 +94,7 @@ ERROR_GOODBYE_FATAL="Unexpected fatal error in daemon stop (goodbye) dialog."
 ERROR_SEND_INVALID_ADDRESS="\Z1You entered an invalid address.\Zn\n\nA valid Spectrecoin address must be in the form:\n- beginning with \"S\"\n- length 27-34\n- uppercase letter \"O\", \"I\", lowercase letter \"l\", and the number \"0\" are never used to prevent visual ambiguity"
 ERROR_SEND_INVALID_AMOUNT="Amount must be a number, with:\n- greater than 0\n- max. 8 digits behind decimal point"
 ERROR_CURL_MSG_PROMPT="CURL error message:"
-ERROR_401_UNAUTHORIZED="Error: RPC login failed.\nDid you change the password without restarting the daemon?\n"
+ERROR_401_UNAUTHORIZED="Error: RPC login failed. Did you change the password without restarting the daemon? Note: You can stop the daemon with the command: wallet-stop"
 ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to sprectrecoind could be established.\nYou may need to check your config."
 ERROR_DAEMON_NO_CONNECT="Daemon did not respond within 60 sec.\nNo connection to sprectrecoind could be established.\nYou may need to check your config."
 #
@@ -174,3 +174,5 @@ TEXT_FEEDBACK_RECEIVE="Marking the text will automatically copy it to clipboard.
 TEXT_SEND_UNLOCK_WALLET_AGAIN="Notice\nPlease note:\nYou have to 'unlock' the wallet for staking again.\n"
 TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE="\nIncrease the terminal size to at least"
 TEXT_PLACEHOLDER_FUNCTION="\nUnder construction...\n\nSry right now this is a placeholder."
+#
+TEXT_SUGGESTION_STAKING="It will take a short amount of time for the daemon to start staking, after the wallet was unlocked.\n Use the ${CMD_MAIN_REFRESH} command in main menu to refresh the screen."

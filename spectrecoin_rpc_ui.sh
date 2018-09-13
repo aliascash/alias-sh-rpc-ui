@@ -1350,6 +1350,9 @@ lockWallet() {
 unlockWalletForStaking() {
     passwordDialog "999999999" \
                    "true"
+    simpleMsg "${TITEL_SUGGESTION}" \
+              "${TEXT_SUGGESTION_STAKING}" \
+              "${BUTTON_LABEL_CONTINUE}"
     refreshMainMenu_DATA
 }
 
