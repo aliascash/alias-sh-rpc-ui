@@ -812,11 +812,11 @@ advancedmenu() {
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
             sry;;
-        "${CMD_MAIN_QUIT}")
+        "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
             errorHandling "${ERROR_ADVMENU_FATAL}"
-                          1
+                          1;;
     esac
 }
 
