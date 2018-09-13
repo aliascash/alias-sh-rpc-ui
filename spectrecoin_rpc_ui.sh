@@ -1148,7 +1148,7 @@ calculateLayout() {
     else
         SIZE_X_MENU=${_max_buff}
     fi
-
+    SIZE_X_MENU=60
     SIZE_Y_MENU=13
 
     #Size for the displayed transactions in main menu
