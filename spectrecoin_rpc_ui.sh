@@ -723,7 +723,8 @@ viewAllTransactions() {
         ${DIALOG_HELP})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "${ERROR_TRANS_FATAL}"
+    errorHandling "${ERROR_TRANS_FATAL}" \
+                  1
 }
 
 # ============================================================================
@@ -808,7 +809,7 @@ advancedmenu() {
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
-            errorHandling "${ERROR_ADVMENU_FATAL}"
+            errorHandling "${ERROR_ADVMENU_FATAL}" \
                           1;;
     esac
 }
@@ -912,8 +913,8 @@ sendCoins() {
         done
         sendCoins "${_destinationAddress}";;
     esac
-    errorHandling "$ERROR_SEND_FATAL" \
-              1
+    errorHandling "${ERROR_SEND_FATAL}" \
+                  1
 }
 
 # ============================================================================
