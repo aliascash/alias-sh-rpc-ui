@@ -734,7 +734,7 @@ viewAllTransactions() {
 }
 
 # ============================================================================
-advancedMainMenu() {
+advancedmenu() {
 # Staking Analysis
   # count
   # estimante
@@ -759,7 +759,62 @@ advancedMainMenu() {
 # command execution  <-- add help command ( = help text zu bereits eingegeben command)
 
 # back to main
-    :
+    local _cmdWallet
+    local _explWalletStatus
+    # ${info_global[8]} indicates if wallet is open
+    if [ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]; then
+        _cmdWallet="${CMD_MAIN_ENCRYPT_WALLET}"
+        _explWalletStatus="${EXPL_CMD_MAIN_WALLETENCRYPT}"
+    else
+        _cmdWallet="${CMD_CHANGE_WALLET_PW}"
+        _explWalletStatus="${EXPL_CMD_CHANGE_WALLET_PW}"
+    fi
+    exec 3>&1
+    local _mainMenuPick=$(dialog --no-shadow \
+        --begin 0 0 \
+        --no-lines \
+        --infobox "" "$(tput lines)" "$(tput cols)" \
+        \
+        --and-widget \
+        --colors \
+        --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
+        --title "${TITLE_ADV_MENU}" \
+        --nocancel \
+        --ok-label "${BUTTON_LABEL_ENTER}" \
+        --no-shadow \
+        --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
+        \
+        "${_cmdWallet}" "${_explWalletStatus}" \
+        "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+        "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+        "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+        "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+        2>&1 1>&3)
+    exit_status=$?
+    exec 3>&-
+    case ${exit_status} in
+        ${DIALOG_ESC})
+            refreshMainMenu_DATA;;
+    esac
+    case ${_mainMenuPick} in
+        "${CMD_MAIN_ENCRYPT_WALLET}")
+            sry;;
+        "${CMD_CHANGE_WALLET_PW}")
+            sry;;
+        "${CMD_STAKING_ANALYSE}")
+            sry;;
+        "${CMD_SETUP_PI}")
+            sry;;
+        "${CMD_MAIN_COMMAND}")
+            userCommandInput;;
+        "${CMD_GET_PEER_INFO}")
+            sry;;
+        "${CMD_CHANGE_LANGUAGE}")
+            sry;;
+        "${CMD_MAIN_QUIT}")
+            refreshMainMenu_DATA;;
+    esac
 }
 
 # ============================================================================
@@ -1170,8 +1225,8 @@ calculateLayout() {
 # ============================================================================
 # This function draws the main menu to the terminal
 refreshMainMenu_GUI() {
-    local _explWalletStatus
     local _cmdWallet
+    local _explWalletStatus
     # ${info_global[8]} indicates if wallet is open
     if [ "${info_global[8]}" = "${TEXT_WALLET_IS_UNLOCKED}" ]; then
         _cmdWallet="${CMD_MAIN_LOCK_WALLET}"
@@ -1218,7 +1273,7 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
         "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
         "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
-        "${CMD_MAIN_COMMAND}" "${EXPL_CMD_MAIN_USERCOMMAND}" \
+        "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
         "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
         2>&1 1>&3)
     exit_status=$?
@@ -1242,8 +1297,8 @@ refreshMainMenu_GUI() {
             sendCoins;;
         "${CMD_MAIN_RECEIVE}")
             receiveCoins;;
-        "${CMD_MAIN_COMMAND}")
-            userCommandInput;;
+        "${CMD_MAIN_ADVANCED_MENU}")
+            advancedmenu;;
         "${CMD_MAIN_QUIT}")
             goodbye;;
     esac
