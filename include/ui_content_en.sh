@@ -175,4 +175,4 @@ TEXT_SEND_UNLOCK_WALLET_AGAIN="Notice\nPlease note:\nYou have to 'unlock' the wa
 TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE="\nIncrease the terminal size to at least"
 TEXT_PLACEHOLDER_FUNCTION="\nUnder construction...\n\nSry right now this is a placeholder."
 #
-TEXT_SUGGESTION_STAKING="It will take a short amount of time for the daemon to start staking, after the wallet was unlocked.\n Use the ${CMD_MAIN_REFRESH} command in main menu to refresh the screen."
+TEXT_SUGGESTION_STAKING="It will take a short amount of time for the daemon to start staking, after the wallet was unlocked.\nUse the \Z4${CMD_MAIN_REFRESH}\Zn command in main menu to refresh the screen."
