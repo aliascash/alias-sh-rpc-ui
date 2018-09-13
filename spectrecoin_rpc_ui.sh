@@ -684,9 +684,10 @@ viewAllTransactions() {
     fi
     getTransactions
     if [ ${#transactions_global[@]} -eq 0 ] && [ ${_start} -ge ${COUNT_TRANS_VIEW} ]; then
-        viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
+        viewAllTransactions "$(( ${_start} - ${COUNT_TRANS_VIEW} ))" \
                            "${_displayStakes}"
     fi
+    local _page=$(( (${_start} / ${COUNT_TRANS_VIEW}) + 1 ))
     dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
@@ -696,6 +697,7 @@ viewAllTransactions() {
         --colors \
         --extra-button \
         --help-button \
+        --title "${TITEL_VIEW_TRANSACTIONS} ${_page}" \
         --ok-label "${BUTTON_LABEL_PREVIOUS}" \
         --extra-label "${BUTTON_LABEL_NEXT}" \
         --help-label "${BUTTON_LABEL_MAIN_MENU}" \
