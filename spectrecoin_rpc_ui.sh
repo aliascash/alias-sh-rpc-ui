@@ -789,7 +789,7 @@ advancedmenu() {
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_ESC})
-            refreshMainMenu_DATA;;
+            #refreshMainMenu_DATA;;
     esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_ENCRYPT_WALLET}")
@@ -1313,7 +1313,7 @@ refreshMainMenu_GUI() {
     fi
     case ${exit_status} in
         ${DIALOG_ESC})
-            goodbye;;
+            #goodbye;;
     esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
