@@ -1312,13 +1312,13 @@ refreshMainMenu_GUI() {
             exit_status=$?
             exec 3>&-
     fi
-    case ${exit_status} in
-        "${DIALOG_ESC}")
-            goodbye;;
-        "${DIALOG_ERROR}")
-            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
-                           1;;
-    esac
+#    case ${exit_status} in
+#        "${DIALOG_ESC}")
+#            goodbye;;
+#        "${DIALOG_ERROR}")
+#            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
+#                           1;;
+#    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
