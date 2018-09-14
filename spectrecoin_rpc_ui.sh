@@ -787,10 +787,10 @@ advancedmenu() {
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
-    case ${exit_status} in
-        ${DIALOG_ESC})
-            #refreshMainMenu_DATA;;
-    esac
+#    case ${exit_status} in
+#        ${DIALOG_ESC})
+#            refreshMainMenu_DATA;;
+#    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_ENCRYPT_WALLET}")
             sry;;
@@ -1311,10 +1311,10 @@ refreshMainMenu_GUI() {
             exit_status=$?
             exec 3>&-
     fi
-    case ${exit_status} in
-        ${DIALOG_ESC})
-            #goodbye;;
-    esac
+#    case ${exit_status} in
+#        ${DIALOG_ESC})
+#            goodbye;;
+#    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
