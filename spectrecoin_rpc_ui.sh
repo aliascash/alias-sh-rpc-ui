@@ -561,6 +561,7 @@ makeOutputTransactions() {
 : ${DIALOG_EXTRA=3}
 : ${DIALOG_ITEM_HELP=4}
 : ${DIALOG_ESC=255}
+: ${DIALOG_ERROR=-1}
 
 # ============================================================================
 # Simple error handling
@@ -1311,10 +1312,13 @@ refreshMainMenu_GUI() {
             exit_status=$?
             exec 3>&-
     fi
-#    case ${exit_status} in
-#        ${DIALOG_ESC})
-#            goodbye;;
-#    esac
+    case ${exit_status} in
+        ${DIALOG_ESC})
+            goodbye;;
+        ${DIALOG_ERROR})
+            errorHandling "${ERROR_SCREENSIZE_FATAL}"
+                           1;;
+    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
