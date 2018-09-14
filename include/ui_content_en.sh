@@ -50,7 +50,7 @@ BUTTON_LABEL_I_HAVE_UNDERSTOOD="YES - I´ve understood"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Lock"
-EXPL_CMD_MAIN_WALLETLOCK="Lock the wallet, no more staking."
+EXPL_CMD_MAIN_WALLETLOCK="Lock wallet, no more staking."
 CMD_MAIN_UNLOCK_WALLET="Unlock"
 EXPL_CMD_MAIN_WALLETUNLOCK="Unlock wallet for staking only."
 CMD_MAIN_ENCRYPT_WALLET="Encrypt"

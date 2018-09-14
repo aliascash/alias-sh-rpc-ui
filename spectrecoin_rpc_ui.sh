@@ -765,19 +765,13 @@ advancedmenu() {
         _explWalletStatus="${EXPL_CMD_CHANGE_WALLET_PW}"
     fi
     exec 3>&1
-    local _mainMenuPick=$(dialog --no-shadow \
-        --begin 0 0 \
-        --no-lines \
-        --infobox "" "${currentTPutlines}" "${currentTPutCols}" \
-        \
-        --and-widget \
+    local _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
         --colors \
-        --begin "${POS_Y_MENU}" "${POS_X_MENU}" \
         --title "${TITLE_ADV_MENU}" \
         --nocancel \
         --ok-label "${BUTTON_LABEL_ENTER}" \
         --no-shadow \
-        --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
+        --menu "" 0 0 10 \
         \
         "${_cmdWallet}" "${_explWalletStatus}" \
         "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
@@ -1238,8 +1232,8 @@ refreshMainMenu_GUI() {
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETUNLOCK}"
     fi
     local _mainMenuPick
+    exec 3>&1
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
-        exec 3>&1
         _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
@@ -1278,9 +1272,7 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
             exit_status=$?
-            exec 3>&-
     else
-        exec 3>&1
         _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
@@ -1312,8 +1304,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
             exit_status=$?
-            exec 3>&-
     fi
+    exec 3>&-
 #    case ${exit_status} in
 #        "${DIALOG_ESC}")
 #            goodbye;;
