@@ -684,7 +684,7 @@ viewAllTransactions() {
     dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
-        --infobox "" "$(tput lines)" "$(tput cols)" \
+        --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
         \
         --and-widget \
         --colors \
@@ -767,7 +767,7 @@ advancedmenu() {
     local _mainMenuPick=$(dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
-        --infobox "" "$(tput lines)" "$(tput cols)" \
+        --infobox "" "${currentTPutlines}" "${currentTPutCols}" \
         \
         --and-widget \
         --colors \
@@ -1137,9 +1137,11 @@ curlUserFeedbackHandling() {
 # ============================================================================
 # This function calculates global arrangement variables (i.e. for main menu).
 calculateLayout() {
+    currentTPutCols=$(tput cols)
+    currentTPutLines=$(tput lines)
     local _max_buff
     POS_Y_MENU=0
-    _max_buff=$(($(tput cols) / 2))
+    _max_buff=$((${currentTPutCols} / 2))
     if [ ${_max_buff} -lt 45 ] ; then
         _max_buff=45
     fi
@@ -1152,7 +1154,7 @@ calculateLayout() {
     SIZE_Y_MENU=13
 
     #Size for the displayed transactions in main menu
-    _max_buff=$(($(tput cols) - ${SIZE_X_MENU}))
+    _max_buff=$((${currentTPutCols} - ${SIZE_X_MENU}))
 #    SIZE_X_TRANS=$((85<${_max_buff}?85:${_max_buff}))
     if [ ${_max_buff} -gt 85 ] ; then
         SIZE_X_TRANS=85
@@ -1178,7 +1180,7 @@ calculateLayout() {
     fi
 
     # Size for view all transactions dialog
-    _max_buff=$(tput cols)
+    _max_buff=${currentTPutCols}
     if [ ${_max_buff} -gt 74 ] ; then
         SIZE_X_TRANS_VIEW=74
     else
@@ -1186,7 +1188,7 @@ calculateLayout() {
     fi
     SIZE_Y_TRANS_VIEW=$(tput lines)
 
-    POS_X_MENU=$(($(($(tput cols) - ${SIZE_X_MENU} - ${SIZE_X_TRANS})) / 2))
+    POS_X_MENU=$(($((${currentTPutCols} - ${SIZE_X_MENU} - ${SIZE_X_TRANS})) / 2))
     POS_X_TRANS=$((${POS_X_MENU} + ${SIZE_X_MENU}))
     POS_Y_TRANS=${POS_Y_MENU}
     POS_X_INFO=${POS_X_MENU}
@@ -1201,6 +1203,7 @@ calculateLayout() {
     # Amount of transactions that can be displayed in the view all transactions dialog
     COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 7 - ${POS_Y_TRANS}) / 4) + 1 ))
     #
+
 
 
     # not used yet
@@ -1232,12 +1235,12 @@ refreshMainMenu_GUI() {
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETUNLOCK}"
     fi
     local _mainMenuPick
-    exec 3>&1
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
+        exec 3>&1
         _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
-            --infobox "" "$(tput lines)" "$(tput cols)" \
+            --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
             \
             --and-widget \
             --colors \
@@ -1272,11 +1275,13 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
             exit_status=$?
+            exec 3>&-
     else
+        exec 3>&1
         _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
-            --infobox "" "$(tput lines)" "$(tput cols)" \
+            --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
             \
             --and-widget \
             --colors \
@@ -1304,8 +1309,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
             exit_status=$?
+            exec 3>&-
     fi
-    exec 3>&-
     case ${exit_status} in
         ${DIALOG_ESC})
             goodbye;;
