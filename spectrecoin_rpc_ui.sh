@@ -1151,12 +1151,10 @@ calculateLayout() {
     else
         SIZE_X_MENU=${_max_buff}
     fi
-    SIZE_X_MENU=60
     SIZE_Y_MENU=13
 
     #Size for the displayed transactions in main menu
     _max_buff=$((${currentTPutCols} - ${SIZE_X_MENU}))
-#    SIZE_X_TRANS=$((85<${_max_buff}?85:${_max_buff}))
     if [ ${_max_buff} -gt 85 ] ; then
         SIZE_X_TRANS=85
     else
@@ -1164,11 +1162,15 @@ calculateLayout() {
         if [ ${_max_buff} -lt 29 ]; then
             # hide transactions in main
             SIZE_X_TRANS=0
+            if [ ${currentTPutCols} -gt 60 ] ; then
+                SIZE_X_MENU=60
+            else
+                SIZE_X_MENU=${currentTPutCols}
+            fi
         else
             SIZE_X_TRANS=${_max_buff}
         fi
     fi
-
     SIZE_Y_TRANS=$(($(tput lines) - ${POS_Y_MENU}))
 
     # Size for the displayed info in main menu
