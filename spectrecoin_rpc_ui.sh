@@ -1313,8 +1313,8 @@ refreshMainMenu_GUI() {
             exec 3>&-
     fi
     case ${exit_status} in
-        ${DIALOG_ESC})
-            goodbye;;
+#        ${DIALOG_ESC})
+#            goodbye;;
         ${DIALOG_ERROR})
             errorHandling "${ERROR_SCREENSIZE_FATAL}"
                            1;;
