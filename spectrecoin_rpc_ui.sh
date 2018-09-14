@@ -1452,8 +1452,8 @@ simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
           "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
 
-trap refreshMainMenu_DATA INT
-while :; do
+#trap refreshMainMenu_DATA INT
+#while :; do
     refreshMainMenu_DATA
-done
+#done
 goodbye
