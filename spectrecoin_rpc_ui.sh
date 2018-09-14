@@ -373,6 +373,8 @@ makeOutputInfo() {
     #
     if [ ${SIZE_Y_INFO} -ge 15 ] ; then
         echo "\n${TEXT_HEADLINE_STAKING_INFO}\n"
+    else
+        echo "\n"
     fi
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
@@ -383,6 +385,8 @@ makeOutputInfo() {
     #
     if [ ${SIZE_Y_INFO} -ge 15 ] ; then
         echo "\n${TEXT_HEADLINE_CLIENT_INFO}\n"
+    else
+        echo "\n"
     fi
     echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[0]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[9]}" \
                     "${_textWidth}")"\n"
