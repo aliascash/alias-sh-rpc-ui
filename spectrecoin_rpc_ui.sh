@@ -1313,10 +1313,10 @@ refreshMainMenu_GUI() {
             exec 3>&-
     fi
     case ${exit_status} in
-#        ${DIALOG_ESC})
-#            goodbye;;
-        ${DIALOG_ERROR})
-            errorHandling "${ERROR_SCREENSIZE_FATAL}"
+        "${DIALOG_ESC}")
+            goodbye;;
+        "${DIALOG_ERROR}")
+            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
                            1;;
     esac
     case ${_mainMenuPick} in
@@ -1340,6 +1340,9 @@ refreshMainMenu_GUI() {
             advancedmenu;;
         "${CMD_MAIN_QUIT}")
             goodbye;;
+        *)
+            errorHandling "${ERROR_MAINMENU_FATAL}"
+                           1;;
     esac
 }
 
