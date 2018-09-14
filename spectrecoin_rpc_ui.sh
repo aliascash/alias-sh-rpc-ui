@@ -359,7 +359,7 @@ makeOutputInfo() {
     else
         _textWidth="$1"
     fi
-    if [ ${SIZE_Y_INFO} -ge 15 ] ; then
+    if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
         echo "${TEXT_HEADLINE_WALLET_INFO}\n"
     fi
     local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
@@ -371,9 +371,9 @@ makeOutputInfo() {
     echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" \
                     "${_textWidth}")"\n"
     #
-    if [ ${SIZE_Y_INFO} -ge 15 ] ; then
+    if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
         echo "\n${TEXT_HEADLINE_STAKING_INFO}\n"
-    elif [ ${SIZE_Y_INFO} -ge 10 ] ; then
+    elif [ ${TEXTHIGHT_INFO} -ge 10 ] ; then
         echo "\n"
     fi
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
@@ -383,9 +383,9 @@ makeOutputInfo() {
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
     #
-    if [ ${SIZE_Y_INFO} -ge 15 ] ; then
+    if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
         echo "\n${TEXT_HEADLINE_CLIENT_INFO}\n"
-    elif [ ${SIZE_Y_INFO} -ge 10 ] ; then
+    elif [ ${TEXTHIGHT_INFO} -ge 10 ] ; then
         echo "\n"
     fi
     echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[0]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[9]}" \
