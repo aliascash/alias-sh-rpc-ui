@@ -678,7 +678,17 @@ viewAllTransactions() {
         _displayStakes="false"
         _displayStakesButton="${BUTTON_LABEL_SHOW_STAKES}"
     fi
+    _prevButton="${BUTTON_LABEL_PREVIOUS}"
+    _nextButton="${BUTTON_LABEL_NEXT}"
+    _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     calculateLayout
+    if [ ${SIZE_X_TRANS} == 0 ]; then
+        # shorten buttons
+        _displayStakesButton=$(echo ${_displayStakesButton} | sed 's/\(.\{4\}\).*/\1/')
+        _prevButton=$(echo ${_prevButton} | sed 's/\(.\{4\}\).*/\1/')
+        _nextButton=$(echo ${_nextButton} | sed 's/\(.\{4\}\).*/\1/')
+        _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
+     fi
     if [ "${_displayStakes}" = "true" ]; then
         executeCURL "listtransactions" \
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"1"'
@@ -702,9 +712,9 @@ viewAllTransactions() {
         --extra-button \
         --help-button \
         --title "${TITEL_VIEW_TRANSACTIONS} ${_page}" \
-        --ok-label "${BUTTON_LABEL_PREVIOUS}" \
-        --extra-label "${BUTTON_LABEL_NEXT}" \
-        --help-label "${BUTTON_LABEL_MAIN_MENU}" \
+        --ok-label "${_prevButton}" \
+        --extra-label "${_nextButton}" \
+        --help-label "${_mainMenuButton}" \
         --cancel-label "${_displayStakesButton}" \
         --default-button 'extra' \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
@@ -1166,6 +1176,7 @@ calculateLayout() {
         if [ ${_max_buff} -lt 29 ]; then
             # hide transactions in main
             SIZE_X_TRANS=0
+            # recalc main menu size (make it max)
             if [ ${currentTPutCols} -gt 60 ] ; then
                 SIZE_X_MENU=60
             else
@@ -1210,10 +1221,6 @@ calculateLayout() {
     # Amount of transactions that can be displayed in the view all transactions dialog
     COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 7 - ${POS_Y_TRANS}) / 4) + 1 ))
     #
-
-
-
-    # not used yet
     TEXTHIGHT_INFO=$(( ${SIZE_Y_INFO} - 2 ))
 
     if [ ${currentTPutCols} -gt 60 ] ; then
