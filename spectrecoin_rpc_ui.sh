@@ -915,7 +915,8 @@ sendCoins() {
                         executeCURL "walletlock"
                     fi
                     if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
-                        simpleMsg "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
+                        simpleMsg "" \
+                                  "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
                                   "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
                         unlockWalletForStaking
                     fi
