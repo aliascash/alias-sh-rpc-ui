@@ -64,7 +64,7 @@ executeCURL() {
     unset msg_global
     connectToDaemon "$1" "$2"
     if [ -z "${curl_result_global}" ]; then
-        startDaemon
+        dialog_Start_Daemon
     fi
     # clean the result (curl_result_global) and optimize it for bash
     cutCURLresult
@@ -134,8 +134,8 @@ cutCURLresult() {
         curl_result_global=${curl_result_global//'"'/}
     elif [[ "${curl_result_global}" == *'401 Unauthorized'* ]]; then
         # The RPC login failed - since the daemon responded it's due to a wrong login
-        errorHandling "${ERROR_401_UNAUTHORIZED}" \
-                      2
+        dialog_Error_Handler "${ERROR_401_UNAUTHORIZED}" \
+                             2
     else
         # Most likely a parsing error in the CURL command parameters
         # Just hand over the error msg. within the CURL reply
@@ -143,20 +143,20 @@ cutCURLresult() {
         msg_global="${curl_result_global%%'"}'*}"
         # cut left side
         msg_global="${msg_global#*'message":"'}"
-        errorHandling "${ERROR_CURL_MSG_PROMPT}\n\n${msg_global}"
+        dialog_Error_Handler "${ERROR_CURL_MSG_PROMPT}\n\n${msg_global}"
     fi
 }
 
 # ============================================================================
 # Starts the daemon (spectrecoind)
 #
-startDaemon() {
+dialog_Start_Daemon() {
     if [ "${rpcconnect}" != "127.0.0.1" ]; then
         local _s="Settings:\n"
               _s+="RPC USER:${rpcuser}\nRPC PW:${rpcpassword}\n"
               _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
-        errorHandling "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" \
-                      1
+        dialog_Error_Handler "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" \
+                             1
     fi
     (
          local _oldIFS=$IFS
@@ -175,7 +175,7 @@ startDaemon() {
         for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
         done
-        local _i=60
+        local _i=120
         while [ -z "${curl_result_global}" ] && [ ${_i} -gt 0 ]; do
             echo "- ${_i} ${ERROR_DAEMON_WAITING_MSG}"
             _i=$((_i-5))
@@ -184,8 +184,8 @@ startDaemon() {
         done
         if [ -z "${curl_result_global}" ]; then
             # exit script
-            errorHandling "${ERROR_DAEMON_NO_CONNECT}" \
-                          1
+            dialog_Error_Handler "${ERROR_DAEMON_NO_CONNECT}" \
+                                 1
         else
             for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
                 echo "${_itemBuffer}"
@@ -306,9 +306,8 @@ getInfo() {
             fi
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
             if [ "${_itemBuffer#*':'}" == 'none' ]; then
-                info_global[9]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
+                info_global[9]="${TEXT_NO_ERRORS_DURING_RUNTIME}"
             else
-                #todo remove } at the end of error msg
                 info_global[9]="\Z1""${_itemBuffer#*':'}""\Zn"
             fi
         fi
@@ -326,7 +325,7 @@ getStakingInfo() {
     local _i=0
     local _oldIFS=$IFS
     local _itemBuffer
-    local _time
+    local _buff
     curl_result_global=${curl_result_global#'{'}
     curl_result_global=${curl_result_global%'}'}
     IFS=','
@@ -338,8 +337,17 @@ getStakingInfo() {
                 stakinginfo_global[0]="${TEXT_STAKING_OFF}"
             fi
         elif [[ ${_itemBuffer} == 'expectedtime:'* ]]; then
-            _time="${_itemBuffer#*':'}"
-            stakinginfo_global[1]=$(secToHumanReadable ${_time})
+            _buff="${_itemBuffer#*':'}"
+            stakinginfo_global[1]=$(secToHumanReadable ${_buff})
+        elif [[ ${_itemBuffer} == 'netstakeweight:'* ]]; then
+            _buff="${_itemBuffer#*':'}"
+            stakinginfo_global[2]=$(echo ${_buff} | sed 's/\(.*\)\(.\{8\}\)/\1.\2/')
+        elif [[ ${_itemBuffer} == 'errors:'* ]]; then
+            if [ "${_itemBuffer#*':'}" == 'none' ]; then
+                stakinginfo_global[3]="${TEXT_NO_ERRORS_DURING_RUNTIME}"
+            else
+                stakinginfo_global[3]="\Z1""${_itemBuffer#*':'}""\Zn"
+            fi
         fi
     done
     IFS=${_oldIFS}
@@ -397,12 +405,83 @@ makeOutputInfo() {
 }
 
 # ============================================================================
+# Gathers the data form the CURL result for the listtransactions command
+#
+# Input: $curl_result_global
+# Outpunt: $transactions_global array
+getTransactions() {
+    unset transactions_global
+    local _i=0
+    local _valueBuffer
+    local _oldIFS=$IFS
+    local _itemBuffer
+    local _unixtime
+    curl_result_global=${curl_result_global#'{'}
+    curl_result_global=${curl_result_global%'}'}
+    IFS='},{'
+    for _itemBuffer in ${curl_result_global}; do
+        if [[ ${_itemBuffer} == 'timereceived'* ]]; then
+            _unixtime="${_itemBuffer#*':'}"
+            _unixtime=$(date -d "@$_unixtime" +%d-%m-%Y" at "%H:%M:%S)
+            transactions_global[${_i}]=${_unixtime}
+            _i=$((${_i}+1))
+        elif [[ ${_itemBuffer} == 'category'* ]]; then
+            _valueBuffer="${_itemBuffer#*':'}"
+            if [[ ${_valueBuffer} == 'receive' ]]; then
+                transactions_global[${_i}]="${TEXT_RECEIVED}"
+            elif [[ ${_valueBuffer} == 'generate' ]]; then
+                transactions_global[${_i}]="${TEXT_STAKE}"
+            elif [[ ${_valueBuffer} == 'immature' ]]; then
+                transactions_global[${_i}]="${TEXT_IMMATURE}"
+            else
+                transactions_global[${_i}]="${TEXT_TRANSFERRED}"
+            fi
+            _i=$((${_i}+1))
+        elif [[ ${_itemBuffer} == 'address'* || ${_itemBuffer} == 'amount'* \
+            || ${_itemBuffer} == 'confirmations'* || ${_itemBuffer} == 'txid'* ]]; then
+            transactions_global[${_i}]="${_itemBuffer#*':'}"
+            _i=$((${_i}+1))
+        fi
+    done
+    IFS=${_oldIFS}
+}
+
+# ============================================================================
+# Gathers the data form the CURL result for the getinfo command
+#
+# Input:  $1  - optional var determing the text width (default: TEXTWIDTH_TRANS)
+# Operating with:  $transactions_global
+makeOutputTransactions() {
+    local _textWidth
+    if [ -z "$1" ]; then
+        _textWidth="${TEXTWIDTH_TRANS}"
+    else
+        _textWidth="$1"
+    fi
+    for ((i=${#transactions_global[@]}-1;i >= 0;i=$(( $i - 6 )))); do
+        echo $(fillLine "${transactions_global[$i-4]}: ${transactions_global[$i-3]}-_-${transactions_global[$i]}" \
+                        "${_textWidth}")"\n"
+        if (( ${_textWidth} >= 43 ));then
+            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}-_-${TEXT_ADDRESS}: ${transactions_global[$i-5]}" \
+                            "${_textWidth}")"\n"
+        else
+            echo "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}\n"
+        fi
+        if (( ${_textWidth} >= 70 ));then
+            echo $(fillLine "${TEXT_TXID}: ${transactions_global[$i-1]}" \
+                            "${_textWidth}")"\n"
+        fi
+        echo "\n"
+    done
+}
+
+# ============================================================================
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input: $curl_result_global
 # Outpunt: $transactions_global array
 #          $1  - if "full" a staking analysis is done
-getTransactions() {
+getStakingAnalysisData() {
     unset transactions_global
     local _i=0
     local _oldestStakeDate=9999999999
@@ -535,35 +614,6 @@ getTransactions() {
 }
 
 # ============================================================================
-# Gathers the data form the CURL result for the getinfo command
-#
-# Input:  $1  - optional var determing the text width (default: TEXTWIDTH_TRANS)
-# Operating with:  $transactions_global
-makeOutputTransactions() {
-    local _textWidth
-    if [ -z "$1" ]; then
-        _textWidth="${TEXTWIDTH_TRANS}"
-    else
-        _textWidth="$1"
-    fi
-    for ((i=${#transactions_global[@]}-1;i >= 0;i=$(( $i - 6 )))); do
-        echo $(fillLine "${transactions_global[$i-4]}: ${transactions_global[$i-3]}-_-${transactions_global[$i]}" \
-                        "${_textWidth}")"\n"
-        if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}-_-${TEXT_ADDRESS}: ${transactions_global[$i-5]}" \
-                            "${_textWidth}")"\n"
-        else
-            echo "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}\n"
-        fi
-        if (( ${_textWidth} >= 70 ));then
-            echo $(fillLine "${TEXT_TXID}: ${transactions_global[$i-1]}" \
-                            "${_textWidth}")"\n"
-        fi
-        echo "\n"
-    done
-}
-
-# ============================================================================
 # Define the dialog exit status codes
 : ${DIALOG_OK=0}
 : ${DIALOG_CANCEL=1}
@@ -580,7 +630,7 @@ makeOutputTransactions() {
 #           by an integer in the range 1 - 255).
 # If no $2 is parsed the handler will just promp a dialog and continue,
 # instead of prompting to terminal and exiting
-errorHandling() {
+dialog_Error_Handler() {
     if [ -z "$2" ]; then
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
@@ -596,41 +646,48 @@ errorHandling() {
 
 # ============================================================================
 # Placeholder checkbox just give the user visual feedback
-sry() {
+dialog_SRY() {
     dialog --backtitle "${TITLE_BACK}" \
            --no-shadow \
            --colors \
            --title "${TITLE_PLACEHOLDER_FUNCTION}" \
            --msgbox  "${TEXT_PLACEHOLDER_FUNCTION}" 0 0
-    refreshMainMenu_GUI
+    dialog_Main_Menu
 }
 
 # ============================================================================
 # This marks the regular ending of the script
-goodbye() {
+dialog_Goodbye() {
+    local _mainMenuButton
     local _s=""
+    if [ ${SIZE_X_TRANS} == 0 ]; then
+        # shorten buttons
+        _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
+    else
+        _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
+    fi
     dialog --no-shadow \
         --colors \
         --extra-button \
         --ok-label "${BUTTON_LABEL_JUST_LEAVE}" \
         --extra-label "${BUTTON_LABEL_STOP_DAEMON}" \
-        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
+        --cancel-label "${_mainMenuButton}" \
         --default-button 'ok' \
         --yesno "${TEXT_GOODBYE_WARNING}" 0 0
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
-            refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_OK})
             _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             sudo service spectrecoind stop
             _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
-            refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         *)
-            errorHandling "${ERROR_GOODBYE_FATAL}" \
-                          1;;
+            dialog_Error_Handler "${ERROR_GOODBYE_FATAL}" \
+                                 1;;
     esac
     _s+="\n\n${TEXT_GOODBYE_FEEDBACK_EXIT}"
     dialog --backtitle "${TITLE_BACK}" \
@@ -649,7 +706,7 @@ goodbye() {
 #       $2 - text within the box
 #       $3 - button text
 #
-simpleMsg() {
+dialog_Simple_Msg() {
     dialog --backtitle "${TITLE_BACK}" \
         --colors \
         --title "$1" \
@@ -663,7 +720,11 @@ simpleMsg() {
 #
 # Input: $1 - start (optional - default "0")
 #        $2 - if "true" stakes will be displayed (optional - default "true")
-viewAllTransactions() {
+dialog_View_All_Transactions() {
+    local _displayStakesButton
+    local _prevButton
+    local _nextButton
+    local _mainMenuButton
     local _start
     if [ -z "$1" ]; then
         _start="0"
@@ -678,9 +739,6 @@ viewAllTransactions() {
         _displayStakes="false"
         _displayStakesButton="${BUTTON_LABEL_SHOW_STAKES}"
     fi
-    _prevButton="${BUTTON_LABEL_PREVIOUS}"
-    _nextButton="${BUTTON_LABEL_NEXT}"
-    _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     calculateLayout
     if [ ${SIZE_X_TRANS} == 0 ]; then
         # shorten buttons
@@ -688,7 +746,11 @@ viewAllTransactions() {
         _prevButton=$(echo ${_prevButton} | sed 's/\(.\{4\}\).*/\1/')
         _nextButton=$(echo ${_nextButton} | sed 's/\(.\{4\}\).*/\1/')
         _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
-     fi
+    else
+        _prevButton="${BUTTON_LABEL_PREVIOUS}"
+        _nextButton="${BUTTON_LABEL_NEXT}"
+        _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
+    fi
     if [ "${_displayStakes}" = "true" ]; then
         executeCURL "listtransactions" \
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"1"'
@@ -698,7 +760,7 @@ viewAllTransactions() {
     fi
     getTransactions
     if [ ${#transactions_global[@]} -eq 0 ] && [ ${_start} -ge ${COUNT_TRANS_VIEW} ]; then
-        viewAllTransactions "$(( ${_start} - ${COUNT_TRANS_VIEW} ))" \
+        dialog_View_All_Transactions "$(( ${_start} - ${COUNT_TRANS_VIEW} ))" \
                            "${_displayStakes}"
     fi
     local _page=$(( (${_start} / ${COUNT_TRANS_VIEW}) + 1 ))
@@ -712,8 +774,8 @@ viewAllTransactions() {
         --extra-button \
         --help-button \
         --title "${TITEL_VIEW_TRANSACTIONS} ${_page}" \
-        --ok-label "${_prevButton}" \
-        --extra-label "${_nextButton}" \
+        --ok-label "${_nextButton}" \
+        --extra-label "${_prevButton}" \
         --help-label "${_mainMenuButton}" \
         --cancel-label "${_displayStakesButton}" \
         --default-button 'extra' \
@@ -724,32 +786,32 @@ viewAllTransactions() {
             refreshMainMenu_DATA;;
         ${DIALOG_OK})
             if [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
-                viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
+                dialog_View_All_Transactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
                                    "${_displayStakes}"
             else
-                viewAllTransactions "0" \
+                dialog_View_All_Transactions "0" \
                                     "${_displayStakes}"
             fi;;
         ${DIALOG_EXTRA})
-            viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
+            dialog_View_All_Transactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
                                "${_displayStakes}";;
         ${DIALOG_CANCEL})
             if [ "${_displayStakes}" = "true" ]; then
-            viewAllTransactions "0" \
+            dialog_View_All_Transactions "0" \
                                 "false"
             else
-            viewAllTransactions "0" \
+            dialog_View_All_Transactions "0" \
                                 "true"
             fi;;
         ${DIALOG_HELP})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "${ERROR_TRANS_FATAL}" \
-                  1
+    dialog_Error_Handler "${ERROR_TRANS_FATAL}" \
+                         1
 }
 
 # ============================================================================
-advancedmenu() {
+dialog_SubMenu_Advanced() {
 # Staking Analysis
   # count
   # estimante
@@ -794,6 +856,7 @@ advancedmenu() {
         --menu "" 0 0 10 \
         \
         "${_cmdWallet}" "${_explWalletStatus}" \
+        "${CMD_BACKUP_WALLET}" "${EXPL_CMD_BACKUP_WALLET}" \
         "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
         "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
@@ -802,37 +865,39 @@ advancedmenu() {
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
-#    case ${exit_status} in
-#        ${DIALOG_ESC})
-#            refreshMainMenu_DATA;;
-#    esac
+    case ${exit_status} in
+        ${DIALOG_ESC})
+            refreshMainMenu_DATA;;
+    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            sry;;
+            dialog_SRY;;
+        "${CMD_BACKUP_WALLET}")
+            dialog_SRY;;
         "${CMD_CHANGE_WALLET_PW}")
-            sry;;
+            dialog_SRY;;
         "${CMD_STAKING_ANALYSE}")
-            sry;;
+            dialog_SRY;;
         "${CMD_SETUP_PI}")
-            sry;;
+            dialog_SRY;;
         "${CMD_USER_COMMAND}")
-            userCommandInput;;
+            dialog_User_Command_Input;;
         "${CMD_GET_PEER_INFO}")
-            sry;;
+            dialog_SRY;;
         "${CMD_CHANGE_LANGUAGE}")
-            sry;;
+            dialog_SRY;;
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
-            errorHandling "${ERROR_ADVMENU_FATAL}" \
-                          1;;
+            dialog_Error_Handler "${ERROR_ADVMENU_FATAL}" \
+                                 1;;
     esac
 }
 
 # ============================================================================
 # Goal: Display the wallets addresses for the "Default Address"-account (equals default addr)
 #
-receiveCoins() {
+dialog_Receive_Coins() {
     executeCURL "getaddressesbyaccount" "\"Default Address\""
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
@@ -843,7 +908,7 @@ receiveCoins() {
                --no-shadow \
                --infobox "${TEXT_FEEDBACK_RECEIVE}\n${curl_result_global}" 0 0
     read -s
-    refreshMainMenu_GUI
+    dialog_Main_Menu
 }
 
 # ============================================================================
@@ -853,10 +918,17 @@ receiveCoins() {
 #
 # Input $1 - address (important for address book functionality)
 #
-sendCoins() {
+dialog_Send_Coins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
+    local _mainMenuButton
+    if [ ${SIZE_X_TRANS} == 0 ]; then
+        # shorten buttons
+        _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
+    else
+        _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
+    fi
     local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
@@ -867,7 +939,7 @@ sendCoins() {
     exec 3>&1
     _buffer=$(dialog --backtitle "${TITLE_BACK}" \
         --ok-label "${BUTTON_LABEL_SEND}" \
-        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
+        --cancel-label "${_mainMenuButton}" \
         --extra-button \
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow --colors \
@@ -882,55 +954,56 @@ sendCoins() {
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
-        refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_ESC})
-        refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_EXTRA})
-        sry
-        sendCoins "test1";;
+            dialog_SRY
+            dialog_Send_Coins "test1";;
         ${DIALOG_OK})
-        _i=0
-        local _itemBuffer
-        for _itemBuffer in ${_buffer}; do
-            _i=$((_i+1))
-            if [ ${_i} -eq 1 ]; then
-            if [[ ${_itemBuffer} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
-                _destinationAddress="${_itemBuffer}"
-            else
-                errorHandling "${ERROR_SEND_INVALID_ADDRESS}"
-                sendCoins
-            fi
-            elif [ ${_i} -eq 2 ]; then
-                if [[ ${_itemBuffer} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${_itemBuffer} > 0" | bc)" ]; then
-                    _amount=${_itemBuffer}
-                    if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
-                        # iff wallet is unlocked, we have to look it first
-                        executeCURL "walletlock"
-                    fi
-                    if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
-                        passwordDialog "60" "false"
-                    fi
-                    executeCURL "sendtoaddress" "\"${_destinationAddress}\",${_amount}"
-                    if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
-                        executeCURL "walletlock"
-                    fi
-                    if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
-                        simpleMsg "" \
-                                  "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
-                                  "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
-                        unlockWalletForStaking
-                    fi
-                    refreshMainMenu_DATA
+            _i=0
+            local _itemBuffer
+            for _itemBuffer in ${_buffer}; do
+                _i=$((_i+1))
+                if [ ${_i} -eq 1 ]; then
+                if [[ ${_itemBuffer} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
+                    _destinationAddress="${_itemBuffer}"
                 else
-                    errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
-                    sendCoins "${_destinationAddress}"
+                    dialog_Error_Handler "${ERROR_SEND_INVALID_ADDRESS}"
+                    dialog_Send_Coins
                 fi
-            fi
-        done
-        sendCoins "${_destinationAddress}";;
+                elif [ ${_i} -eq 2 ]; then
+                    if [[ ${_itemBuffer} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${_itemBuffer} > 0" | bc)" ]; then
+                        _amount=${_itemBuffer}
+                        if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
+                            # iff wallet is unlocked, we have to look it first
+                            executeCURL "walletlock"
+                        fi
+                        if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
+                            dialog_Enter_Password "60" \
+                                                  "false"
+                        fi
+                        executeCURL "sendtoaddress" "\"${_destinationAddress}\",${_amount}"
+                        if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
+                            executeCURL "walletlock"
+                        fi
+                        if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
+                            dialog_Simple_Msg "" \
+                                      "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
+                                      "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
+                            dialog_Unlock_Wallet_For_Staking
+                        fi
+                        refreshMainMenu_DATA
+                    else
+                        dialog_Error_Handler "${ERROR_SEND_INVALID_AMOUNT}"
+                        dialog_Send_Coins "${_destinationAddress}"
+                    fi
+                fi
+            done
+            dialog_Send_Coins "${_destinationAddress}";;
     esac
-    errorHandling "${ERROR_SEND_FATAL}" \
-                  1
+    dialog_Error_Handler "${ERROR_SEND_FATAL}" \
+                         1
 }
 
 # ============================================================================
@@ -941,7 +1014,7 @@ sendCoins() {
 #       $2 - if true the wallet will only be opend for staking
 #
 # Return: nothing
-passwordDialog() {
+dialog_Enter_Password() {
     exec 3>&1
     local _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
         --no-shadow \
@@ -959,29 +1032,36 @@ passwordDialog() {
             refreshMainMenu_DATA;;
         ${DIALOG_OK})
             # literally nothing to do here since daemon responds is excellent
-            # the user will be guided back to main menu by function which exceuted passwordDialog()
+            # the user will be guided back to main menu by function which exceuted dialog_Enter_Password()
             executeCURL "walletpassphrase" "\"${_wallet_password}\",$1,$2";;
         *)
-            errorHandling "${ERROR_PW_FATAL}" \
-                          1;;
+            dialog_Error_Handler "${ERROR_PW_FATAL}" \
+                                 1;;
     esac
 }
 
 # ============================================================================
-# Goal: ask for a new wallet password
+# Goal: ask for a wallet password, note: this only works if the wallet is unencrypted
 #       Password will never leave this function.
 #
 # Input $1 - title of the dialog
 #
 # Return: nothing
-setWalletPW() {
+dialog_Encrypt_Wallet() {
+    local _mainMenuButton
+    if [ ${SIZE_X_TRANS} == 0 ]; then
+        # shorten buttons
+        _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
+    else
+        _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
+    fi
     exec 3>&1
     local _buffer=$(dialog --backtitle "${TITLE_BACK}" \
                            --no-shadow \
                            --insecure \
                            --title "${TITLE_ENCRYPT_WALLET}" \
                            --ok-label "${BUTTON_LABEL_ENCRYPT}" \
-                           --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
+                           --cancel-label "${_mainMenuButton}" \
                            --mixedform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
                                        "Password:" 1 1 "" 1 11 30 0 1 \
                                        "Retype:" 3 1 "" 3 11 30 0 1 \
@@ -991,9 +1071,9 @@ setWalletPW() {
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
-            refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_ESC})
-            refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_OK})
             _i=0
             local _itemBuffer
@@ -1006,7 +1086,7 @@ setWalletPW() {
                     local _s="\Z1You entered an invalid password.\Zn\n\n"
                         _s+="A valid wallet password must be in the form:"
                         _s+="\n- at least 10 char long"
-                    errorHandling "${_s}"
+                    dialog_Error_Handler "${_s}"
                     setWalletPW
                 fi
                 elif [ ${_i} -eq 2 ]; then
@@ -1023,7 +1103,7 @@ setWalletPW() {
                         refreshMainMenu_DATA
                     else
                         local _s="Passwords do not match."
-                        errorHandling "${_s}"
+                        dialog_Error_Handler "${_s}"
                         setWalletPW
                     fi
                 fi
@@ -1044,7 +1124,15 @@ setWalletPW() {
 #
 # Output: USER_DAEMON_COMMAND updated
 #         USER_DAEMON_PARAMS updated
-userCommandInput() {
+dialog_User_Command_Input() {
+    local _mainMenuButton
+    local _s=""
+    if [ ${SIZE_X_TRANS} == 0 ]; then
+        # shorten buttons
+        _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
+    else
+        _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
+    fi
     local _itemBuffer
     local _oldIFS=$IFS
     local _buffer
@@ -1064,7 +1152,7 @@ userCommandInput() {
     exec 3>&1
     _buffer=$(dialog --backtitle "${TITLE_BACK}" \
         --ok-label "${BUTTON_LABEL_EXECUTE}" \
-        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
+        --cancel-label "${_mainMenuButton}" \
         --extra-button \
         --extra-label "${BUTTON_LABEL_HELP}" \
         --no-shadow --colors \
@@ -1079,13 +1167,13 @@ userCommandInput() {
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
-            refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_ESC})
-            refreshMainMenu_GUI;;
+            dialog_Main_Menu;;
         ${DIALOG_EXTRA})
             executeCURL "help" ""
-            curlUserFeedbackHandling
-            userCommandInput;;
+            dialog_cURL_User_Command_Feedback
+            dialog_User_Command_Input;;
         ${DIALOG_OK})
             _i=0
             local _argContainsSpaces="false"
@@ -1121,22 +1209,22 @@ userCommandInput() {
                     fi
                 fi
             done
-            drawGauge "0" \
+            dialog_Draw_Gauge "0" \
                       "${TEXT_GAUGE_DEFAULT}"
             executeCURL "${USER_DAEMON_COMMAND}" \
                         "${USER_DAEMON_PARAMS}"
-            drawGauge "100" \
+            dialog_Draw_Gauge "100" \
                       "${TEXT_GAUGE_ALLDONE}"
-            curlUserFeedbackHandling
-            userCommandInput;;
+            dialog_cURL_User_Command_Feedback
+            dialog_User_Command_Input;;
     esac
-    errorHandling "${ERROR_USERCOMMAND_FATAL}" \
-                  1
+    dialog_Error_Handler "${ERROR_USERCOMMAND_FATAL}" \
+                         1
 }
 
 # ============================================================================
 # Simple output for any CURL command the user entered
-curlUserFeedbackHandling() {
+dialog_cURL_User_Command_Feedback() {
     if [[ "${curl_result_global}" != '{"result":null'* ]]; then
         # split the string between the values using ',' as indicator
         # instead of replacing every ',' with '\n' just replace those followed by [a-z]
@@ -1187,11 +1275,11 @@ calculateLayout() {
             SIZE_X_TRANS=${_max_buff}
         fi
     fi
-    SIZE_Y_TRANS=$(($(tput lines) - ${POS_Y_MENU}))
+    SIZE_Y_TRANS=$((${currentTPutLines} - ${POS_Y_MENU}))
 
     # Size for the displayed info in main menu
     SIZE_X_INFO=${SIZE_X_MENU}
-    _max_buff=$(($(tput lines) - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
+    _max_buff=$((${currentTPutLines} - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
     if [ ${_max_buff} -gt 15 ] ; then
         SIZE_Y_INFO=15
     else
@@ -1205,7 +1293,7 @@ calculateLayout() {
     else
         SIZE_X_TRANS_VIEW=${_max_buff}
     fi
-    SIZE_Y_TRANS_VIEW=$(tput lines)
+    SIZE_Y_TRANS_VIEW=${currentTPutLines}
 
     POS_X_MENU=$(($((${currentTPutCols} - ${SIZE_X_MENU} - ${SIZE_X_TRANS})) / 2))
     POS_X_TRANS=$((${POS_X_MENU} + ${SIZE_X_MENU}))
@@ -1235,7 +1323,7 @@ calculateLayout() {
 
 # ============================================================================
 # This function draws the main menu to the terminal
-refreshMainMenu_GUI() {
+dialog_Main_Menu() {
     local _cmdWallet
     local _explWalletStatus
     # ${info_global[8]} indicates if wallet is open
@@ -1324,37 +1412,32 @@ refreshMainMenu_GUI() {
             exit_status=$?
     fi
     exec 3>&-
-#    case ${exit_status} in
-#        "${DIALOG_ESC}")
-#            goodbye;;
-#        "${DIALOG_ERROR}")
-#            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
-#                           1;;
-#    esac
+    case ${exit_status} in
+        "${DIALOG_ESC}")
+            dialog_Goodbye;;
+    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
         "${CMD_MAIN_UNLOCK_WALLET}")
-            unlockWalletForStaking;;
+            dialog_Unlock_Wallet_For_Staking;;
         "${CMD_MAIN_LOCK_WALLET}")
-            lockWallet;;
+            dialog_Lock_Wallet;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            # todo change with new dialog version
-            sry;;
-            #setWalletPW;;
+            dialog_Encrypt_Wallet;;
         "${CMD_MAIN_TRANS}")
-            viewAllTransactions;;
+            dialog_View_All_Transactions;;
         "${CMD_MAIN_SEND}")
-            sendCoins;;
+            dialog_Send_Coins;;
         "${CMD_MAIN_RECEIVE}")
-            receiveCoins;;
+            dialog_Receive_Coins;;
         "${CMD_MAIN_ADVANCED_MENU}")
-            advancedmenu;;
+            dialog_SubMenu_Advanced;;
         "${CMD_MAIN_QUIT}")
-            goodbye;;
+            dialog_Goodbye;;
         *)
-            errorHandling "${ERROR_MAINMENU_FATAL}"
-                           1;;
+            dialog_Error_Handler "${ERROR_MAINMENU_FATAL}" \
+                                 1;;
     esac
 }
 
@@ -1365,34 +1448,34 @@ refreshMainMenu_DATA() {
     # have to recalc layout since it might have changed
     # (needed for transactions amount to fetch)
     calculateLayout
-    drawGauge "0" \
+    dialog_Draw_Gauge "0" \
             "${TEXT_GAUGE_GET_STAKING_DATA}"
     executeCURL "getstakinginfo"
-    drawGauge "15" \
+    dialog_Draw_Gauge "15" \
             "${TEXT_GAUGE_PROCESS_STAKING_DATA}"
     getStakingInfo
-    drawGauge "33" \
+    dialog_Draw_Gauge "33" \
             "${TEXT_GAUGE_GET_INFO}"
     executeCURL "getinfo"
-    drawGauge "48" \
+    dialog_Draw_Gauge "48" \
             "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
-        drawGauge "66" \
+        dialog_Draw_Gauge "66" \
                 "${TEXT_GAUGE_GET_TRANS}"
         executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
-        drawGauge "85" \
+        dialog_Draw_Gauge "85" \
                 "${TEXT_GAUGE_PROCESS_TRANS}"
         getTransactions
     fi
-    drawGauge "100" \
+    dialog_Draw_Gauge "100" \
             "${TEXT_GAUGE_ALLDONE}"
-    refreshMainMenu_GUI
+    dialog_Main_Menu
 }
 
 # ============================================================================
 # Goal: lock the wallet
-lockWallet() {
+dialog_Lock_Wallet() {
     executeCURL "walletlock"
     dialog --backtitle "${TITLE_BACK}" \
            --colors \
@@ -1404,8 +1487,8 @@ lockWallet() {
 
 # ============================================================================
 # Goal: unlock the wallet for staking only
-unlockWalletForStaking() {
-    passwordDialog "999999999" \
+dialog_Unlock_Wallet_For_Staking() {
+    dialog_Enter_Password "999999999" \
                    "true"
     local _s
     # if there was no error
@@ -1417,16 +1500,14 @@ unlockWalletForStaking() {
                --msgbox "${TEXT_FEEDBACK_WALLET_UNLOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
         refreshMainMenu_DATA
     fi
-    # todo change with new dialog version
-    #unlockWalletForStaking
-    refreshMainMenu_DATA
+    dialog_Unlock_Wallet_For_Staking
 }
 
 # ============================================================================
 # Goal: draw a gauge to give user feedback
 # Input $1 - amount the gauge will display integer (0-100)
 #       $2 - text in the gauge box
-drawGauge() {
+dialog_Draw_Gauge() {
     echo "$1" | dialog --no-shadow \
                        --title "${TITLE_GAUGE}" \
                        --gauge "$2" "${SIZE_Y_GAUGE}" "${SIZE_X_GAUGE}" 0
@@ -1457,9 +1538,9 @@ export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 initDaemonConfiguration
 if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
-    simpleMsg "${TITEL_SUGGESTION}" \
-              "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
-              "${BUTTON_LABEL_CONTINUE}"
+    dialog_Simple_Msg "${TITEL_SUGGESTION}" \
+                      "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
+                      "${BUTTON_LABEL_CONTINUE}"
 fi
 message="\n"
 message+="        Use at your own risc!!!\n\n"
@@ -1467,12 +1548,13 @@ message+="    Terminal: $(tput longname)\n"
 message+="    Dialog $(dialog --version)\n"
 message+="      Interface version: ${VERSION}\n"
 
-simpleMsg "- --- === WARNING === --- -" \
-          "${message}" \
-          "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
+dialog_Simple_Msg "- --- === WARNING === --- -" \
+                  "${message}" \
+                  "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
 
-#trap refreshMainMenu_DATA INT
-#while :; do
+trap refreshMainMenu_DATA INT
+while :; do
     refreshMainMenu_DATA
-#done
-#goodbye
+done
+dialog_Error_Handler "${ERROR_MAINMENU_FATAL}" \
+                     1
