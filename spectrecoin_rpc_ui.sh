@@ -1114,7 +1114,7 @@ dialog_Encrypt_Wallet() {
                     _s+="\n- at least 10 char long"
                 dialog_Error_Handler "${_s}"
                 dialog_Encrypt_Wallet "$1"
-            elif [ "${_pw}" != "${#_pw2}" ]; then
+            elif [ "${_pw}" != "${_pw2}" ]; then
                 local _s="Passwords do not match."
                 dialog_Error_Handler "${_s}"
                 dialog_Encrypt_Wallet "$1"
