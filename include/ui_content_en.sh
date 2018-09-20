@@ -170,6 +170,7 @@ TEXT_GAUGE_GET_TRANS="Getting transactions data from wallet daemon..."
 TEXT_GAUGE_PROCESS_TRANS="Processing transactions data..."
 #
 TEXT_GOODBYE_WARNING="\Z1If you plan to shutdown the system, wallet must be stopped before!\Zn\n\nDo you want to stop the wallet (no more staking) or just exit the UI?\Zn"
+TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPING="The wallet is shutting down. Please wait..."
 TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING="Wallet is still running. This means you will keep staking, if your wallet is unlocked (or without pw)."
 TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED="\Z1Wallet daemon stopped.\Zn"
 TEXT_GOODBYE_FEEDBACK_EXIT="Hope you enjoyed.\n\n\Z4Please give feedback.\Zn"

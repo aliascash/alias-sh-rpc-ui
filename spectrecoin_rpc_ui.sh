@@ -678,6 +678,9 @@ dialog_Goodbye() {
         ${DIALOG_OK})
             _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
+            dialog --backtitle "${TITLE_BACK}" \
+                   --colors \
+                   --infobox "${TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPING}" 0 0
             sudo service spectrecoind stop
             _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
