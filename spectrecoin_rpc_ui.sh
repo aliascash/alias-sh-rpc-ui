@@ -748,10 +748,10 @@ dialog_View_All_Transactions() {
     fi
     if [ "${_displayStakes}" = "true" ]; then
         executeCURL "listtransactions" \
-                    '"*",'"${COUNT_TRANS_VIEW},${_start}"',"1"'
+                    "\"*\",${COUNT_TRANS_VIEW},${_start},\"1\""
     else
         executeCURL "listtransactions" \
-                    '"*",'"${COUNT_TRANS_VIEW},${_start}"',"0"'
+                    "\"*\",${COUNT_TRANS_VIEW},${_start},\"0\""
     fi
     getTransactions
     if [ ${#transactions_global[@]} -eq 0 ] && [ ${_start} -ge ${COUNT_TRANS_VIEW} ]; then
@@ -894,7 +894,8 @@ dialog_SubMenu_Advanced() {
 # Goal: Display the wallets addresses for the "Default Address"-account (equals default addr)
 #
 dialog_Receive_Coins() {
-    executeCURL "getaddressesbyaccount" "\"Default Address\""
+    executeCURL "getaddressesbyaccount" \
+                "\"Default Address\""
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
     curl_result_global=${curl_result_global//']'/''}
@@ -978,7 +979,8 @@ dialog_Send_Coins() {
                             dialog_Enter_Password "60" \
                                                   "false"
                         fi
-                        executeCURL "sendtoaddress" "\"${_destinationAddress}\",${_amount}"
+                        executeCURL "sendtoaddress" \
+                                    "\"${_destinationAddress}\",${_amount}"
                         if [ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]; then
                             executeCURL "walletlock"
                         fi
@@ -1039,10 +1041,12 @@ dialog_Enter_Password() {
             # executed dialog_Enter_Password()
             if [ "$1" == "changePW" ]; then
                 # change wallet password
-                executeCURL "walletpassphrasechange" "\"${_wallet_password}\" \"$2\""
+                executeCURL "walletpassphrasechange" \
+                            "\"${_wallet_password}\" \"$2\""
             else
                 # Unlock wallet for staking or sending coins
-                executeCURL "walletpassphrase" "\"${_wallet_password}\",$1,$2"
+                executeCURL "walletpassphrase" \
+                            "\"${_wallet_password}\",$1,$2"
             fi;;
         *)
             dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
@@ -1120,29 +1124,17 @@ dialog_Encrypt_Wallet() {
                 dialog_Encrypt_Wallet "$1"
             fi
             if [ "$1" == "encrypt" ]; then
-                executeCURL "encryptwallet" "\"${_pw}\""
-                #walletpassphrasechange "oldpassphrase" "newpassphrase"
-                # maybe stops daemon?
-                sudo service spectrecoind stop
-                dialog --backtitle "${TITLE_BACK}" \
-                       --colors \
-                       --ok-label "${BUTTON_LABEL_RESTART_DAEMON}" \
-                       --msgbox  "$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED" 0 0
-                refreshMainMenu_DATA
+                executeCURL "encryptwallet" \
+                            "\"${_pw}\""
             else
-                unset msg_global
                 dialog_Enter_Password "changePW" \
                                       "${_pw}"
-                # if there was no error
-                if [ -z "${msg_global}" ]; then
-                    dialog --backtitle "${TITLE_BACK}" \
-                           --colors \
-                           --ok-label "${BUTTON_LABEL_MAIN_MENU}" \
-                           --msgbox "Password changed." 0 0
-                    refreshMainMenu_DATA
-                fi
-                dialog_Encrypt_Wallet "$1"
-            fi;;
+            fi
+            dialog --backtitle "${TITLE_BACK}" \
+                   --colors \
+                   --infobox "Wallet password successfully set. Daemon will now encrypt the wallet and restart." 0 0
+            sudo service spectrecoind stop
+            refreshMainMenu_DATA;;
         *)
             dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
@@ -1205,7 +1197,8 @@ dialog_User_Command_Input() {
         ${DIALOG_ESC})
             dialog_Main_Menu;;
         ${DIALOG_EXTRA})
-            executeCURL "help" ""
+            executeCURL "help" \
+                        ""
             dialog_cURL_User_Command_Feedback
             dialog_User_Command_Input;;
         ${DIALOG_OK})
@@ -1494,7 +1487,8 @@ refreshMainMenu_DATA() {
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
         dialog_Draw_Gauge "66" \
                 "${TEXT_GAUGE_GET_TRANS}"
-        executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
+        executeCURL "listtransactions" \
+                    "\"*\",${COUNT_TRANS_MENU},0,\"1\""
         dialog_Draw_Gauge "85" \
                 "${TEXT_GAUGE_PROCESS_TRANS}"
         getTransactions
