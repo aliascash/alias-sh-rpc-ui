@@ -91,6 +91,8 @@ EXPL_CMD_MAIN_MENU="Go back to main menu."
 # Error Feedback
 ERROR_FATAL_DIALOG="Unexpected fatal error with dialog return code."
 ERROR_FUNCTION_PARAMETER="Unexpected error with function parameter."
+ERROR_ENCRYPT_TOO_SHORT="\Z1You entered an invalid password.\Zn\n\nA valid wallet password must be in the form:\n- at least 10 char long"
+ERROR_ENCRYPT_NO_MATCH="Passwords do not match."
 ERROR_SEND_INVALID_ADDRESS="\Z1You entered an invalid address.\Zn\n\nA valid Spectrecoin address must be in the form:\n- beginning with \"S\"\n- length 27-34\n- uppercase letter \"O\", \"I\", lowercase letter \"l\", and the number \"0\" are never used to prevent visual ambiguity"
 ERROR_SEND_INVALID_AMOUNT="Amount must be a number, with:\n- greater than 0\n- max. 8 digits behind decimal point"
 ERROR_CURL_MSG_PROMPT="CURL error message:"
@@ -148,6 +150,10 @@ TEXT_SEND_EXPL="Enter the destination address."
 #
 TEXT_PW_EXPL="Enter wallet password"
 #
+TEXT_ENCRYPT_EXPL="Note: Password must be at least 10 char long.\nEnter new wallet password:"
+TEXT_ENCRYPT_PASSWORD="Password"
+TEXT_ENCRYPT_RETYPE="Retype"
+#
 TEXT_USERCOMMAND_EXPL="Here you can enter commands that will be send to the Daemon."
 TEXT_USERCOMMAND_CMD_EXPL="type help for info"
 TEXT_USERCOMMAND_CMD="Command"
@@ -170,6 +176,7 @@ TEXT_GOODBYE_FEEDBACK_EXIT="Hope you enjoyed.\n\n\Z4Please give feedback.\Zn"
 #
 TEXT_FEEDBACK_WALLET_LOCKED="Wallet successfully locked.\n\n\Z5You will not be able to stake anymore.\Zn\n\nUse \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn in main menu to unlock the wallet for staking only again."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Wallet successfully unlocked."
+TEXT_FEEDBACK_WALLET_ENCRYPT="Wallet password successfully set. Daemon will now encrypt the wallet and restart."
 TEXT_SUGGESTION_STAKING="It will take a short amount of time for the wallet daemon to update the staking status, after the wallet was unlocked/locked.\nUse the \Z4${CMD_MAIN_REFRESH}\Zn command in main menu to refresh the screen."
 TEXT_FEEDBACK_RECEIVE="Marking the text will automatically copy it to clipboard.\nPress return to continue to main menu.\n\nDefault wallet addresses:"
 #

@@ -1088,9 +1088,9 @@ dialog_Encrypt_Wallet() {
                            --title "${_title}" \
                            --ok-label "${_ok}" \
                            --cancel-label "${_mainMenuButton}" \
-                           --passwordform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
-                                       "Password:" 1 1 "" 1 11 30 0 \
-                                       "Retype:" 3 1 "" 3 11 30 0 \
+                           --passwordform "${TEXT_ENCRYPT_EXPL}" 12 50 0 \
+                                       "${TEXT_ENCRYPT_PASSWORD}:" 1 1 "" 1 11 30 0 \
+                                       "${TEXT_ENCRYPT_RETYPE}:" 3 1 "" 3 11 30 0 \
                          2>&1 1>&3)
     local _exit_status=$?
     exec 3>&-
@@ -1113,16 +1113,15 @@ dialog_Encrypt_Wallet() {
                 fi
             done
             if [ ${#_pw} -lt 10 ]; then
-                local _s="\Z1You entered an invalid password.\Zn\n\n"
-                    _s+="A valid wallet password must be in the form:"
-                    _s+="\n- at least 10 char long"
-                dialog_Error_Handler "${_s}"
+                dialog_Error_Handler "${ERROR_ENCRYPT_TOO_SHORT}"
                 dialog_Encrypt_Wallet "$1"
             elif [ "${_pw}" != "${_pw2}" ]; then
-                local _s="Passwords do not match."
-                dialog_Error_Handler "${_s}"
+                dialog_Error_Handler "${ERROR_ENCRYPT_NO_MATCH}"
                 dialog_Encrypt_Wallet "$1"
             fi
+            dialog --backtitle "${TITLE_BACK}" \
+                   --colors \
+                   --infobox "${TEXT_FEEDBACK_WALLET_ENCRYPT}" 0 0
             if [ "$1" == "encrypt" ]; then
                 executeCURL "encryptwallet" \
                             "\"${_pw}\""
@@ -1130,9 +1129,6 @@ dialog_Encrypt_Wallet() {
                 dialog_Enter_Password "changePW" \
                                       "${_pw}"
             fi
-            dialog --backtitle "${TITLE_BACK}" \
-                   --colors \
-                   --infobox "Wallet password successfully set. Daemon will now encrypt the wallet and restart." 0 0
             sudo service spectrecoind stop
             refreshMainMenu_DATA;;
         *)
