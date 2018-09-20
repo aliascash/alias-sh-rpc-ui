@@ -671,8 +671,8 @@ dialog_Goodbye() {
         --cancel-label "${_mainMenuButton}" \
         --default-button 'ok' \
         --yesno "${TEXT_GOODBYE_WARNING}" 0 0
-    exit_status=$?
-    case ${exit_status} in
+    local _exit_status=$?
+    case ${_exit_status} in
         ${DIALOG_ESC})
             dialog_Main_Menu;;
         ${DIALOG_OK})
@@ -775,8 +775,8 @@ dialog_View_All_Transactions() {
         --cancel-label "${_displayStakesButton}" \
         --default-button 'extra' \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
-    exit_status=$?
-    case ${exit_status} in
+    local _exit_status=$?
+    case ${_exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_DATA;;
         ${DIALOG_OK})
@@ -859,18 +859,18 @@ dialog_SubMenu_Advanced() {
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
         "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
         2>&1 1>&3)
-    exit_status=$?
+    local _exit_status=$?
     exec 3>&-
-    case ${exit_status} in
+    case ${_exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_DATA;;
     esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            dialog_SRY;;
-        "${CMD_BACKUP_WALLET}")
-            dialog_SRY;;
+            dialog_Encrypt_Wallet "encrypt";;
         "${CMD_CHANGE_WALLET_PW}")
+            dialog_Encrypt_Wallet "changepw";;
+        "${CMD_BACKUP_WALLET}")
             dialog_SRY;;
         "${CMD_STAKING_ANALYSE}")
             dialog_SRY;;
@@ -945,9 +945,9 @@ dialog_Send_Coins() {
         "${TEXT_SEND_AMOUNT_EXPL}" 4 12 "" 3 11 -1 0 \
         "${TEXT_SEND_AMOUNT}:" 5 1 "${_amount}" 5 11 20 0 \
         2>&1 1>&3)
-    exit_status=$?
+    local _exit_status=$?
     exec 3>&-
-    case ${exit_status} in
+    case ${_exit_status} in
         ${DIALOG_CANCEL})
             dialog_Main_Menu;;
         ${DIALOG_ESC})
@@ -1003,23 +1003,30 @@ dialog_Send_Coins() {
 }
 
 # ============================================================================
-# Goal: ask for the wallet password, to unlock the wallet for staking
-#       and sending transactions. Password will never leave this function.
+# Goal: ask for the wallet password, to unlock the wallet for staking,
+#       sending transactions or changing the pw.
+#       Password will never leave this function.
+#       This is the only Function that asks for the wallet pw.
 #
 # Input $1 - time amout the wallet will be opend
+#            iff $1=="" the function will command the daemon to change the pw.
 #       $2 - if true the wallet will only be opend for staking
 #
 # Return: nothing
 dialog_Enter_Password() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        dialog_Error_Handler "${ERROR_FUNCTION_PARAMETER}"
+        dialog_Main_Menu
+    fi
     local _wallet_password
     exec 3>&1
     _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
         --insecure \
         --passwordbox "${TEXT_PW_EXPL}" 0 0 \
         2>&1 1>&3)
-    exit_status=$?
+    local _exit_status=$?
     exec 3>&-
-    case ${exit_status} in
+    case ${_exit_status} in
         ${DIALOG_CANCEL})
             # abort and reload main menu
             refreshMainMenu_DATA;;
@@ -1028,8 +1035,15 @@ dialog_Enter_Password() {
             refreshMainMenu_DATA;;
         ${DIALOG_OK})
             # literally nothing to do here since daemon responds is excellent
-            # the user will be guided back to main menu by function which exceuted dialog_Enter_Password()
-            executeCURL "walletpassphrase" "\"${_wallet_password}\",$1,$2";;
+            # the user will be guided back to main menu by function which
+            # executed dialog_Enter_Password()
+            if [ "$1" == "changePW" ]; then
+                # change wallet password
+                executeCURL "walletpassphrasechange" "\"${_wallet_password}\" \"$2\""
+            else
+                # Unlock wallet for staking or sending coins
+                executeCURL "walletpassphrase" "\"${_wallet_password}\",$1,$2"
+            fi;;
         *)
             dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
@@ -1040,10 +1054,22 @@ dialog_Enter_Password() {
 # Goal: ask for a wallet password, note: this only works if the wallet is unencrypted
 #       Password will never leave this function.
 #
-# Input $1 - title of the dialog
+# Input $1 - ["encrypt","changepw"]
 #
 # Return: nothing
 dialog_Encrypt_Wallet() {
+    local _title
+    local _ok
+    if [ "$1" == "encrypt" ]; then
+        _title="${TITLE_ENCRYPT_WALLET}"
+        _ok="${BUTTON_LABEL_ENCRYPT}"
+    elif [ "$1" == "changepw" ]; then
+        _title="${TITLE_CHANGE_WALLET_PW}"
+        _ok="${BUTTON_LABEL_CHANGE_WALLET_PW}"
+    else
+        dialog_Error_Handler "${ERROR_FUNCTION_PARAMETER}"
+        dialog_Main_Menu
+    fi
     local _mainMenuButton
     if [ ${SIZE_X_TRANS} == 0 ]; then
         # shorten buttons
@@ -1055,8 +1081,8 @@ dialog_Encrypt_Wallet() {
     exec 3>&1
     _buffer=$(dialog --backtitle "${TITLE_BACK}" \
                            --insecure \
-                           --title "${TITLE_ENCRYPT_WALLET}" \
-                           --ok-label "${BUTTON_LABEL_ENCRYPT}" \
+                           --title "${_title}" \
+                           --ok-label "${_ok}" \
                            --cancel-label "${_mainMenuButton}" \
                            --passwordform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
                                        "Password:" 1 1 "" 1 11 30 0 \
@@ -1071,37 +1097,52 @@ dialog_Encrypt_Wallet() {
             dialog_Main_Menu;;
         ${DIALOG_OK})
             _i=0
+            local _pw=""
+            local _pw2="a"
             local _itemBuffer
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
                 if [ ${_i} -eq 1 ]; then
-                if [ ${#_itemBuffer} -ge 10 ]; then
                     _pw="${_itemBuffer}"
-                else
-                    local _s="\Z1You entered an invalid password.\Zn\n\n"
-                        _s+="A valid wallet password must be in the form:"
-                        _s+="\n- at least 10 char long"
-                    dialog_Error_Handler "${_s}"
-                    dialog_Encrypt_Wallet
-                fi
                 elif [ ${_i} -eq 2 ]; then
-                    if [ ${_itemBuffer} == ${_pw} ]; then
-                        executeCURL "encryptwallet" "\"${_pw}\""
-                        #walletpassphrasechange "oldpassphrase" "newpassphrase"
-                        # maybe stops daemon?
-                        sudo service spectrecoind stop
-                        dialog --backtitle "${TITLE_BACK}" \
-                               --colors \
-                               --ok-label "${BUTTON_LABEL_RESTART_DAEMON}" \
-                               --msgbox  "$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED" 0 0
-                        refreshMainMenu_DATA
-                    else
-                        local _s="Passwords do not match."
-                        dialog_Error_Handler "${_s}"
-                        dialog_Encrypt_Wallet
-                    fi
+                    _pw2="${_itemBuffer}"
                 fi
-            done;;
+            done
+            if [ ${#_pw} -lt 10 ]; then
+                local _s="\Z1You entered an invalid password.\Zn\n\n"
+                    _s+="A valid wallet password must be in the form:"
+                    _s+="\n- at least 10 char long"
+                dialog_Error_Handler "${_s}"
+                dialog_Encrypt_Wallet "$1"
+            elif [ "${_pw}" != "${#_pw2}" ]; then
+                local _s="Passwords do not match."
+                dialog_Error_Handler "${_s}"
+                dialog_Encrypt_Wallet "$1"
+            fi
+            if [ "$1" == "encrypt" ]; then
+                executeCURL "encryptwallet" "\"${_pw}\""
+                #walletpassphrasechange "oldpassphrase" "newpassphrase"
+                # maybe stops daemon?
+                sudo service spectrecoind stop
+                dialog --backtitle "${TITLE_BACK}" \
+                       --colors \
+                       --ok-label "${BUTTON_LABEL_RESTART_DAEMON}" \
+                       --msgbox  "$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED" 0 0
+                refreshMainMenu_DATA
+            else
+                unset msg_global
+                dialog_Enter_Password "changePW" \
+                                      "${_pw}"
+                # if there was no error
+                if [ -z "${msg_global}" ]; then
+                    dialog --backtitle "${TITLE_BACK}" \
+                           --colors \
+                           --ok-label "${BUTTON_LABEL_MAIN_MENU}" \
+                           --msgbox "Password changed." 0 0
+                    refreshMainMenu_DATA
+                fi
+                dialog_Encrypt_Wallet "$1"
+            fi;;
         *)
             dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
@@ -1156,9 +1197,9 @@ dialog_User_Command_Input() {
         "${TEXT_USERCOMMAND_PARAMS_EXPL}" 4 12 "" 3 11 -1 0 \
         "${TEXT_USERCOMMAND_PARAMS}:" 5 1 "${USER_DAEMON_PARAMS}" 5 11 65 0 \
         2>&1 1>&3)
-    exit_status=$?
+    local _exit_status=$?
     exec 3>&-
-    case ${exit_status} in
+    case ${_exit_status} in
         ${DIALOG_CANCEL})
             dialog_Main_Menu;;
         ${DIALOG_ESC})
@@ -1331,6 +1372,7 @@ dialog_Main_Menu() {
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETUNLOCK}"
     fi
     local _mainMenuPick
+    local _exit_status
     exec 3>&1
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
         _mainMenuPick=$(dialog \
@@ -1368,7 +1410,7 @@ dialog_Main_Menu() {
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
-            exit_status=$?
+            _exit_status=$?
     else
         _mainMenuPick=$(dialog \
             --begin 0 0 \
@@ -1398,10 +1440,10 @@ dialog_Main_Menu() {
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
             2>&1 1>&3)
-            exit_status=$?
+            _exit_status=$?
     fi
     exec 3>&-
-    case ${exit_status} in
+    case ${_exit_status} in
         "${DIALOG_ESC}")
             dialog_Goodbye;;
     esac
@@ -1413,7 +1455,7 @@ dialog_Main_Menu() {
         "${CMD_MAIN_LOCK_WALLET}")
             dialog_Lock_Wallet;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            dialog_Encrypt_Wallet;;
+            dialog_Encrypt_Wallet "encrypt";;
         "${CMD_MAIN_TRANS}")
             dialog_View_All_Transactions;;
         "${CMD_MAIN_SEND}")
@@ -1476,14 +1518,14 @@ dialog_Lock_Wallet() {
 # ============================================================================
 # Goal: unlock the wallet for staking only
 dialog_Unlock_Wallet_For_Staking() {
+    unset msg_global
     dialog_Enter_Password "999999999" \
-                   "true"
-    local _s
+                          "true"
     # if there was no error
     if [ -z "${msg_global}" ]; then
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --ok-label "${BUTTON_LABEL_CONTINUE}" \
+               --ok-label "${BUTTON_LABEL_MAIN_MENU}" \
                --msgbox "${TEXT_FEEDBACK_WALLET_UNLOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
         refreshMainMenu_DATA
     fi
