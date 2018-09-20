@@ -198,7 +198,6 @@ dialog_Start_Daemon() {
         IFS=${_oldIFS}
     ) | dialog --backtitle "${TITLE_BACK}" \
                --title "${TITLE_STARTING_DAEMON}" \
-               --no-shadow \
                --progressbox 20 45
     refreshMainMenu_DATA
 }
@@ -636,7 +635,6 @@ dialog_Error_Handler() {
                --colors \
                --title "${TITLE_ERROR}" \
                --ok-label "${BUTTON_LABEL_OK}" \
-               --no-shadow \
                --msgbox "$1" 0 0
     else
         echo "$1"
@@ -648,7 +646,6 @@ dialog_Error_Handler() {
 # Placeholder checkbox just give the user visual feedback
 dialog_SRY() {
     dialog --backtitle "${TITLE_BACK}" \
-           --no-shadow \
            --colors \
            --title "${TITLE_PLACEHOLDER_FUNCTION}" \
            --msgbox  "${TEXT_PLACEHOLDER_FUNCTION}" 0 0
@@ -666,7 +663,7 @@ dialog_Goodbye() {
     else
         _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     fi
-    dialog --no-shadow \
+    dialog \
         --colors \
         --extra-button \
         --ok-label "${BUTTON_LABEL_JUST_LEAVE}" \
@@ -686,12 +683,11 @@ dialog_Goodbye() {
         ${DIALOG_CANCEL})
             dialog_Main_Menu;;
         *)
-            dialog_Error_Handler "${ERROR_GOODBYE_FATAL}" \
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
     esac
     _s+="\n\n${TEXT_GOODBYE_FEEDBACK_EXIT}"
     dialog --backtitle "${TITLE_BACK}" \
-           --no-shadow \
            --colors \
            --title "${TITEL_GOODBYE}" \
            --ok-label "${BUTTON_LABEL_LEAVE}" \
@@ -711,7 +707,6 @@ dialog_Simple_Msg() {
         --colors \
         --title "$1" \
         --ok-label "$3" \
-        --no-shadow \
         --msgbox "$2" 0 0
 }
 
@@ -764,7 +759,7 @@ dialog_View_All_Transactions() {
                            "${_displayStakes}"
     fi
     local _page=$(( (${_start} / ${COUNT_TRANS_VIEW}) + 1 ))
-    dialog --no-shadow \
+    dialog \
         --begin 0 0 \
         --no-lines \
         --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
@@ -805,9 +800,10 @@ dialog_View_All_Transactions() {
             fi;;
         ${DIALOG_HELP})
             refreshMainMenu_DATA;;
+        *)
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
+                                 1;;
     esac
-    dialog_Error_Handler "${ERROR_TRANS_FATAL}" \
-                         1
 }
 
 # ============================================================================
@@ -846,18 +842,18 @@ dialog_SubMenu_Advanced() {
         _cmdWallet="${CMD_CHANGE_WALLET_PW}"
         _explWalletStatus="${EXPL_CMD_CHANGE_WALLET_PW}"
     fi
+    local _mainMenuPick
     exec 3>&1
-    local _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+    _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
         --colors \
         --title "${TITLE_ADV_MENU}" \
         --nocancel \
         --ok-label "${BUTTON_LABEL_ENTER}" \
-        --no-shadow \
         --menu "" 0 0 10 \
         \
         "${_cmdWallet}" "${_explWalletStatus}" \
         "${CMD_BACKUP_WALLET}" "${EXPL_CMD_BACKUP_WALLET}" \
-        "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+        "${CMD_STAKING_ANALYSIS}" "${EXPL_CMD_STAKING_ANALYSIS}" \
         "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
@@ -889,7 +885,7 @@ dialog_SubMenu_Advanced() {
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
-            dialog_Error_Handler "${ERROR_ADVMENU_FATAL}" \
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
     esac
 }
@@ -905,7 +901,6 @@ dialog_Receive_Coins() {
     dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --title "${TITEL_RECEIVE}" \
-               --no-shadow \
                --infobox "${TEXT_FEEDBACK_RECEIVE}\n${curl_result_global}" 0 0
     read -s
     dialog_Main_Menu
@@ -942,7 +937,7 @@ dialog_Send_Coins() {
         --cancel-label "${_mainMenuButton}" \
         --extra-button \
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
-        --no-shadow --colors \
+        --colors \
         --title "${TITEL_SEND}" \
         --form "${_s}" 0 0 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}" 1 12 "" 1 11 -1 0 \
@@ -1001,9 +996,10 @@ dialog_Send_Coins() {
                 fi
             done
             dialog_Send_Coins "${_destinationAddress}";;
+        *)
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
+                                 1;;
     esac
-    dialog_Error_Handler "${ERROR_SEND_FATAL}" \
-                         1
 }
 
 # ============================================================================
@@ -1015,9 +1011,9 @@ dialog_Send_Coins() {
 #
 # Return: nothing
 dialog_Enter_Password() {
+    local _wallet_password
     exec 3>&1
-    local _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
-        --no-shadow \
+    _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
         --insecure \
         --passwordbox "${TEXT_PW_EXPL}" 0 0 \
         2>&1 1>&3)
@@ -1035,7 +1031,7 @@ dialog_Enter_Password() {
             # the user will be guided back to main menu by function which exceuted dialog_Enter_Password()
             executeCURL "walletpassphrase" "\"${_wallet_password}\",$1,$2";;
         *)
-            dialog_Error_Handler "${ERROR_PW_FATAL}" \
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
     esac
 }
@@ -1055,21 +1051,20 @@ dialog_Encrypt_Wallet() {
     else
         _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     fi
+    local _buffer
     exec 3>&1
-    local _buffer=$(dialog --backtitle "${TITLE_BACK}" \
-                           --no-shadow \
+    _buffer=$(dialog --backtitle "${TITLE_BACK}" \
                            --insecure \
                            --title "${TITLE_ENCRYPT_WALLET}" \
                            --ok-label "${BUTTON_LABEL_ENCRYPT}" \
                            --cancel-label "${_mainMenuButton}" \
-                           --mixedform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
-                                       "Password:" 1 1 "" 1 11 30 0 1 \
-                                       "Retype:" 3 1 "" 3 11 30 0 1 \
+                           --passwordform "Note: Password must be at least 10 char long.\nEnter new wallet password:" 12 50 0 \
+                                       "Password:" 1 1 "" 1 11 30 0 \
+                                       "Retype:" 3 1 "" 3 11 30 0 \
                          2>&1 1>&3)
-    exit_status=$?
-    echo "exitstatus: ${exit_status}"
+    local _exit_status=$?
     exec 3>&-
-    case ${exit_status} in
+    case ${_exit_status} in
         ${DIALOG_CANCEL})
             dialog_Main_Menu;;
         ${DIALOG_ESC})
@@ -1087,7 +1082,7 @@ dialog_Encrypt_Wallet() {
                         _s+="A valid wallet password must be in the form:"
                         _s+="\n- at least 10 char long"
                     dialog_Error_Handler "${_s}"
-                    setWalletPW
+                    dialog_Encrypt_Wallet
                 fi
                 elif [ ${_i} -eq 2 ]; then
                     if [ ${_itemBuffer} == ${_pw} ]; then
@@ -1096,7 +1091,6 @@ dialog_Encrypt_Wallet() {
                         # maybe stops daemon?
                         sudo service spectrecoind stop
                         dialog --backtitle "${TITLE_BACK}" \
-                               --no-shadow \
                                --colors \
                                --ok-label "${BUTTON_LABEL_RESTART_DAEMON}" \
                                --msgbox  "$TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED" 0 0
@@ -1104,15 +1098,14 @@ dialog_Encrypt_Wallet() {
                     else
                         local _s="Passwords do not match."
                         dialog_Error_Handler "${_s}"
-                        setWalletPW
+                        dialog_Encrypt_Wallet
                     fi
                 fi
             done;;
         *)
-            setWalletPW;;
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
+                                 1;;
         esac
-        echo "error: ${exit_status}"
-        exit 1
 }
 
 # ============================================================================
@@ -1155,7 +1148,7 @@ dialog_User_Command_Input() {
         --cancel-label "${_mainMenuButton}" \
         --extra-button \
         --extra-label "${BUTTON_LABEL_HELP}" \
-        --no-shadow --colors \
+        --colors \
         --title "${TITEL_USERCOMMAND}" \
         --form "$_s" 0 0 0 \
         "${TEXT_USERCOMMAND_CMD_EXPL}" 1 12 "" 1 11 -1 0 \
@@ -1217,9 +1210,10 @@ dialog_User_Command_Input() {
                       "${TEXT_GAUGE_ALLDONE}"
             dialog_cURL_User_Command_Feedback
             dialog_User_Command_Input;;
+        *)
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
+                                 1;;
     esac
-    dialog_Error_Handler "${ERROR_USERCOMMAND_FATAL}" \
-                         1
 }
 
 # ============================================================================
@@ -1233,7 +1227,6 @@ dialog_cURL_User_Command_Feedback() {
                --colors \
                --title "${TITEL_CURL_RESULT}" \
                --ok-label "${BUTTON_LABEL_CONTINUE}" \
-               --no-shadow \
                --msgbox "${curl_result_global}" 0 0
     fi
 }
@@ -1340,7 +1333,7 @@ dialog_Main_Menu() {
     local _mainMenuPick
     exec 3>&1
     if [ ${SIZE_X_TRANS} -gt 0 ] ; then
-        _mainMenuPick=$(dialog --no-shadow \
+        _mainMenuPick=$(dialog \
             --begin 0 0 \
             --no-lines \
             --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
@@ -1356,7 +1349,6 @@ dialog_Main_Menu() {
             --colors \
             --begin "${POS_Y_INFO}" "${POS_X_INFO}" \
             --title "${TITLE_INFO}" \
-            --no-shadow \
             --no-collapse \
             --infobox "$(makeOutputInfo)" "${SIZE_Y_INFO}" "${SIZE_X_INFO}" \
             \
@@ -1366,7 +1358,6 @@ dialog_Main_Menu() {
             --title "${TITLE_MENU}" \
             --nocancel \
             --ok-label "${BUTTON_LABEL_ENTER}" \
-            --no-shadow \
             --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
             \
             "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
@@ -1379,7 +1370,7 @@ dialog_Main_Menu() {
             2>&1 1>&3)
             exit_status=$?
     else
-        _mainMenuPick=$(dialog --no-shadow \
+        _mainMenuPick=$(dialog \
             --begin 0 0 \
             --no-lines \
             --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
@@ -1388,7 +1379,6 @@ dialog_Main_Menu() {
             --colors \
             --begin "${POS_Y_INFO}" "${POS_X_INFO}" \
             --title "${TITLE_INFO}" \
-            --no-shadow \
             --no-collapse \
             --infobox "$(makeOutputInfo)" "${SIZE_Y_INFO}" "${SIZE_X_INFO}" \
             \
@@ -1398,7 +1388,6 @@ dialog_Main_Menu() {
             --title "${TITLE_MENU}" \
             --nocancel \
             --ok-label "${BUTTON_LABEL_ENTER}" \
-            --no-shadow \
             --menu "" "${SIZE_Y_MENU}" "${SIZE_X_MENU}" 10 \
             \
             "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
@@ -1436,7 +1425,7 @@ dialog_Main_Menu() {
         "${CMD_MAIN_QUIT}")
             dialog_Goodbye;;
         *)
-            dialog_Error_Handler "${ERROR_MAINMENU_FATAL}" \
+            dialog_Error_Handler "${ERROR_FATAL_DIALOG}" \
                                  1;;
     esac
 }
@@ -1479,7 +1468,6 @@ dialog_Lock_Wallet() {
     executeCURL "walletlock"
     dialog --backtitle "${TITLE_BACK}" \
            --colors \
-           --no-shadow \
            --ok-label "${BUTTON_LABEL_CONTINUE}" \
            --msgbox "${TEXT_FEEDBACK_WALLET_LOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
     refreshMainMenu_DATA
@@ -1495,7 +1483,6 @@ dialog_Unlock_Wallet_For_Staking() {
     if [ -z "${msg_global}" ]; then
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --no-shadow \
                --ok-label "${BUTTON_LABEL_CONTINUE}" \
                --msgbox "${TEXT_FEEDBACK_WALLET_UNLOCKED}\n\n${TEXT_SUGGESTION_STAKING}" 0 0
         refreshMainMenu_DATA
@@ -1508,7 +1495,7 @@ dialog_Unlock_Wallet_For_Staking() {
 # Input $1 - amount the gauge will display integer (0-100)
 #       $2 - text in the gauge box
 dialog_Draw_Gauge() {
-    echo "$1" | dialog --no-shadow \
+    echo "$1" | dialog \
                        --title "${TITLE_GAUGE}" \
                        --gauge "$2" "${SIZE_Y_GAUGE}" "${SIZE_X_GAUGE}" 0
 }
@@ -1557,5 +1544,5 @@ trap refreshMainMenu_DATA INT
 while :; do
     refreshMainMenu_DATA
 done
-dialog_Error_Handler "${ERROR_MAINMENU_FATAL}" \
+dialog_Error_Handler "Fatal Error" \
                      1
