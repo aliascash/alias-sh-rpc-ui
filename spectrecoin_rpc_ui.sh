@@ -244,22 +244,22 @@ secToHumanReadable() {
     local _time=$1
     local _timeHuman=""
     if [ $((_time / 31536000)) -gt 0 ];then
-        _timeHuman="$((_time / 31536000))y "
+        _timeHuman="$((_time / 31536000))${TEXT_YEAR} "
     fi
     if [ $((_time % 31536000 /604800)) -gt 0 ];then
-        _timeHuman+="$((_time % 31536000 /604800))w "
+        _timeHuman+="$((_time % 31536000 /604800))${TEXT_WEEK} "
     fi
     if [ $((_time % 604800 /86400)) -gt 0 ];then
-        _timeHuman+="$((_time % 604800 /86400))d "
+        _timeHuman+="$((_time % 604800 /86400))${TEXT_DAY} "
     fi
     if [ $((_time % 86400 /3600)) -gt 0 ];then
-        _timeHuman+="$((_time % 86400 /3600))h "
+        _timeHuman+="$((_time % 86400 /3600))${TEXT_HOUR} "
     fi
     if [ $((_time % 3600 /60)) -gt 0 ];then
-        _timeHuman+="$((_time % 3600 /60))m "
+        _timeHuman+="$((_time % 3600 /60))${TEXT_MINUTE} "
     fi
     if [ $((_time % 60)) -gt 0 ];then
-        _timeHuman+="$((_time % 60))s"
+        _timeHuman+="$((_time % 60))${TEXT_SECOND}"
     fi
     echo "${_timeHuman}"
 }
@@ -343,7 +343,7 @@ getStakingInfo() {
             stakinginfo_global[2]=$(echo ${_buff} | sed 's/\(.*\)\(.\{8\}\)/\1.\2/')
         elif [[ ${_itemBuffer} == 'netstakeweight:'* ]]; then
             _buff="${_itemBuffer#*':'}"
-            stakinginfo_global[3]=$(echo ${_buff} | sed 's/\(.*\)\(.\{1\}\)\(.\{5\}\)\(.\{8\}\)/\1/.\2 mio')
+            stakinginfo_global[3]=$(echo ${_buff} | sed 's/\(.*\)\(.\{1\}\)\(.\{13\}\)/\1.\2/')
         elif [[ ${_itemBuffer} == 'errors:'* ]]; then
             if [ "${_itemBuffer#*':'}" == 'none' ]; then
                 stakinginfo_global[4]="${TEXT_NO_ERRORS_DURING_RUNTIME}"
@@ -388,7 +388,7 @@ makeOutputInfo() {
     fi
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${stakinginfo_global[2]}\Zn-_-(\Z5${stakinginfo_global[3]}\Zn${TEXT_STAKING_COINS_WORLDWIDE})" \
+    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${stakinginfo_global[2]}\Zn-_-(\Z5${stakinginfo_global[3]}\Zn${TEXT_MILLION} ${TEXT_STAKING_COINS_WORLDWIDE})" \
                     "${_textWidth}")"\n"
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
