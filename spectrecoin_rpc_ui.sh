@@ -1534,8 +1534,9 @@ checkRequirement dialog
 checkRequirement bc
 checkRequirement curl
 
-export NCURSES_NO_UTF8_ACS=1
+#export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
+
 initDaemonConfiguration
 if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
     dialog_Simple_Msg "${TITEL_SUGGESTION}" \
