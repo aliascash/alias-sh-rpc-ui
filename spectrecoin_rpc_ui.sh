@@ -338,14 +338,17 @@ getStakingInfo() {
         elif [[ ${_itemBuffer} == 'expectedtime:'* ]]; then
             _buff="${_itemBuffer#*':'}"
             stakinginfo_global[1]=$(secToHumanReadable ${_buff})
-        elif [[ ${_itemBuffer} == 'netstakeweight:'* ]]; then
+        elif [[ ${_itemBuffer} == 'weight:'* ]]; then
             _buff="${_itemBuffer#*':'}"
             stakinginfo_global[2]=$(echo ${_buff} | sed 's/\(.*\)\(.\{8\}\)/\1.\2/')
+        elif [[ ${_itemBuffer} == 'netstakeweight:'* ]]; then
+            _buff="${_itemBuffer#*':'}"
+            stakinginfo_global[3]=$(echo ${_buff} | sed 's/\(.*\)\(.\{1\}\)\(.\{5\}\)\(.\{8\}\)/\1/.\2 mio')
         elif [[ ${_itemBuffer} == 'errors:'* ]]; then
             if [ "${_itemBuffer#*':'}" == 'none' ]; then
-                stakinginfo_global[3]="${TEXT_NO_ERRORS_DURING_RUNTIME}"
+                stakinginfo_global[4]="${TEXT_NO_ERRORS_DURING_RUNTIME}"
             else
-                stakinginfo_global[3]="\Z1""${_itemBuffer#*':'}""\Zn"
+                stakinginfo_global[4]="\Z1""${_itemBuffer#*':'}""\Zn"
             fi
         fi
     done
@@ -385,7 +388,7 @@ makeOutputInfo() {
     fi
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn ${TEXT_MATRUING_COINS})" \
+    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${stakinginfo_global[2]}\Zn-_-(\Z5${stakinginfo_global[3]}\Zn${TEXT_STAKING_COINS_WORLDWIDE})" \
                     "${_textWidth}")"\n"
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
