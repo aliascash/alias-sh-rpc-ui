@@ -22,15 +22,15 @@ cd "${ownLocation}"
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
 
-# ToDo: Possibility to switch between different language files
-. include/ui_content_en.sh
-
 # Handle separate version file
 if [ -e VERSION ] ; then
     VERSION=$(cat VERSION)
 else
     VERSION='unknown'
 fi
+
+# ToDo: Possibility to switch between different language files
+. include/ui_content_en.sh
 
 rtc=0
 _init
@@ -1462,10 +1462,12 @@ if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
               "${BUTTON_LABEL_CONTINUE}"
 fi
 message="\n"
-message+="        Use at your own risc!!!\n\n"
-message+="    Terminal: $(tput longname)\n"
-message+="    Dialog $(dialog --version)\n"
-message+="      Interface version: ${VERSION}\n"
+message+="$(sh ./include/logo.sh | base64 -d)"
+message+="\n"
+message+="                  Use at your own risc!!!\n\n"
+#message+="    Terminal: $(tput longname)\n"
+#message+="    Dialog $(dialog --version)\n"
+#message+="      Interface version: ${VERSION}\n"
 
 simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
