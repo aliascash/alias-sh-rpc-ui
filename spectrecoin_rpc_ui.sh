@@ -622,24 +622,22 @@ goodbye() {
         ${DIALOG_ESC})
             refreshMainMenu_GUI;;
         ${DIALOG_OK})
-            _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING}";;
+            reset
+            echo ''
+            info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
+            reset
             sudo service spectrecoind stop
-            _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED}";;
+            echo ''
+            info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
             refreshMainMenu_GUI;;
         *)
             errorHandling "${ERROR_GOODBYE_FATAL}" \
                           1;;
     esac
-    _s+="\n\n${TEXT_GOODBYE_FEEDBACK_EXIT}"
-    dialog --backtitle "${TITLE_BACK}" \
-           --no-shadow \
-           --colors \
-           --title "${TITEL_GOODBYE}" \
-           --ok-label "${BUTTON_LABEL_LEAVE}" \
-           --msgbox  "${_s}" 0 0
-    reset
+    info "${TEXT_GOODBYE_FEEDBACK}"
+    echo ''
     exit 0
 }
 
