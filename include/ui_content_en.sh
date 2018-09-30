@@ -11,7 +11,7 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK="Spectrecoin Bash RPC Wallet Interface"
+TITLE_BACK="Spectrecoin Bash RPC Wallet Interface (${VERSION})"
 TITLE_TRANS="RECENT TRANSACTIONS"
 TITLE_INFO=""
 TITLE_MENU="${TITLE_BACK}"
@@ -44,7 +44,7 @@ BUTTON_LABEL_ADDRESS_BOOK="Address Book"
 BUTTON_LABEL_MAIN_MENU="Main Menu"
 BUTTON_LABEL_SHOW_STAKES="Show Stakes"
 BUTTON_LABEL_HIDE_STAKES="Hide Stakes"
-BUTTON_LABEL_JUST_LEAVE="No, just leave"
+BUTTON_LABEL_JUST_LEAVE="No, just exit UI"
 BUTTON_LABEL_STOP_DAEMON="Yes, stop daemon"
 BUTTON_LABEL_I_HAVE_UNDERSTOOD="YES - I´ve understood"
 #
@@ -164,10 +164,10 @@ TEXT_GAUGE_PROCESS_STAKING_DATA="Processing staking data..."
 TEXT_GAUGE_GET_TRANS="Getting transactions data from daemon..."
 TEXT_GAUGE_PROCESS_TRANS="Processing transactions data..."
 #
-TEXT_GOODBYE_WARNING="\Z1If you plan to shutdown the system, daemon must be stopped before!\Zn\n\nDo you want to stop the daemon (no more staking) or just exit the UI?\Zn"
-TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING="Daemon is still running."
-TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED="\Z1Daemon stopped.\Zn"
-TEXT_GOODBYE_FEEDBACK_EXIT="Hope you enjoyed.\n\n\Z4Please give feedback.\Zn"
+TEXT_GOODBYE_WARNING="\Z1If you plan to shutdown the system, daemon must be stopped before to prevent database inconsistencies!\Zn\n\nDo you want to stop the daemon (no more staking) or just exit the UI?\Zn"
+TEXT_GOODBYE_DAEMON_STILL_RUNNING="Daemon is still running."
+TEXT_GOODBYE_DAEMON_STOPPED="Daemon stopped."
+TEXT_GOODBYE_FEEDBACK="Any feedback appreciated, please let us know. Thank you!"
 #
 TEXT_FEEDBACK_WALLET_LOCKED="Wallet successfully locked.\n\n\Z5You will not be able to stake anymore.\Zn\n\nUse \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn in main menu to unlock the wallet for staking only again."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Wallet successfully unlocked."

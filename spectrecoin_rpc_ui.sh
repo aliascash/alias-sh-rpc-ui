@@ -22,15 +22,15 @@ cd "${ownLocation}"
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
 
-# ToDo: Possibility to switch between different language files
-. include/ui_content_en.sh
-
 # Handle separate version file
 if [ -e VERSION ] ; then
     VERSION=$(cat VERSION)
 else
     VERSION='unknown'
 fi
+
+# ToDo: Possibility to switch between different language files
+. include/ui_content_en.sh
 
 rtc=0
 _init
@@ -622,24 +622,22 @@ goodbye() {
         ${DIALOG_ESC})
             refreshMainMenu_GUI;;
         ${DIALOG_OK})
-            _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STILL_RUNNING}";;
+            reset
+            echo ''
+            info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
+            reset
             sudo service spectrecoind stop
-            _s+="${TEXT_GOODBYE_FEEDBACK_DAEMON_STOPPED}";;
+            echo ''
+            info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
             refreshMainMenu_GUI;;
         *)
             errorHandling "${ERROR_GOODBYE_FATAL}" \
                           1;;
     esac
-    _s+="\n\n${TEXT_GOODBYE_FEEDBACK_EXIT}"
-    dialog --backtitle "${TITLE_BACK}" \
-           --no-shadow \
-           --colors \
-           --title "${TITEL_GOODBYE}" \
-           --ok-label "${BUTTON_LABEL_LEAVE}" \
-           --msgbox  "${_s}" 0 0
-    reset
+    info "${TEXT_GOODBYE_FEEDBACK}"
+    echo ''
     exit 0
 }
 
@@ -915,7 +913,8 @@ sendCoins() {
                         executeCURL "walletlock"
                     fi
                     if [ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]; then
-                        simpleMsg "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
+                        simpleMsg "" \
+                                  "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
                                   "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
                         unlockWalletForStaking
                     fi
@@ -1461,10 +1460,12 @@ if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
               "${BUTTON_LABEL_CONTINUE}"
 fi
 message="\n"
-message+="        Use at your own risc!!!\n\n"
-message+="    Terminal: $(tput longname)\n"
-message+="    Dialog $(dialog --version)\n"
-message+="      Interface version: ${VERSION}\n"
+message+="$(sh ./include/logo.sh | base64 -d)"
+message+="\n"
+message+="                  Use at your own risc!!!\n\n"
+#message+="    Terminal: $(tput longname)\n"
+#message+="    Dialog $(dialog --version)\n"
+#message+="      Interface version: ${VERSION}\n"
 
 simpleMsg "- --- === WARNING === --- -" \
           "${message}" \
