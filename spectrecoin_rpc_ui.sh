@@ -417,7 +417,7 @@ getTransactions() {
     curl_result_global=${curl_result_global%'}'}
     IFS='},{'
     for _itemBuffer in ${curl_result_global}; do
-        if [[ ${_itemBuffer} == 'timereceived'* ]]; then
+        if [[ ${_itemBuffer} == 'time:'* ]]; then
             _unixtime="${_itemBuffer#*':'}"
             if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -lt ${_oldestStakeDate} ]); then
                 _oldestStakeDate=${_unixtime}
