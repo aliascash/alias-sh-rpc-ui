@@ -366,9 +366,9 @@ makeOutputInfo() {
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    echo $(fillLine "${TEXT_BALANCE}:-_-${_balance} ${TEXT_CURRENCY}" \
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-${_balance}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "Stealth spectre coins:-_-\Z6${info_global[2]}\Zn" \
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z6${info_global[2]}\Zn" \
                     "${_textWidth}")"\n"
     #
     if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
