@@ -269,7 +269,7 @@ secToHumanReadable() {
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input: $curl_result_global
-# Outpunt: $info_global array
+# Output: $info_global array
 getInfo() {
     unset info_global
     local _oldIFS=$IFS
@@ -320,7 +320,7 @@ getInfo() {
 # Gathers the data form the CURL result for the getstakinginfo command
 #
 # Input: $curl_result_global
-# Outpunt: $stakinginfo_global array
+# Output: $stakinginfo_global array
 getStakingInfo() {
     unset stakinginfo_global
     local _i=0
@@ -400,7 +400,7 @@ makeOutputInfo() {
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input: $curl_result_global
-# Outpunt: $transactions_global array
+# Output: $transactions_global array
 #          $1  - if "full" a staking analysis is done
 getTransactions() {
     unset transactions_global
