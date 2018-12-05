@@ -140,6 +140,7 @@ TEXT_TRANSFERRED="\Z1SENDED\Zn"
 TEXT_CONFIRMATIONS="confirmations"
 TEXT_ADDRESS="address"
 TEXT_TXID="txid"
+TEXT_NARRATION="narration"
 #
 TEXT_CLIPBOARD_HINT="On Linux: Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to paste from clipboard."
 TEXT_SEND_DESTINATION_ADDRESS_EXPL="Destination address"
@@ -147,6 +148,7 @@ TEXT_SEND_DESTINATION_ADDRESS="Address"
 TEXT_SEND_AMOUNT_EXPL="Amount of XSPEC"
 TEXT_SEND_AMOUNT="Amount"
 TEXT_SEND_EXPL="Enter the destination address."
+TEXT_SEND_NARRATION="Narration"
 #
 TEXT_PW_EXPL="Enter wallet password"
 #
