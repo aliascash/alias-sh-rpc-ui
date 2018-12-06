@@ -423,17 +423,21 @@ makeOutputTransactions() {
     else
         _textWidth="$1"
     fi
-    for ((i=${#transactions_global[@]}-1;i >= 0;i=$(( $i - 6 )))); do
-        echo $(fillLine "${transactions_global[$i-4]}: ${transactions_global[$i-3]}-_-${transactions_global[$i]}" \
+    for ((i=${currentAmountOfTransactions}; i > 0; i=$(($i-1)))) ; do
+        echo $(fillLine "${transactions[${i},6]}: ${transactions[${i},2]}-_-${transactions[${i},12]}" \
                         "${_textWidth}")"\n"
         if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}-_-${TEXT_ADDRESS}: ${transactions_global[$i-5]}" \
+            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},7]}-_-${TEXT_ADDRESS}: ${transactions[${i},1]}" \
                             "${_textWidth}")"\n"
         else
-            echo "${TEXT_CONFIRMATIONS}: ${transactions_global[$i-2]}\n"
+            echo "${TEXT_CONFIRMATIONS}: ${transactions[${i},7]}\n"
         fi
         if (( ${_textWidth} >= 70 ));then
-            echo $(fillLine "${TEXT_TXID}: ${transactions_global[$i-1]}" \
+            echo $(fillLine "${TEXT_TXID}: ${transactions[${i},13]}" \
+                            "${_textWidth}")"\n"
+        fi
+        if [[ -n "${transactions[${i},10]}" ]] ; then
+            echo $(fillLine "${TEXT_NARRATION}: ${transactions[${i},10]}" \
                             "${_textWidth}")"\n"
         fi
         echo "\n"
@@ -810,6 +814,8 @@ refreshMainMenu_GUI() {
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
+    declare -A transactions
+
     # have to recalc layout since it might have changed
     # (needed for transactions amount to fetch)
     calculateLayout

@@ -19,6 +19,64 @@ getTransactions() {
     local _unixtime
     curl_result_global=${curl_result_global#'{'}
     curl_result_global=${curl_result_global%'}'}
+
+    local _oldIFS=$IFS
+    IFS='{'
+    for transaction in ${curl_result_global} ; do
+        # Remove trailing '},'
+        transaction=${transaction%\}*}
+        IFS=','
+        for detail in ${transaction} ; do
+            case ${detail%%:*} in
+                account)
+                    transactions[${_i},0]="${detail#*:}";;
+                address)
+                    transactions[${_i},1]="${detail#*:}";;
+                amount)
+                    transactions[${_i},2]="${detail#*:}";;
+                blockhash)
+                    transactions[${_i},3]="${detail#*:}";;
+                blockindex)
+                    transactions[${_i},4]="${detail#*:}";;
+                blocktime)
+                    transactions[${_i},5]="${detail#*:}";;
+                category)
+                    case ${detail#*:} in
+                        receive)
+                            transactions[${_i},6]="${TEXT_RECEIVED}";;
+                        generate)
+                            transactions[${_i},6]="${TEXT_STAKE}";;
+                        immature)
+                            transactions[${_i},6]="${TEXT_IMMATURE}";;
+                        *)
+                            transactions[${_i},6]="${TEXT_TRANSFERRED}";;
+                    esac;;
+                confirmations)
+                    transactions[${_i},7]="${detail#*:}";;
+                currency)
+                    transactions[${_i},8]="${detail#*:}";;
+                generated)
+                    transactions[${_i},9]="${detail#*:}";;
+                narration)
+                    transactions[${_i},10]="${detail#*:}";;
+                time)
+                    transactions[${_i},11]="${detail#*:}";;
+                timereceived)
+                    transactions[${_i},12]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+                txid)
+                    transactions[${_i},13]="${detail#*:}";;
+                version)
+                    transactions[${_i},14]="${detail#*:}";;
+            esac
+        done
+        IFS='{'
+        _i=$((${_i}+1))
+        echo "Counter: ${_i}"
+    done
+    IFS=${_oldIFS}
+    currentAmountOfTransactions=$((${_i}-1))
+
+    # ToDo: The following might be obsolete, to be removed...
     IFS='},{'
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'timereceived'* ]]; then
