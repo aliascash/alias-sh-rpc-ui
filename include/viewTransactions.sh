@@ -53,7 +53,7 @@ viewAllTransactions() {
         --colors \
         --extra-button \
         --help-button \
-        --title "${TITEL_VIEW_TRANSACTIONS} ${_page}" \
+        --title "${TITLE_VIEW_TRANSACTIONS} ${_page}" \
         --ok-label "${_prevButton}" \
         --extra-label "${_nextButton}" \
         --help-label "${_mainMenuButton}" \

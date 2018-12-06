@@ -28,7 +28,7 @@ sendCoins() {
         --extra-button \
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow --colors \
-        --title "${TITEL_SEND}" \
+        --title "${TITLE_SEND}" \
         --form "${_s}" 16 65 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 35 0 \
         "${TEXT_SEND_AMOUNT_EXPL}:" 4 1 "${_amount}" 4 22 20 0 \

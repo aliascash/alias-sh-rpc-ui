@@ -33,7 +33,7 @@ userCommandInput() {
         --extra-button \
         --extra-label "${BUTTON_LABEL_HELP}" \
         --no-shadow --colors \
-        --title "${TITEL_USERCOMMAND}" \
+        --title "${TITLE_USERCOMMAND}" \
         --form "$_s" 0 0 0 \
         "${TEXT_USERCOMMAND_CMD_EXPL}" 1 12 "" 1 11 -1 0 \
         "${TEXT_USERCOMMAND_CMD}:" 2 1 "${USER_DAEMON_COMMAND}" 2 11 33 0 \

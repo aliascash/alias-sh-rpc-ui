@@ -617,7 +617,7 @@ receiveCoins() {
     curl_result_global=${curl_result_global//']'/''}
     dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --title "${TITEL_RECEIVE}" \
+               --title "${TITLE_RECEIVE}" \
                --no-shadow \
                --infobox "${TEXT_FEEDBACK_RECEIVE}\n${curl_result_global}" 0 0
     read -s
@@ -667,7 +667,7 @@ curlUserFeedbackHandling() {
         curl_result_global=$(echo ${curl_result_global} | sed 's/\(,\)\([a-z]\)/\n\2/g')
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
-               --title "${TITEL_CURL_RESULT}" \
+               --title "${TITLE_CURL_RESULT}" \
                --ok-label "${BUTTON_LABEL_CONTINUE}" \
                --no-shadow \
                --msgbox "${curl_result_global}" 0 0
@@ -898,7 +898,7 @@ export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 initDaemonConfiguration
 if [[ $(tput lines) -lt 28 ]] || [[ $(tput cols) -lt 74 ]]; then
-    simpleMsg "${TITEL_SUGGESTION}" \
+    simpleMsg "${TITLE_SUGGESTION}" \
               "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
               "${BUTTON_LABEL_CONTINUE}"
 fi
