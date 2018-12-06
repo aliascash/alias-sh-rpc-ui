@@ -17,7 +17,7 @@ userCommandInput() {
     local _i=0
     for _itemBuffer in ${USER_DAEMON_PARAMS}; do
         _i=$((_i+1))
-        if [ ${_i} -gt 1 ]; then
+        if [[ ${_i} -gt 1 ]]; then
             _buffer+=' '
         fi
         _buffer+="${_itemBuffer}"
@@ -57,26 +57,26 @@ userCommandInput() {
             unset USER_DAEMON_PARAMS
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
-                if [ ${_i} -eq 1 ]; then
+                if [[ ${_i} -eq 1 ]]; then
                     USER_DAEMON_COMMAND="${_itemBuffer}"
                 else
-                    if [ ${_i} -gt 2 ]; then
-                        if [ ${_argContainsSpaces} != "true" ]; then
+                    if [[ ${_i} -gt 2 ]]; then
+                        if [[ ${_argContainsSpaces} != "true" ]]; then
                             USER_DAEMON_PARAMS+=','
                         else
                             USER_DAEMON_PARAMS+=' '
                         fi
                     fi
-                    if [ "${_itemBuffer}" != "true" ] \
-                    && [ "${_itemBuffer}" != "false" ] \
+                    if [[ "${_itemBuffer}" != "true" ]] \
+                    && [[ "${_itemBuffer}" != "false" ]] \
                     && [[ ! ${_itemBuffer} =~ ^[0-9]+$ ]]; then
-                        if [[ "${_itemBuffer}" != '"'* ]] && [ ${_argContainsSpaces} != "true" ]; then
+                        if [[ "${_itemBuffer}" != '"'* ]] && [[ ${_argContainsSpaces} != "true" ]]; then
                             USER_DAEMON_PARAMS+='"'
                         else
                             _argContainsSpaces="true"
                         fi
                         USER_DAEMON_PARAMS+="${_itemBuffer}"
-                        if [[ "${_itemBuffer}" != *'"' ]] && [ ${_argContainsSpaces} != "true" ]; then
+                        if [[ "${_itemBuffer}" != *'"' ]] && [[ ${_argContainsSpaces} != "true" ]]; then
                             USER_DAEMON_PARAMS+='"'
                         elif [[ "${_itemBuffer}" == *'"' ]]; then
                             _argContainsSpaces="false"

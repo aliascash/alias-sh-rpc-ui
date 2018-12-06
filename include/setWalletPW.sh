@@ -32,8 +32,8 @@ setWalletPW() {
             local _itemBuffer
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
-                if [ ${_i} -eq 1 ]; then
-                if [ ${#_itemBuffer} -ge 10 ]; then
+                if [[ ${_i} -eq 1 ]]; then
+                if [[ ${#_itemBuffer} -ge 10 ]]; then
                     _pw="${_itemBuffer}"
                 else
                     local _s="\Z1You entered an invalid password.\Zn\n\n"
@@ -42,8 +42,8 @@ setWalletPW() {
                     errorHandling "${_s}"
                     setWalletPW
                 fi
-                elif [ ${_i} -eq 2 ]; then
-                    if [ ${_itemBuffer} == ${_pw} ]; then
+                elif [[ ${_i} -eq 2 ]]; then
+                    if [[ ${_itemBuffer} == ${_pw} ]]; then
                         executeCURL "encryptwallet" "\"${_pw}\""
                         #walletpassphrasechange "oldpassphrase" "newpassphrase"
                         # maybe stops daemon?

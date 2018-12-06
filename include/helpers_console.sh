@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------
 
 _init() {
-    if [ -n "${TERM}" -a "${TERM}" != "dumb" ]; then
+    if [[ -n "${TERM}" && "${TERM}" != "dumb" ]]; then
 #        GREEN=$(tput setaf 2) RED=$(tput setaf 1) BLUE="$(tput setaf 4)"
 #        LTGREYBG="$(tput setab 7)"
 #        NORMAL=$(tput sgr0) BLINK=$(tput blink)
@@ -40,8 +40,8 @@ executeCommand() {
 evaluateRtc(){
     local _givenRtc=$1
     local _returnCodeForError=$2
-    if [ ${_givenRtc} -ne 0 ] ; then
-        if [ -z "$_returnCodeForError" ] ; then
+    if [[ ${_givenRtc} -ne 0 ]] ; then
+        if [[ -z "$_returnCodeForError" ]] ; then
             die 80 "Error occurred!"
         else
             die ${_returnCodeForError} "Error occurred! (${_returnCodeForError})"

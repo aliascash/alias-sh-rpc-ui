@@ -23,11 +23,11 @@ getTransactions() {
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'timereceived'* ]]; then
             _unixtime="${_itemBuffer#*':'}"
-            if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -lt ${_oldestStakeDate} ]); then
+            if ([[ ${_thisWasAStake} = "true" ]] && [[ ${_unixtime} -lt ${_oldestStakeDate} ]]); then
                 _oldestStakeDate=${_unixtime}
                 _firstStakeIndex="${_i}"
             fi
-            if ([ ${_thisWasAStake} = "true" ] && [ ${_unixtime} -gt ${_newestStakeDate} ]); then
+            if ([[ ${_thisWasAStake} = "true" ]] && [[ ${_unixtime} -gt ${_newestStakeDate} ]]); then
                 _newestStakeDate=${_unixtime}
             fi
             _unixtime=$(date -d "@$_unixtime" +%d-%m-%Y" at "%H:%M:%S)
@@ -54,13 +54,13 @@ getTransactions() {
         fi
     done
     IFS=${_oldIFS}
-    if ([ "$1" = "full" ] && [ ${_oldestStakeDate} != ${_newestStakeDate} ] && [ ${_newestStakeDate} !=  "0" ]); then
+    if ([[ "$1" = "full" ]] && [[ ${_oldestStakeDate} != ${_newestStakeDate} ]] && [[ ${_newestStakeDate} !=  "0" ]]); then
         local _stakedAmount=0
         local _stakeCounter=0
         local _i
         local _dataTimeFrame=$((${_newestStakeDate} - ${_oldestStakeDate}))
         for ((_i=$(( ${_firstStakeIndex} + 1));_i<${#transactions_global[@]};_i=$(( ${_i} + 6)))); do
-            if [ ${transactions_global[$_i+1]} = "${TEXT_STAKE}" ]; then
+            if [[ ${transactions_global[$_i+1]} = "${TEXT_STAKE}" ]]; then
                 _stakedAmount=$(echo "scale=8; ${_stakedAmount} + ${transactions_global[$_i+2]}" | bc)
                 _stakeCounter=$(( ${_stakeCounter} + 1 ))
             fi

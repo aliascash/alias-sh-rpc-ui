@@ -8,10 +8,10 @@ calculateLayout() {
     local _max_buff
     POS_Y_MENU=0
     _max_buff=$((${currentTPutCols} / 2))
-    if [ ${_max_buff} -lt 45 ] ; then
+    if [[ ${_max_buff} -lt 45 ]] ; then
         _max_buff=45
     fi
-    if [ ${_max_buff} -gt 60 ] ; then
+    if [[ ${_max_buff} -gt 60 ]] ; then
         SIZE_X_MENU=60
     else
         SIZE_X_MENU=${_max_buff}
@@ -20,15 +20,15 @@ calculateLayout() {
 
     #Size for the displayed transactions in main menu
     _max_buff=$((${currentTPutCols} - ${SIZE_X_MENU}))
-    if [ ${_max_buff} -gt 85 ] ; then
+    if [[ ${_max_buff} -gt 85 ]] ; then
         SIZE_X_TRANS=85
     else
         # if we do not have enough place just fuck it and tease by showing only left half
-        if [ ${_max_buff} -lt 29 ]; then
+        if [[ ${_max_buff} -lt 29 ]]; then
             # hide transactions in main
             SIZE_X_TRANS=0
             # recalc main menu size (make it max)
-            if [ ${currentTPutCols} -gt 60 ] ; then
+            if [[ ${currentTPutCols} -gt 60 ]] ; then
                 SIZE_X_MENU=60
             else
                 SIZE_X_MENU=${currentTPutCols}
@@ -42,7 +42,7 @@ calculateLayout() {
     # Size for the displayed info in main menu
     SIZE_X_INFO=${SIZE_X_MENU}
     _max_buff=$(($(tput lines) - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
-    if [ ${_max_buff} -gt 15 ] ; then
+    if [[ ${_max_buff} -gt 15 ]] ; then
         SIZE_Y_INFO=15
     else
         SIZE_Y_INFO=${_max_buff}
@@ -50,7 +50,7 @@ calculateLayout() {
 
     # Size for view all transactions dialog
     _max_buff=${currentTPutCols}
-    if [ ${_max_buff} -gt 74 ] ; then
+    if [[ ${_max_buff} -gt 74 ]] ; then
         SIZE_X_TRANS_VIEW=74
     else
         SIZE_X_TRANS_VIEW=${_max_buff}
@@ -74,7 +74,7 @@ calculateLayout() {
     #
     TEXTHIGHT_INFO=$(( ${SIZE_Y_INFO} - 2 ))
 
-    if [ ${currentTPutCols} -gt 60 ] ; then
+    if [[ ${currentTPutCols} -gt 60 ]] ; then
         SIZE_X_GAUGE=60
     else
         SIZE_X_GAUGE=${currentTPutCols}

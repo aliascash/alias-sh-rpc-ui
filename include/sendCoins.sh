@@ -60,7 +60,7 @@ sendCoins() {
                 sendCoins
             fi
 
-            if [[ ${sendInput[1]} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [ 1 -eq "$(echo "${sendInput[1]} > 0" | bc)" ]; then
+            if [[ ${sendInput[1]} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [[ 1 -eq "$(echo "${sendInput[1]} > 0" | bc)" ]]; then
                 _amount=${sendInput[1]}
                 if [[ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
                     # iff wallet is unlocked, we have to look it first

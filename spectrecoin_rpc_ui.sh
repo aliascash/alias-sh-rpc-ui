@@ -20,6 +20,9 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scriptName=$(basename $0)
 cd "${ownLocation}"
 
+# ToDo: Possibility to switch between different language files
+. include/ui_content_en.sh
+
 # Include used functions
 . include/calculateLayout.sh
 . include/getTransactions.sh
@@ -31,14 +34,11 @@ cd "${ownLocation}"
 . include/viewTransactions.sh
 
 # Handle separate version file
-if [ -e VERSION ] ; then
+if [[ -e VERSION ]] ; then
     VERSION=$(cat VERSION)
 else
     VERSION='unknown'
 fi
-
-# ToDo: Possibility to switch between different language files
-. include/ui_content_en.sh
 
 rtc=0
 _init
@@ -71,7 +71,7 @@ helpMe ()
 executeCURL() {
     unset msg_global
     connectToDaemon "$1" "$2"
-    if [ -z "${curl_result_global}" ]; then
+    if [[ -z "${curl_result_global}" ]]; then
         startDaemon
     fi
     # clean the result (curl_result_global) and optimize it for bash
@@ -159,7 +159,7 @@ cutCURLresult() {
 # Starts the daemon (spectrecoind)
 #
 startDaemon() {
-    if [ "${rpcconnect}" != "127.0.0.1" ]; then
+    if [[ "${rpcconnect}" != "127.0.0.1" ]]; then
         local _s="Settings:\n"
               _s+="RPC USER:${rpcuser}\nRPC PW:${rpcpassword}\n"
               _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
@@ -184,13 +184,13 @@ startDaemon() {
             echo "${_itemBuffer}"
         done
         local _i=60
-        while [ -z "${curl_result_global}" ] && [ ${_i} -gt 0 ]; do
+        while [[ -z "${curl_result_global}" ]] && [[ ${_i} -gt 0 ]]; do
             echo "- ${_i} ${ERROR_DAEMON_WAITING_MSG}"
             _i=$((_i-5))
             sleep 5
             connectToDaemon "getinfo"
         done
-        if [ -z "${curl_result_global}" ]; then
+        if [[ -z "${curl_result_global}" ]]; then
             # exit script
             errorHandling "${ERROR_DAEMON_NO_CONNECT}" \
                           1
@@ -228,9 +228,9 @@ fillLine() {
     buff=${buff//'-_-'/}
     _len=${#buff}
     offset=$(( $2 - ${_len} ))
-    if [ ${offset} -gt 0 ]; then
+    if [[ ${offset} -gt 0 ]]; then
         local _i=0
-        while [ ${_i} -lt ${offset} ]; do
+        while [[ ${_i} -lt ${offset} ]]; do
             if (( $_i % 2 == 1 )); then
                 filler=${filler}'.'
             else
@@ -252,22 +252,22 @@ fillLine() {
 secToHumanReadable() {
     local _time=$1
     local _timeHuman=""
-    if [ $((_time / 31536000)) -gt 0 ];then
+    if [[ $((_time / 31536000)) -gt 0 ]];then
         _timeHuman="$((_time / 31536000))y "
     fi
-    if [ $((_time % 31536000 /604800)) -gt 0 ];then
+    if [[ $((_time % 31536000 /604800)) -gt 0 ]];then
         _timeHuman+="$((_time % 31536000 /604800))w "
     fi
-    if [ $((_time % 604800 /86400)) -gt 0 ];then
+    if [[ $((_time % 604800 /86400)) -gt 0 ]];then
         _timeHuman+="$((_time % 604800 /86400))d "
     fi
-    if [ $((_time % 86400 /3600)) -gt 0 ];then
+    if [[ $((_time % 86400 /3600)) -gt 0 ]];then
         _timeHuman+="$((_time % 86400 /3600))h "
     fi
-    if [ $((_time % 3600 /60)) -gt 0 ];then
+    if [[ $((_time % 3600 /60)) -gt 0 ]];then
         _timeHuman+="$((_time % 3600 /60))m "
     fi
-    if [ $((_time % 60)) -gt 0 ];then
+    if [[ $((_time % 60)) -gt 0 ]];then
         _timeHuman+="$((_time % 60))s"
     fi
     echo "${_timeHuman}"
@@ -307,13 +307,13 @@ getInfo() {
             info_global[7]="${_itemBuffer#*':'}"
         elif [[ ${_itemBuffer} == 'unlocked_until:'* ]]; then
             _unixtime="${_itemBuffer#*':'}"
-            if [ "$_unixtime" -gt 0 ]; then
+            if [[ "$_unixtime" -gt 0 ]]; then
                 info_global[8]="${TEXT_WALLET_IS_UNLOCKED}"
             else
                 info_global[8]="${TEXT_WALLET_IS_LOCKED}"
             fi
         elif [[ ${_itemBuffer} == 'errors'* ]]; then
-            if [ "${_itemBuffer#*':'}" == 'none' ]; then
+            if [[ "${_itemBuffer#*':'}" == 'none' ]]; then
                 info_global[9]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
             else
                 #todo remove } at the end of error msg
@@ -340,7 +340,7 @@ getStakingInfo() {
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
-            if [ "${_itemBuffer#*':'}" == "true" ]; then
+            if [[ "${_itemBuffer#*':'}" == "true" ]]; then
                 stakinginfo_global[0]="${TEXT_STAKING_ON}"
             else
                 stakinginfo_global[0]="${TEXT_STAKING_OFF}"
@@ -362,12 +362,12 @@ getStakingInfo() {
 #                  $stakinginfo_global
 makeOutputInfo() {
     local _textWidth
-    if [ -z "$1" ]; then
+    if [[ -z "$1" ]]; then
         _textWidth="${TEXTWIDTH_INFO}"
     else
         _textWidth="$1"
     fi
-    if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
+    if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
         echo "${TEXT_HEADLINE_WALLET_INFO}\n"
     fi
     local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
@@ -379,9 +379,9 @@ makeOutputInfo() {
     echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z6${info_global[2]}\Zn" \
                     "${_textWidth}")"\n"
     #
-    if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
+    if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
         echo "\n${TEXT_HEADLINE_STAKING_INFO}\n"
-    elif [ ${TEXTHIGHT_INFO} -ge 10 ] ; then
+    elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
         echo "\n"
     fi
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
@@ -391,9 +391,9 @@ makeOutputInfo() {
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
     #
-    if [ ${TEXTHIGHT_INFO} -ge 13 ] ; then
+    if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
         echo "\n${TEXT_HEADLINE_CLIENT_INFO}\n"
-    elif [ ${TEXTHIGHT_INFO} -ge 10 ] ; then
+    elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
         echo "\n"
     fi
     echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[0]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[9]}" \
@@ -411,7 +411,7 @@ makeOutputInfo() {
 # Operating with:  $transactions_global
 makeOutputTransactions() {
     local _textWidth
-    if [ -z "$1" ]; then
+    if [[ -z "$1" ]]; then
         _textWidth="${TEXTWIDTH_TRANS}"
     else
         _textWidth="$1"
@@ -451,7 +451,7 @@ makeOutputTransactions() {
 # If no $2 is parsed the handler will just promp a dialog and continue,
 # instead of prompting to terminal and exiting
 errorHandling() {
-    if [ -z "$2" ]; then
+    if [[ -z "$2" ]]; then
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --title "${TITLE_ERROR}" \
@@ -555,7 +555,7 @@ advancedmenu() {
     local _cmdWallet
     local _explWalletStatus
     # ${info_global[8]} indicates if wallet is open
-    if [ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]; then
+    if [[ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]]; then
         _cmdWallet="${CMD_MAIN_ENCRYPT_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETENCRYPT}"
     else
@@ -680,10 +680,10 @@ refreshMainMenu_GUI() {
     local _cmdWallet
     local _explWalletStatus
     # ${info_global[8]} indicates if wallet is open
-    if [ "${info_global[8]}" = "${TEXT_WALLET_IS_UNLOCKED}" ]; then
+    if [[ "${info_global[8]}" = "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
         _cmdWallet="${CMD_MAIN_LOCK_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETLOCK}"
-    elif [ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]; then
+    elif [[ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]]; then
         _cmdWallet="${CMD_MAIN_ENCRYPT_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETENCRYPT}"
     else
@@ -692,7 +692,7 @@ refreshMainMenu_GUI() {
     fi
     local _mainMenuPick
     exec 3>&1
-    if [ ${SIZE_X_TRANS} -gt 0 ] ; then
+    if [[ ${SIZE_X_TRANS} -gt 0 ]] ; then
         _mainMenuPick=$(dialog --no-shadow \
             --begin 0 0 \
             --no-lines \
@@ -818,7 +818,7 @@ refreshMainMenu_DATA() {
     drawGauge "48" \
             "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
-    if [ ${SIZE_X_TRANS} -gt 0 ] ; then
+    if [[ ${SIZE_X_TRANS} -gt 0 ]] ; then
         drawGauge "66" \
                 "${TEXT_GAUGE_GET_TRANS}"
         executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
@@ -850,7 +850,7 @@ unlockWalletForStaking() {
                    "true"
     local _s
     # if there was no error
-    if [ -z "${msg_global}" ]; then
+    if [[ -z "${msg_global}" ]]; then
         dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --no-shadow \
@@ -878,7 +878,7 @@ drawGauge() {
 checkRequirement() {
     local _toolToCheck=$1
     ${_toolToCheck} --version > /dev/null 2>&1 ; rtc=$?
-    if [ "$rtc" -ne 0 ] ; then
+    if [[ "$rtc" -ne 0 ]] ; then
         die 20 "Required tool '${_toolToCheck}' not found!"
     fi
 }
@@ -897,7 +897,7 @@ checkRequirement curl
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'
 initDaemonConfiguration
-if [ $(tput lines) -lt 28 ] || [ $(tput cols) -lt 74 ]; then
+if [[ $(tput lines) -lt 28 ]] || [[ $(tput cols) -lt 74 ]]; then
     simpleMsg "${TITEL_SUGGESTION}" \
               "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
               "${BUTTON_LABEL_CONTINUE}"

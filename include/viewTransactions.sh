@@ -7,13 +7,13 @@
 #        $2 - if "true" stakes will be displayed (optional - default "true")
 viewAllTransactions() {
     local _start
-    if [ -z "$1" ]; then
+    if [[ -z "$1" ]]; then
         _start="0"
     else
         _start="$1"
     fi
     local _displayStakes
-    if [ -z "$2" ] || [ "$2" = "true" ]; then
+    if [[ -z "$2" ]] || [[ "$2" = "true" ]]; then
         _displayStakes="true"
         _displayStakesButton="${BUTTON_LABEL_HIDE_STAKES}"
     else
@@ -24,14 +24,14 @@ viewAllTransactions() {
     _nextButton="${BUTTON_LABEL_NEXT}"
     _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     calculateLayout
-    if [ ${SIZE_X_TRANS} == 0 ]; then
+    if [[ ${SIZE_X_TRANS} == 0 ]]; then
         # shorten buttons
         _displayStakesButton=$(echo ${_displayStakesButton} | sed 's/\(.\{4\}\).*/\1/')
         _prevButton=$(echo ${_prevButton} | sed 's/\(.\{4\}\).*/\1/')
         _nextButton=$(echo ${_nextButton} | sed 's/\(.\{4\}\).*/\1/')
         _mainMenuButton=$(echo ${_mainMenuButton} | sed 's/\(.\{4\}\).*/\1/')
      fi
-    if [ "${_displayStakes}" = "true" ]; then
+    if [[ "${_displayStakes}" = "true" ]]; then
         executeCURL "listtransactions" \
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"1"'
     else
@@ -39,7 +39,7 @@ viewAllTransactions() {
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"0"'
     fi
     getTransactions
-    if [ ${#transactions_global[@]} -eq 0 ] && [ ${_start} -ge ${COUNT_TRANS_VIEW} ]; then
+    if [[ ${#transactions_global[@]} -eq 0 ]] && [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
         viewAllTransactions "$(( ${_start} - ${COUNT_TRANS_VIEW} ))" \
                            "${_displayStakes}"
     fi
@@ -76,7 +76,7 @@ viewAllTransactions() {
             viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
                                "${_displayStakes}";;
         ${DIALOG_CANCEL})
-            if [ "${_displayStakes}" = "true" ]; then
+            if [[ "${_displayStakes}" = "true" ]]; then
             viewAllTransactions "0" \
                                 "false"
             else

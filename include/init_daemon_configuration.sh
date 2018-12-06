@@ -12,7 +12,7 @@ writeConfiguration(){
 }
 
 initDaemonConfiguration(){
-    if [ -e ${configfileLocation} ] ; then
+    if [[ -e ${configfileLocation} ]] ; then
         # Daemon config found
         # Check for rpcuser
         if grep -q "^rpcuser=" ${configfileLocation} ; then
