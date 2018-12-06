@@ -20,6 +20,13 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 scriptName=$(basename $0)
 cd "${ownLocation}"
 
+usedShell=$(readlink /proc/$$/exe)
+usedShellMajorVersion=$(${usedShell} --version | head -n 1 | sed -e "s/.* \([0-9]\)/\1/g" -e "s/\..*//g")
+if [[ ${usedShellMajorVersion} -lt 4 ]] ; then
+    echo "ERROR: Your shell must be at least version 4.x!"
+    exit 1
+fi
+
 # ToDo: Possibility to switch between different language files
 . include/ui_content_en.sh
 
