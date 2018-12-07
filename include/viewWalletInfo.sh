@@ -46,12 +46,12 @@ makeWalletInfoOutput() {
 viewWalletInfo() {
     local _showBalance
     local _balanceButtonText
-    if [[ -z "$1" ]] || [[ "$1" = true ]] ; then
-        _showBalance=true
-        _balanceButtonText="${BUTTON_LABEL_HIDE_BALANCE}"
-    else
+    if [[ -z "$1" ]] || [[ "$1" = false ]] ; then
         _showBalance=false
         _balanceButtonText="${BUTTON_LABEL_SHOW_BALANCE}"
+    else
+        _showBalance=true
+        _balanceButtonText="${BUTTON_LABEL_HIDE_BALANCE}"
     fi
     _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     calculateLayout
