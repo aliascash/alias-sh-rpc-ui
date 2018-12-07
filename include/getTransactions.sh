@@ -71,7 +71,6 @@ getTransactions() {
         done
         IFS='{'
         _i=$((${_i}+1))
-        echo "Counter: ${_i}"
     done
     IFS=${_oldIFS}
     currentAmountOfTransactions=$((${_i}-1))
