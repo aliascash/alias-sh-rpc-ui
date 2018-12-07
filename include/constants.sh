@@ -15,8 +15,7 @@ DIALOG_ITEM_HELP=4
 DIALOG_ESC=255
 DIALOG_ERROR=-1
 
-
-# Fields on transaction array
+# Fields on transaction array (RPC listtransactions)
 TA_ACCOUNT=0
 TA_ADDRESS=1
 TA_AMOUNT=2
@@ -33,6 +32,7 @@ TA_TIMERECEIVED=12
 TA_TXID=13
 TA_VERSION=14
 
+# Fields on wallet info (RPC getinfo)
 WALLET_VERSION=0
 WALLET_BALANCE_XSPEC=1
 WALLET_BALANCE_SPECTRE=2
