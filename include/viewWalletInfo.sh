@@ -53,19 +53,12 @@ viewWalletInfo() {
     _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     calculateLayout
     getInfo
-    dialog --no-shadow \
-        --begin 0 0 \
-        --no-lines \
-        --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
-        \
-        --and-widget \
-        --colors \
-        --extra-button \
-        --help-button \
-        --title "${TITLE_VIEW_TRANSACTIONS}" \
-        --help-label "${_mainMenuButton}" \
-        --default-button 'extra' \
-        --yesno "$(makeWalletInfoOutput $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
-    exit_status=$?
+    dialog --backtitle "${TITLE_BACK}" \
+           --colors \
+           --title "${TITLE_ERROR}" \
+           --ok-label "${BUTTON_LABEL_OK}" \
+           --no-shadow \
+           --msgbox "$(makeWalletInfoOutput $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
+
     refreshMainMenu_DATA
 }
