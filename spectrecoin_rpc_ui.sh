@@ -363,6 +363,14 @@ getInfo() {
             'proof-of-stake')
                 # PoS is a sub-entry of 'difficulty'
                 info_global[${WALLET_PROOF_OF_STAKE}]="${_itemBuffer#*:}";;
+            'testnet')
+                info_global[${WALLET_TESTNET}]="${_itemBuffer#*:}";;
+            'keypoolsize')
+                info_global[${WALLET_KEYPOOLSIZE}]="${_itemBuffer#*:}";;
+            'paytxfee')
+                info_global[${WALLET_PAYTXFEE}]="${_itemBuffer#*:}";;
+            'mininput')
+                info_global[${WALLET_MININPUT}]="${_itemBuffer#*:}";;
             *)
                 ;;
         esac
