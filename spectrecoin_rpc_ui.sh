@@ -47,6 +47,7 @@ fi
 . include/setWalletPW.sh
 . include/userCmdInput.sh
 . include/viewTransactions.sh
+. include/viewWalletInfo.sh
 
 rtc=0
 _init
@@ -620,6 +621,7 @@ advancedmenu() {
         --menu "" 0 0 10 \
         \
         "${_cmdWallet}" "${_explWalletStatus}" \
+        "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
         "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
         "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
@@ -633,6 +635,8 @@ advancedmenu() {
 #            refreshMainMenu_DATA;;
 #    esac
     case ${_mainMenuPick} in
+        "${CMD_GET_WALLET_INFO}")
+            viewWalletInfo;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
             sry;;
         "${CMD_CHANGE_WALLET_PW}")
