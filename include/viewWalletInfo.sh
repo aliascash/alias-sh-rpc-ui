@@ -6,17 +6,18 @@
 # Input: $1 - start (optional - default "0")
 #        $2 - if "true" stakes will be displayed (optional - default "true")
 makeWalletInfoOutput() {
-    local _textWidth
-    if [[ -z "$1" ]]; then
-        _textWidth="${TEXTWIDTH_INFO}"
-    else
-        _textWidth="$1"
-    fi
+    local _showBalance=$1
     echo "\n"
     echo "Version:            ${info_global[${WALLET_VERSION}]}\n"
-    echo "Balance XSPEC:      ${info_global[${WALLET_BALANCE_XSPEC}]}\n"
-    echo "Balance SPECTRE:    ${info_global[${WALLET_BALANCE_SPECTRE}]}\n"
-    echo "Stake:              ${info_global[${WALLET_STAKE}]}\n"
+    if ${_showBalance} ; then
+        echo "Balance XSPEC:      ${info_global[${WALLET_BALANCE_XSPEC}]}\n"
+        echo "Balance SPECTRE:    ${info_global[${WALLET_BALANCE_SPECTRE}]}\n"
+        echo "Stake:              ${info_global[${WALLET_STAKE}]}\n"
+    else
+        echo "Balance XSPEC:      ---\n"
+        echo "Balance SPECTRE:    ---\n"
+        echo "Stake:              ---\n"
+    fi
     echo "Connections:        ${info_global[${WALLET_CONNECTIONS}]}\n"
     echo "Data received:      ${info_global[${WALLET_DATARECEIVED}]}\n"
     echo "Data sent:          ${info_global[${WALLET_DATASENT}]}\n"
@@ -43,6 +44,15 @@ makeWalletInfoOutput() {
 }
 
 viewWalletInfo() {
+    local _showBalance
+    local _balanceButtonText
+    if [[ -z "$1" ]] || [[ "$1" = true ]] ; then
+        _showBalance=true
+        _balanceButtonText="${BUTTON_LABEL_HIDE_BALANCE}"
+    else
+        _showBalance=false
+        _balanceButtonText="${BUTTON_LABEL_SHOW_BALANCE}"
+    fi
     _mainMenuButton="${BUTTON_LABEL_MAIN_MENU}"
     calculateLayout
     executeCURL "getinfo"
@@ -54,7 +64,17 @@ viewWalletInfo() {
            --title "${TITLE_WALLET_INFO}" \
            --ok-label "${BUTTON_LABEL_OK}" \
            --no-shadow \
-           --msgbox "$(makeWalletInfoOutput $(( ${SIZE_X_TRANS_VIEW} - 4 )))" 34 "${SIZE_X_TRANS_VIEW}"
-
+           --extra-button \
+           --extra-label "${_balanceButtonText}" \
+           --msgbox "$(makeWalletInfoOutput ${_showBalance})" 34 "${SIZE_X_TRANS_VIEW}"
+    exit_status=$?
+    case ${exit_status} in
+        ${DIALOG_EXTRA})
+            if ${_showBalance} ; then
+                viewWalletInfo false
+            else
+                viewWalletInfo true
+            fi;;
+    esac
     refreshMainMenu_DATA
 }
