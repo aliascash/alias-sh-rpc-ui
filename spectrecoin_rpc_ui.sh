@@ -27,6 +27,13 @@ if [[ ${usedShellMajorVersion} -lt 4 ]] ; then
     exit 1
 fi
 
+# Handle separate version file
+if [[ -e VERSION ]] ; then
+    VERSION=$(cat VERSION)
+else
+    VERSION='unknown'
+fi
+
 # ToDo: Possibility to switch between different language files
 . include/ui_content_en.sh
 
@@ -40,13 +47,6 @@ fi
 . include/setWalletPW.sh
 . include/userCmdInput.sh
 . include/viewTransactions.sh
-
-# Handle separate version file
-if [[ -e VERSION ]] ; then
-    VERSION=$(cat VERSION)
-else
-    VERSION='unknown'
-fi
 
 rtc=0
 _init
