@@ -67,6 +67,11 @@ helpMe ()
     ${0} [options]
 
     Optional parameters:
+    -c <config-file-to-use>
+        Optional configuration file. Using this option you might connect to
+        different spectrecoind instances. If the configuration file is not
+        existing, a minimal one with a random rpc password will be generated.
+        Default: ${configfileLocation}
     -h  Show this help
 
     "
@@ -940,8 +945,9 @@ checkRequirement() {
     fi
 }
 
-while getopts h? option; do
+while getopts c:h? option; do
     case ${option} in
+        c) configfileLocation="${OPTARG}";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
