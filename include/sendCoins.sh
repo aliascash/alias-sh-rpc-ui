@@ -12,7 +12,7 @@ sendCoins() {
     local _destinationAddress=$1
     local _buffer
     local _narration=''
-    local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_STAKE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
@@ -62,11 +62,11 @@ sendCoins() {
 
             if [[ ${sendInput[1]} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [[ 1 -eq "$(echo "${sendInput[1]} > 0" | bc)" ]]; then
                 _amount=${sendInput[1]}
-                if [[ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
+                if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
                     # iff wallet is unlocked, we have to look it first
                     executeCURL "walletlock"
                 fi
-                if [[ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]]; then
+                if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" != "${TEXT_WALLET_HAS_NO_PW}" ]]; then
                     passwordDialog "60" "false"
                 fi
                 if [[ -z "${sendInput[2]}" ]] ; then
@@ -75,10 +75,10 @@ sendCoins() {
                 else
                     executeCURL "sendtoaddress" "\"${_destinationAddress}\",${_amount},\"\",\"\",\"${sendInput[2]}\""
                 fi
-                if [[ "${info_global[8]}" != "${TEXT_WALLET_HAS_NO_PW}" ]]; then
+                if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" != "${TEXT_WALLET_HAS_NO_PW}" ]]; then
                     executeCURL "walletlock"
                 fi
-                if [[ "${info_global[8]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
+                if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" == "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
                     simpleMsg "" \
                               "${TEXT_SEND_UNLOCK_WALLET_AGAIN}" \
                               "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"

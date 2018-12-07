@@ -32,6 +32,7 @@ fi
 
 # Include used functions
 . include/calculateLayout.sh
+. include/constants.sh
 . include/getTransactions.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
@@ -294,39 +295,72 @@ getInfo() {
     curl_result_global=${curl_result_global%'}'}
     IFS=','
     # if wallet is not encrypted
-    info_global[8]="${TEXT_WALLET_HAS_NO_PW}"
+    info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_HAS_NO_PW}"
+    curl_result_global=${curl_result_global%\}*}
     for _itemBuffer in ${curl_result_global}; do
-        if [[ ${_itemBuffer} == 'version'* ]]; then
-            info_global[0]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'balance'* ]]; then
-            info_global[1]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'spectrebalance'* ]]; then
-            info_global[2]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'stake'* ]]; then
-            info_global[3]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'connections'* ]]; then
-            info_global[4]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'datareceived'* ]]; then
-            info_global[5]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'datasent'* ]]; then
-            info_global[6]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'ip'* ]]; then
-            info_global[7]="${_itemBuffer#*':'}"
-        elif [[ ${_itemBuffer} == 'unlocked_until:'* ]]; then
-            _unixtime="${_itemBuffer#*':'}"
-            if [[ "$_unixtime" -gt 0 ]]; then
-                info_global[8]="${TEXT_WALLET_IS_UNLOCKED}"
-            else
-                info_global[8]="${TEXT_WALLET_IS_LOCKED}"
-            fi
-        elif [[ ${_itemBuffer} == 'errors'* ]]; then
-            if [[ "${_itemBuffer#*':'}" == 'none' ]]; then
-                info_global[9]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
-            else
-                #todo remove } at the end of error msg
-                info_global[9]="\Z1""${_itemBuffer#*':'}""\Zn"
-            fi
-        fi
+        case ${_itemBuffer%%:*} in
+            'version')
+                info_global[${WALLET_VERSION}]="${_itemBuffer#*:}";;
+            'balance')
+                info_global[${WALLET_BALANCE_XSPEC}]="${_itemBuffer#*:}";;
+            'spectrebalance')
+                info_global[${WALLET_BALANCE_SPECTRE}]="${_itemBuffer#*:}";;
+            'stake')
+                info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
+            'connections')
+                info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
+            'datareceived')
+                info_global[${WALLET_DATARECEIVED}]="${_itemBuffer#*:}";;
+            'datasent')
+                info_global[${WALLET_DATASENT}]="${_itemBuffer#*:}";;
+            'ip')
+                info_global[${WALLET_IP}]="${_itemBuffer#*:}";;
+            'unlocked_until')
+                _unixtime="${_itemBuffer#*':'}"
+                if [[ "$_unixtime" -gt 0 ]]; then
+                    info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_IS_UNLOCKED}"
+                else
+                    info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_IS_LOCKED}"
+                fi;;
+            'errors')
+                if [[ "${_itemBuffer#*':'}" == 'none' ]]; then
+                    info_global[${WALLET_ERRORS}]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
+                else
+                    info_global[${WALLET_ERRORS}]="\Z1${_itemBuffer#*:}\Zn"
+                fi;;
+        esac
+
+#        if [[ ${_itemBuffer} == 'version'* ]]; then
+#            info_global[0]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'balance'* ]]; then
+#            info_global[1]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'spectrebalance'* ]]; then
+#            info_global[2]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'stake'* ]]; then
+#            info_global[3]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'connections'* ]]; then
+#            info_global[4]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'datareceived'* ]]; then
+#            info_global[5]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'datasent'* ]]; then
+#            info_global[6]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'ip'* ]]; then
+#            info_global[7]="${_itemBuffer#*':'}"
+#        elif [[ ${_itemBuffer} == 'unlocked_until:'* ]]; then
+#            _unixtime="${_itemBuffer#*':'}"
+#            if [[ "$_unixtime" -gt 0 ]]; then
+#                info_global[8]="${TEXT_WALLET_IS_UNLOCKED}"
+#            else
+#                info_global[8]="${TEXT_WALLET_IS_LOCKED}"
+#            fi
+#        elif [[ ${_itemBuffer} == 'errors'* ]]; then
+#            if [[ "${_itemBuffer#*':'}" == 'none' ]]; then
+#                info_global[9]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
+#            else
+#                #todo remove } at the end of error msg
+#                info_global[9]="\Z1""${_itemBuffer#*':'}""\Zn"
+#            fi
+#        fi
     done
     IFS=${_oldIFS}
 }
@@ -377,13 +411,13 @@ makeOutputInfo() {
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
         echo "${TEXT_HEADLINE_WALLET_INFO}\n"
     fi
-    local _balance=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_STAKE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
     echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-${_balance}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z6${info_global[2]}\Zn" \
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z6${info_global[${WALLET_BALANCE_SPECTRE}]}\Zn" \
                     "${_textWidth}")"\n"
     #
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
@@ -391,9 +425,9 @@ makeOutputInfo() {
     elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
         echo "\n"
     fi
-    echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[8]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
+    echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[${WALLET_UNLOCKED_UNTIL}]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${info_global[1]}\Zn-_-(\Z5${info_global[3]}\Zn ${TEXT_MATRUING_COINS})" \
+    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${info_global[${WALLET_BALANCE_XSPEC}]}\Zn-_-(\Z5${info_global[${WALLET_STAKE}]}\Zn ${TEXT_MATRUING_COINS})" \
                     "${_textWidth}")"\n"
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
@@ -403,11 +437,11 @@ makeOutputInfo() {
     elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
         echo "\n"
     fi
-    echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[0]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[9]}" \
+    echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[${WALLET_VERSION}]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[${WALLET_ERRORS}]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_DAEMON_IP}: ${info_global[7]}-_-${TEXT_DAEMON_PEERS}: ${info_global[4]}" \
+    echo $(fillLine "${TEXT_DAEMON_IP}: ${info_global[${WALLET_IP}]}-_-${TEXT_DAEMON_PEERS}: ${info_global[${WALLET_CONNECTIONS}]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_DAEMON_DOWNLOADED_DATA}: ${info_global[5]}-_-${TEXT_DAEMON_UPLOADED_DATA}: ${info_global[6]}" \
+    echo $(fillLine "${TEXT_DAEMON_DOWNLOADED_DATA}: ${info_global[${WALLET_DATARECEIVED}]}-_-${TEXT_DAEMON_UPLOADED_DATA}: ${info_global[${WALLET_DATASENT}]}" \
                     "${_textWidth}")"\n"
 }
 
@@ -424,35 +458,25 @@ makeOutputTransactions() {
         _textWidth="$1"
     fi
     for ((i=${currentAmountOfTransactions}; i > 0; i=$(($i-1)))) ; do
-        echo $(fillLine "${transactions[${i},6]}: ${transactions[${i},2]}-_-${transactions[${i},12]}" \
+        echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${transactions[${i},${TA_TIMERECEIVED}]}" \
                         "${_textWidth}")"\n"
         if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},7]}-_-${TEXT_ADDRESS}: ${transactions[${i},1]}" \
+            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}" \
                             "${_textWidth}")"\n"
         else
-            echo "${TEXT_CONFIRMATIONS}: ${transactions[${i},7]}\n"
+            echo "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}\n"
         fi
         if (( ${_textWidth} >= 70 ));then
-            echo $(fillLine "${TEXT_TXID}: ${transactions[${i},13]}" \
+            echo $(fillLine "${TEXT_TXID}: ${transactions[${i},${TA_TXID}]}" \
                             "${_textWidth}")"\n"
         fi
         if [[ -n "${transactions[${i},10]}" ]] ; then
-            echo $(fillLine "${TEXT_NARRATION}: ${transactions[${i},10]}" \
+            echo $(fillLine "${TEXT_NARRATION}: ${transactions[${i},${TA_NARRATION}]}" \
                             "${_textWidth}")"\n"
         fi
         echo "\n"
     done
 }
-
-# ============================================================================
-# Define the dialog exit status codes
-: ${DIALOG_OK=0}
-: ${DIALOG_CANCEL=1}
-: ${DIALOG_HELP=2}
-: ${DIALOG_EXTRA=3}
-: ${DIALOG_ITEM_HELP=4}
-: ${DIALOG_ESC=255}
-: ${DIALOG_ERROR=-1}
 
 # ============================================================================
 # Simple error handling
@@ -565,8 +589,8 @@ advancedmenu() {
 # back to main
     local _cmdWallet
     local _explWalletStatus
-    # ${info_global[8]} indicates if wallet is open
-    if [[ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]]; then
+    # ${info_global[${WALLET_UNLOCKED_UNTIL}]} indicates if wallet is open
+    if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" = "${TEXT_WALLET_HAS_NO_PW}" ]]; then
         _cmdWallet="${CMD_MAIN_ENCRYPT_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETENCRYPT}"
     else
@@ -690,11 +714,11 @@ curlUserFeedbackHandling() {
 refreshMainMenu_GUI() {
     local _cmdWallet
     local _explWalletStatus
-    # ${info_global[8]} indicates if wallet is open
-    if [[ "${info_global[8]}" = "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
+    # ${info_global[${WALLET_UNLOCKED_UNTIL}]} indicates if wallet is open
+    if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" = "${TEXT_WALLET_IS_UNLOCKED}" ]]; then
         _cmdWallet="${CMD_MAIN_LOCK_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETLOCK}"
-    elif [[ "${info_global[8]}" = "${TEXT_WALLET_HAS_NO_PW}" ]]; then
+    elif [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" = "${TEXT_WALLET_HAS_NO_PW}" ]]; then
         _cmdWallet="${CMD_MAIN_ENCRYPT_WALLET}"
         _explWalletStatus="${EXPL_CMD_MAIN_WALLETENCRYPT}"
     else

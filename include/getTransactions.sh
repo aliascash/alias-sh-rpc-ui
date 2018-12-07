@@ -29,44 +29,44 @@ getTransactions() {
         for detail in ${transaction} ; do
             case ${detail%%:*} in
                 account)
-                    transactions[${_i},0]="${detail#*:}";;
+                    transactions[${_i},${TA_ACCOUNT}]="${detail#*:}";;
                 address)
-                    transactions[${_i},1]="${detail#*:}";;
+                    transactions[${_i},${TA_ADDRESS}]="${detail#*:}";;
                 amount)
-                    transactions[${_i},2]="${detail#*:}";;
+                    transactions[${_i},${TA_AMOUNT}]="${detail#*:}";;
                 blockhash)
-                    transactions[${_i},3]="${detail#*:}";;
+                    transactions[${_i},${TA_BLOCKHASH}]="${detail#*:}";;
                 blockindex)
-                    transactions[${_i},4]="${detail#*:}";;
+                    transactions[${_i},${TA_BLOCKINDEX}]="${detail#*:}";;
                 blocktime)
-                    transactions[${_i},5]="${detail#*:}";;
+                    transactions[${_i},${TA_BLOCKTIME}]="${detail#*:}";;
                 category)
                     case ${detail#*:} in
                         receive)
-                            transactions[${_i},6]="${TEXT_RECEIVED}";;
+                            transactions[${_i},${TA_CATEGORY}]="${TEXT_RECEIVED}";;
                         generate)
-                            transactions[${_i},6]="${TEXT_STAKE}";;
+                            transactions[${_i},${TA_CATEGORY}]="${TEXT_STAKE}";;
                         immature)
-                            transactions[${_i},6]="${TEXT_IMMATURE}";;
+                            transactions[${_i},${TA_CATEGORY}]="${TEXT_IMMATURE}";;
                         *)
-                            transactions[${_i},6]="${TEXT_TRANSFERRED}";;
+                            transactions[${_i},${TA_CATEGORY}]="${TEXT_TRANSFERRED}";;
                     esac;;
                 confirmations)
-                    transactions[${_i},7]="${detail#*:}";;
+                    transactions[${_i},${TA_CONFIRMATIONS}]="${detail#*:}";;
                 currency)
-                    transactions[${_i},8]="${detail#*:}";;
+                    transactions[${_i},${TA_CURRENCY}]="${detail#*:}";;
                 generated)
-                    transactions[${_i},9]="${detail#*:}";;
+                    transactions[${_i},${TA_GENERATED}]="${detail#*:}";;
                 narration)
-                    transactions[${_i},10]="${detail#*:}";;
+                    transactions[${_i},${TA_NARRATION}]="${detail#*:}";;
                 time)
-                    transactions[${_i},11]="${detail#*:}";;
+                    transactions[${_i},${TA_TIME}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
                 timereceived)
-                    transactions[${_i},12]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+                    transactions[${_i},${TA_TIMERECEIVED}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
                 txid)
-                    transactions[${_i},13]="${detail#*:}";;
+                    transactions[${_i},${TA_TXID}]="${detail#*:}";;
                 version)
-                    transactions[${_i},14]="${detail#*:}";;
+                    transactions[${_i},${TA_VERSION}]="${detail#*:}";;
             esac
         done
         IFS='{'
@@ -123,7 +123,7 @@ getTransactions() {
                 _stakeCounter=$(( ${_stakeCounter} + 1 ))
             fi
         done
-        local _totalCoins=$(echo "scale=8 ; ${info_global[1]}+${info_global[3]}" | bc)
+        local _totalCoins=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_STAKE}]}" | bc)
         local _stakedCoinRate=$(echo "scale=16 ; $_stakedAmount / $_totalCoins" | bc)
         local _buff=$(echo "scale=16 ; ${_stakedCoinRate} + 1" | bc)
         local _buff2=$(echo "scale=16 ; 31536000 / ${_dataTimeFrame}" | bc)
