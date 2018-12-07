@@ -1,10 +1,16 @@
 #!/bin/bash
+# ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018-12 HLXEasy
+#
+# ============================================================================
 
 # ============================================================================
-# Gathers the data form the CURL result for the getinfo command
+# Print all data from RPC 'getinfo' to stdout
 #
-# Input: $1 - start (optional - default "0")
-#        $2 - if "true" stakes will be displayed (optional - default "true")
+# Input: $1 - true/false to show/hide current balance
 makeWalletInfoOutput() {
     local _showBalance=$1
     echo "\n"
@@ -43,6 +49,11 @@ makeWalletInfoOutput() {
     echo "Mininput:           ${info_global[${WALLET_MININPUT}]}\n"
 }
 
+# ============================================================================
+# Get result from RPC 'getinfo' and put it into a dialog msgbox.
+# Additional option: Show/hide current balance
+#
+# Input: $1 - true/false to show/hide current balance
 viewWalletInfo() {
     local _showBalance
     local _balanceButtonText

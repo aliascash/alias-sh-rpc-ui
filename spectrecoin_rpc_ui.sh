@@ -1,17 +1,20 @@
 #!/bin/bash
 # ============================================================================
 #
-# FILE: spectrecoin_rpc_ui.sh
+# FILE:         spectrecoin_rpc_ui.sh
 #
-# DESCRIPTION: DIALOG RPC interface for Spectrecoin,
-#              It's a lightwight GUI for the spectrecoind (headless) wallet
+# DESCRIPTION:  DIALOG based RPC interface for Spectrecoin.
+#               It's a lightwight UI for spectrecoind, the Spectrecoin daemon
 #
-# OPTIONS: path to config file can be parsed as an argument,
-#          if the file is not located in the same folder
-# REQUIREMENTS: dialog, bc
-# NOTES: you may resize your terminal to get most of it
-# AUTHOR: dave#0773@discord
-# Project: https://spectreproject.io/ and https://github.com/spectrecoin/spectre
+# REQUIREMENTS: bash 4.x, bc, curl, dialog
+# OPTIONS:      Call script with '-h'
+# NOTES:        You may resize your terminal to get most of it
+# AUTHOR:       dave#0773@discord
+# AUTHOR:       HLXEasy
+# PROJECT:      https://spectreproject.io/
+#               https://github.com/spectrecoin/spectre
+#               https://github.com/spectrecoin/spectrecoin-sh-rpc-ui
+#
 # ============================================================================
 
 # Backup where we came from

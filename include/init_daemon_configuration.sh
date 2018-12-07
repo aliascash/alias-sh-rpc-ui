@@ -1,7 +1,11 @@
 #!/bin/bash
-# ---------------------------------------------------------------------------
-#  @author   HLXEasy - Helix
-# ---------------------------------------------------------------------------
+# ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018 HLXEasy
+#
+# ============================================================================
 
 configfileLocation=~/.spectrecoin/spectrecoin.conf
 defaultPassword=supersupersuperlongpassword

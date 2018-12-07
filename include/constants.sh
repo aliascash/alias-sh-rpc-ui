@@ -1,6 +1,8 @@
 #!/bin/bash
-
 # ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
 # Definition of used constants
 #
 # Creation: 2018-12-07 HLXEasy

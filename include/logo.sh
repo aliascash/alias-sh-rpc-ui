@@ -1,4 +1,12 @@
 #!/bin/sh
+# ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018 HLXEasy
+#
+# ============================================================================
+
 (
 cat << EOF
 ICAgIF9fX19fICAgICAgICAgICAgICAgICBfXyAgICAgICAgICAgICAgICAgICAgICAgXyAgICAg

@@ -1,4 +1,11 @@
 #!/bin/bash
+# ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018 dave#0773@discord
+#
+# ============================================================================
 
 # ============================================================================
 # This function provides a mask for the user to enter commands, that are

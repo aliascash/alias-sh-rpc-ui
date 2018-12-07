@@ -1,5 +1,13 @@
 #!/bin/bash
 # ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018 HLXEasy
+#
+# ============================================================================
+
+# ============================================================================
 # Set global variables for text output(i.e. for main menu).
 #
 # Interpret embedded "\Z" sequences in the dialog text by the following character,
