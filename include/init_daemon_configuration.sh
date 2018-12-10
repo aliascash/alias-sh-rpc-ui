@@ -1,7 +1,11 @@
 #!/bin/bash
-# ---------------------------------------------------------------------------
-#  @author   HLXEasy - Helix
-# ---------------------------------------------------------------------------
+# ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018 HLXEasy
+#
+# ============================================================================
 
 configfileLocation=~/.spectrecoin/spectrecoin.conf
 defaultPassword=supersupersuperlongpassword
@@ -12,7 +16,7 @@ writeConfiguration(){
 }
 
 initDaemonConfiguration(){
-    if [ -e ${configfileLocation} ] ; then
+    if [[ -e ${configfileLocation} ]] ; then
         # Daemon config found
         # Check for rpcuser
         if grep -q "^rpcuser=" ${configfileLocation} ; then

@@ -1,5 +1,13 @@
 #!/bin/bash
 # ============================================================================
+#
+# This is a component of the Spectrecoin shell rpc ui
+#
+# Author: 2018 HLXEasy
+#
+# ============================================================================
+
+# ============================================================================
 # Set global variables for text output(i.e. for main menu).
 #
 # Interpret embedded "\Z" sequences in the dialog text by the following character,
@@ -18,16 +26,17 @@ TITLE_MENU="${TITLE_BACK}"
 TITLE_GAUGE="Please wait"
 TITLE_ERROR="ERROR"
 TITLE_STARTING_DAEMON="Starting Daemon"
-TITEL_GOODBYE="GOODBYE"
-TITEL_SEND="Send XSPEC"
-TITEL_USERCOMMAND="Enter Command"
-TITEL_CURL_RESULT="cURL result"
-TITEL_RECEIVE="Wallet Addresses"
-TITEL_SUGGESTION="Suggestion"
+TITLE_GOODBYE="GOODBYE"
+TITLE_SEND="Send XSPEC"
+TITLE_USERCOMMAND="Enter Command"
+TITLE_CURL_RESULT="cURL result"
+TITLE_RECEIVE="Wallet Addresses"
+TITLE_SUGGESTION="Suggestion"
 TITLE_PLACEHOLDER_FUNCTION="SRY"
 TITLE_ENCRYPT_WALLET="Encrypt Wallet"
-TITEL_VIEW_TRANSACTIONS="Page"
+TITLE_VIEW_TRANSACTIONS="Page"
 TITLE_ADV_MENU="Advanced Options"
+TITLE_WALLET_INFO="Wallet Info"
 #
 BUTTON_LABEL_ENCRYPT="Encrypt"
 BUTTON_LABEL_RESTART_DAEMON="Restart daemon"
@@ -47,6 +56,8 @@ BUTTON_LABEL_HIDE_STAKES="Hide Stakes"
 BUTTON_LABEL_JUST_LEAVE="No, just exit UI"
 BUTTON_LABEL_STOP_DAEMON="Yes, stop daemon"
 BUTTON_LABEL_I_HAVE_UNDERSTOOD="YES - I´ve understood"
+BUTTON_LABEL_SHOW_BALANCE="Show balance"
+BUTTON_LABEL_HIDE_BALANCE="Hide balance"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Lock"
@@ -75,6 +86,8 @@ CMD_CHANGE_WALLET_PW="Reencrypt"
 EXPL_CMD_CHANGE_WALLET_PW="Change wallet password."
 CMD_STAKING_ANALYSE="Analyse"
 EXPL_CMD_STAKING_ANALYSE="Advanced staking analysis tool."
+CMD_GET_WALLET_INFO="Wallet"
+EXPL_CMD_GET_WALLET_INFO="Get wallet info."
 CMD_SETUP_PI="Configure"
 EXPL_CMD_SETUP_PI="Setup your Rasperry Pi."
 CMD_CHANGE_LANGUAGE="Language"
@@ -110,6 +123,7 @@ ERROR_DAEMON_WAITING_END="All done. Starting Interface..."
 TEXT_HEADLINE_WALLET_INFO="Wallet Info"
 TEXT_BALANCE="Balance"
 TEXT_CURRENCY="XSPEC"
+TEXT_CURRENCY_2="SPECTRE"
 TEXT_WALLET_STATE="Wallet"
 TEXT_WALLET_HAS_NO_PW="\Z1no PW\Zn"
 TEXT_WALLET_IS_UNLOCKED="\Z4unlocked\Zn"
@@ -139,13 +153,15 @@ TEXT_TRANSFERRED="\Z1SENDED\Zn"
 TEXT_CONFIRMATIONS="confirmations"
 TEXT_ADDRESS="address"
 TEXT_TXID="txid"
+TEXT_NARRATION="narration"
 #
-TEXT_CLIPBOARD_HINT="On Linux: Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to copy from clipboard."
+TEXT_CLIPBOARD_HINT="On Linux: Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to paste from clipboard."
 TEXT_SEND_DESTINATION_ADDRESS_EXPL="Destination address"
 TEXT_SEND_DESTINATION_ADDRESS="Address"
 TEXT_SEND_AMOUNT_EXPL="Amount of XSPEC"
 TEXT_SEND_AMOUNT="Amount"
 TEXT_SEND_EXPL="Enter the destination address."
+TEXT_SEND_NARRATION="Narration"
 #
 TEXT_PW_EXPL="Enter wallet password"
 #
