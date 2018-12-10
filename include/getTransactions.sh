@@ -64,10 +64,10 @@ getTransactions() {
                     transactions[${_i},${TA_GENERATED}]="${detail#*:}";;
                 narration)
                     transactions[${_i},${TA_NARRATION}]="${detail#*:}";;
-                time)
-                    transactions[${_i},${TA_TIME}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
                 timereceived)
                     transactions[${_i},${TA_TIMERECEIVED}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+                time)
+                    transactions[${_i},${TA_TIME}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
                 txid)
                     transactions[${_i},${TA_TXID}]="${detail#*:}";;
                 version)

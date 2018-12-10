@@ -480,7 +480,7 @@ makeOutputTransactions() {
         _textWidth="$1"
     fi
     for ((i=${currentAmountOfTransactions}; i > 0; i=$(($i-1)))) ; do
-        echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${transactions[${i},${TA_TIMERECEIVED}]}" \
+        echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${transactions[${i},${TA_TIME}]}" \
                         "${_textWidth}")"\n"
         if (( ${_textWidth} >= 43 ));then
             echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}" \
