@@ -9,10 +9,9 @@
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input: $curl_result_global
-# Output: $transactions_global array
-#          $1  - if "full" a staking analysis is done
+# Output: $transactions array
 getTransactions() {
-    unset transactions_global
+#    unset transactions_global
     local _i=0
     local _oldestStakeDate=9999999999
     local _newestStakeDate=0

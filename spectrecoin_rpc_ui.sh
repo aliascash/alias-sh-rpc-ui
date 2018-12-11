@@ -43,12 +43,14 @@ fi
 # Include used functions
 . include/calculateLayout.sh
 . include/constants.sh
+. include/getStakingPrediction.sh
 . include/getTransactions.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
 . include/sendCoins.sh
 . include/setWalletPW.sh
 . include/userCmdInput.sh
+. include/viewStakingPrediction.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
 
@@ -471,7 +473,7 @@ makeOutputInfo() {
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input:  $1  - optional var determing the text width (default: TEXTWIDTH_TRANS)
-# Operating with:  $transactions_global
+# Operating with:  $transactions
 makeOutputTransactions() {
     local _textWidth
     if [[ -z "$1" ]]; then
@@ -646,11 +648,11 @@ advancedmenu() {
     case ${_mainMenuPick} in
         "${CMD_GET_WALLET_INFO}")
             viewWalletInfo;;
+        "${CMD_STAKING_ANALYSE}")
+            viewStakingPrediction;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
             sry;;
         "${CMD_CHANGE_WALLET_PW}")
-            sry;;
-        "${CMD_STAKING_ANALYSE}")
             sry;;
         "${CMD_SETUP_PI}")
             sry;;
