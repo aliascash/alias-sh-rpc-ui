@@ -15,9 +15,9 @@ makeStakeInfoOutput() {
                     "${_textWidth}")\n"
 
     echo "\n${TEXT_STAKING_ANALYSIS_LAST_THOUSAND}:\n"
-    echo "$(fillLine "${TEXT_STAKING_ANALYSIS_AMOUNTS}:-_-${staking_analysis[2]}" \
+    echo "$(fillLine " - ${TEXT_STAKING_ANALYSIS_AMOUNTS}:-_-${staking_analysis[2]}" \
                     "${_textWidth}")\n"
-    echo "$(fillLine "${TEXT_STAKING_ANALYSIS_TOTAL_REWARD}:-_-${staking_analysis[3]}" \
+    echo "$(fillLine " - ${TEXT_STAKING_ANALYSIS_TOTAL_REWARD}:-_-${staking_analysis[3]}" \
                     "${_textWidth}")\n"
 
     echo "\n$(fillLine "${TEXT_STAKING_ANALYSIS_TOTAL_TODAY}:-_-${staking_analysis[4]}" \
@@ -72,7 +72,7 @@ viewStakingPrediction() {
            --title "${TITLE_STAKING_INFO}" \
            --ok-label "${BUTTON_LABEL_OK}" \
            --no-shadow \
-           --msgbox "$(makeStakeInfoOutput)" 26 74
+           --msgbox "$(makeStakeInfoOutput)" 30 74
 
     refreshMainMenu_DATA
 }
