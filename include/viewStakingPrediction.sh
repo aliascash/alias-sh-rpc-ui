@@ -72,7 +72,7 @@ viewStakingPrediction() {
            --title "${TITLE_STAKING_INFO}" \
            --ok-label "${BUTTON_LABEL_OK}" \
            --no-shadow \
-           --msgbox "$(makeStakeInfoOutput)" 30 74
+           --msgbox "$(makeStakeInfoOutput)" 30 54
 
     refreshMainMenu_DATA
 }
