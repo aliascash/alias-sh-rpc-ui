@@ -65,9 +65,13 @@ getTransactions() {
                 narration)
                     transactions[${_i},${TA_NARRATION}]="${detail#*:}";;
                 timereceived)
-                    transactions[${_i},${TA_TIMERECEIVED}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+# Conversion is performed right before showing values on UI, so here it's too early
+#                    transactions[${_i},${TA_TIMERECEIVED}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+                    transactions[${_i},${TA_TIMERECEIVED}]="${detail#*:}";;
                 time)
-                    transactions[${_i},${TA_TIME}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+# Conversion is performed right before showing values on UI, so here it's too early
+#                    transactions[${_i},${TA_TIME}]="$(date -d "@${detail#*:}" +%d-%m-%Y" at "%H:%M:%S)";;
+                    transactions[${_i},${TA_TIME}]="${detail#*:}";;
                 txid)
                     transactions[${_i},${TA_TXID}]="${detail#*:}";;
                 version)
