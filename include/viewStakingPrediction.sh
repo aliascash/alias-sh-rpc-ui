@@ -11,7 +11,7 @@
 # Print prepared data regarding staking from RPC 'listtransactions' to stdout
 makeStakeInfoOutput() {
     local _textWidth=50
-    echo "$(fillLine "${TEXT_STAKING_ANALYSIS_TIMEFRAME}:-_-${staking_analysis[1]}" \
+    echo "\n$(fillLine "${TEXT_STAKING_ANALYSIS_TIMEFRAME}:-_-${staking_analysis[1]}" \
                     "${_textWidth}")\n"
 
     echo "\n${TEXT_STAKING_ANALYSIS_LAST_THOUSAND}:\n"
