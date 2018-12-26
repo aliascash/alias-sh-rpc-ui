@@ -483,20 +483,30 @@ makeOutputTransactions() {
     fi
     for ((i=${currentAmountOfTransactions}; i > 0; i=$(($i-1)))) ; do
         local _currentTaTime=$(date -d "@${transactions[${i},${TA_TIME}]}" +%d-%m-%Y" at "%H:%M:%S)
+
+        # 1st line: Transaction and date
         echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${_currentTaTime}" \
                         "${_textWidth}")"\n"
+
+        # 2nd line: Confirmations and narration
         if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}" \
+            narrationContent='---'
+            if [[ -n "${transactions[${i},10]}" ]] ; then
+                narrationContent="${transactions[${i},${TA_NARRATION}]}"
+            fi
+            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_NARRATION}: ${narrationContent}" \
                             "${_textWidth}")"\n"
         else
             echo "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}\n"
         fi
+
         if (( ${_textWidth} >= 70 ));then
+            # 3rd line: Address
+            # There is no space after ":" to prevent line break!
+            echo "${TEXT_ADDRESS}:${transactions[${i},${TA_ADDRESS}]}\n"
+
+            # 4th line: Transaction Id
             echo $(fillLine "${TEXT_TXID}: ${transactions[${i},${TA_TXID}]}" \
-                            "${_textWidth}")"\n"
-        fi
-        if [[ -n "${transactions[${i},10]}" ]] ; then
-            echo $(fillLine "${TEXT_NARRATION}: ${transactions[${i},${TA_NARRATION}]}" \
                             "${_textWidth}")"\n"
         fi
         echo "\n"
