@@ -47,10 +47,6 @@ viewAllTransactions() {
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"0"'
     fi
     getTransactions
-    if [[ ${#transactions_global[@]} -eq 0 ]] && [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
-        viewAllTransactions "$(( ${_start} - ${COUNT_TRANS_VIEW} ))" \
-                           "${_displayStakes}"
-    fi
     local _page=$(( (${_start} / ${COUNT_TRANS_VIEW}) + 1 ))
     dialog --no-shadow \
         --begin 0 0 \
