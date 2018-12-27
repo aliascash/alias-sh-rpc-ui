@@ -48,6 +48,24 @@ viewAllTransactions() {
     fi
     getTransactions
     local _page=$(( (${_start} / ${COUNT_TRANS_VIEW}) + 1 ))
+
+    if [[ ${_start} -le 0 ]] ; then
+        # Disable "Previous" button on first page
+        previousButton=""
+        buttonTypeOK="yes"
+        buttonTypeCancel="no"
+    else
+        previousButton="--extra-button --extra-label ${_prevButton}"
+        buttonTypeOK="ok"
+        buttonTypeCancel="cancel"
+    fi
+    if [[ ${currentAmountOfTransactions} -le 0 ]] ; then
+        # Disable "Next" button if there are no more transactions
+        nextButton=""
+    else
+        nextButton="--help-button --help-label ${_nextButton}"
+    fi
+
     dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
@@ -55,20 +73,18 @@ viewAllTransactions() {
         \
         --and-widget \
         --colors \
-        --extra-button \
-        --help-button \
         --title "${TITLE_VIEW_TRANSACTIONS} ${_page}" \
-        --ok-label "${_prevButton}" \
-        --extra-label "${_nextButton}" \
-        --help-label "${_mainMenuButton}" \
-        --cancel-label "${_displayStakesButton}" \
+        --${buttonTypeOK}-label "${_mainMenuButton}" \
+        --${buttonTypeCancel}-label "${_displayStakesButton}" \
+        ${previousButton} \
+        ${nextButton} \
         --default-button 'extra' \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_DATA;;
-        ${DIALOG_OK})
+        ${DIALOG_EXTRA})
             if [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
                 viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
                                    "${_displayStakes}"
@@ -76,7 +92,7 @@ viewAllTransactions() {
                 viewAllTransactions "0" \
                                     "${_displayStakes}"
             fi;;
-        ${DIALOG_EXTRA})
+        ${DIALOG_HELP})
             viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
                                "${_displayStakes}";;
         ${DIALOG_CANCEL})
@@ -87,7 +103,7 @@ viewAllTransactions() {
             viewAllTransactions "0" \
                                 "true"
             fi;;
-        ${DIALOG_HELP})
+        ${DIALOG_OK})
             refreshMainMenu_DATA;;
     esac
     errorHandling "${ERROR_TRANS_FATAL}" \
