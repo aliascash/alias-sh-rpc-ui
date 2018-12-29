@@ -687,12 +687,17 @@ receiveCoins() {
     executeCURL "getaddressesbyaccount" "\"Default Address\""
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
-    curl_result_global=${curl_result_global//']'/''}
+    local _defaultAddress=${curl_result_global//']'/''}
+    executeCURL "liststealthaddresses"
+    curl_result_global=${curl_result_global//','/'\n'}
+    curl_result_global=${curl_result_global//'['/''}
+    local _defaultStealthAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
+
     dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --title "${TITLE_RECEIVE}" \
                --no-shadow \
-               --infobox "${TEXT_FEEDBACK_RECEIVE}\n${curl_result_global}" 0 0
+               --infobox "${TEXT_FEEDBACK_RECEIVE}\n\n${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 0 0
     read -s
     refreshMainMenu_GUI
 }
