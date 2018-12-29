@@ -481,7 +481,7 @@ makeOutputTransactions() {
     else
         _textWidth="$1"
     fi
-    for ((i=${currentAmountOfTransactions}; i > 0; i=$(($i-1)))) ; do
+    for ((i=${currentAmountOfTransactions}; i >= 0; i=$(($i-1)))) ; do
         local _currentTaTime=$(date -d "@${transactions[${i},${TA_TIME}]}" +%d-%m-%Y" at "%H:%M:%S)
 
         # 1st line: Transaction and date
