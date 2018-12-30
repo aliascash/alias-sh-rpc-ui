@@ -491,7 +491,7 @@ makeOutputTransactions() {
         # 2nd line: Confirmations and narration
         if (( ${_textWidth} >= 43 ));then
             narrationContent='---'
-            if [[ -n "${transactions[${i},10]}" ]] ; then
+            if [[ -n "${transactions[${i},${TA_NARRATION}]}" ]] ; then
                 narrationContent="${transactions[${i},${TA_NARRATION}]}"
             fi
             echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_NARRATION}: ${narrationContent}" \
@@ -881,6 +881,7 @@ refreshMainMenu_GUI() {
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
+    unset transactions
     declare -A transactions
 
     # have to recalc layout since it might have changed

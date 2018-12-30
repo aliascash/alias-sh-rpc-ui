@@ -14,6 +14,9 @@
 # Input: $1 - start (optional - default "0")
 #        $2 - if "true" stakes will be displayed (optional - default "true")
 viewAllTransactions() {
+    unset transactions
+    declare -A transactions
+
     local _start
     if [[ -z "$1" ]]; then
         _start="0"
