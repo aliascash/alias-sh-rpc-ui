@@ -69,6 +69,7 @@ viewAllTransactions() {
     if [[ ${currentAmountOfTransactions} -le 0 ]] ; then
         # Disable "Next" button if there are no more transactions
         nextButton=""
+        _focus="extra"
     else
         nextButton="--help-button --help-label ${_nextButton}"
     fi
