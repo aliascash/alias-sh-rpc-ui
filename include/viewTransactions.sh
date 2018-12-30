@@ -18,6 +18,7 @@ viewAllTransactions() {
     declare -A transactions
 
     local _start
+    local _focus='help'
     if [[ -z "$1" ]]; then
         _start="0"
     else
@@ -30,6 +31,9 @@ viewAllTransactions() {
     else
         _displayStakes="false"
         _displayStakesButton="${BUTTON_LABEL_SHOW_STAKES}"
+    fi
+    if [[ -n "$3" ]] ; then
+        _focus="${3}"
     fi
     _prevButton="${BUTTON_LABEL_PREVIOUS}"
     _nextButton="${BUTTON_LABEL_NEXT}"
@@ -81,7 +85,7 @@ viewAllTransactions() {
         --${buttonTypeCancel}-label "${_displayStakesButton}" \
         ${previousButton} \
         ${nextButton} \
-        --default-button 'extra' \
+        --default-button "${_focus}" \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
     exit_status=$?
     case ${exit_status} in
@@ -89,26 +93,20 @@ viewAllTransactions() {
             refreshMainMenu_DATA;;
         ${DIALOG_EXTRA})
             if [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
-                viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
-                                   "${_displayStakes}"
+                viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) "${_displayStakes}" "extra"
             else
-                viewAllTransactions "0" \
-                                    "${_displayStakes}"
+                viewAllTransactions "0" "${_displayStakes}" "extra"
             fi;;
         ${DIALOG_HELP})
-            viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
-                               "${_displayStakes}";;
+            viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) "${_displayStakes}" "help";;
         ${DIALOG_CANCEL})
             if [[ "${_displayStakes}" = "true" ]]; then
-            viewAllTransactions "0" \
-                                "false"
+                viewAllTransactions "0" "false" "help"
             else
-            viewAllTransactions "0" \
-                                "true"
+                viewAllTransactions "0" "true" "help"
             fi;;
         ${DIALOG_OK})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "${ERROR_TRANS_FATAL}" \
-                  1
+    errorHandling "${ERROR_TRANS_FATAL}" 1
 }
