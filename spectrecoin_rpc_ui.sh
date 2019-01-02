@@ -503,7 +503,7 @@ makeOutputTransactions() {
         if (( ${_textWidth} >= 70 )) ; then
             # 3rd line: Address
             local _address="${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}"
-            local _lineLength=$(expr length ${_address})
+            local _lineLength=$(echo -n ${_address} | wc -c)
             if [[ "${transactions[${i},${TA_CATEGORY}]}" = "${TEXT_TRANSFERRED}" ]] ; then
                 # It's a SENDED entry, so show it's fee
                 if [[ ${_lineLength} -lt ${_textWidth} ]] ; then
