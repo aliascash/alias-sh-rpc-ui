@@ -155,6 +155,7 @@ TEXT_CONFIRMATIONS="confirmations"
 TEXT_ADDRESS="address"
 TEXT_TXID="txid"
 TEXT_NARRATION="narration"
+TEXT_FEE="fee"
 #
 TEXT_CLIPBOARD_HINT="On Linux: Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn to paste from clipboard."
 TEXT_SEND_DESTINATION_ADDRESS_EXPL="Destination address"
