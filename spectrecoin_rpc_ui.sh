@@ -43,12 +43,14 @@ fi
 # Include used functions
 . include/calculateLayout.sh
 . include/constants.sh
+. include/getStakingPrediction.sh
 . include/getTransactions.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
 . include/sendCoins.sh
 . include/setWalletPW.sh
 . include/userCmdInput.sh
+. include/viewStakingPrediction.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
 
@@ -259,7 +261,7 @@ fillLine() {
         filler='\n'
     fi
     _output=${_output//'-_-'/"$filler"}
-    echo ${_output}
+    echo "${_output}"
 }
 
 # ============================================================================
@@ -471,29 +473,57 @@ makeOutputInfo() {
 # Gathers the data form the CURL result for the getinfo command
 #
 # Input:  $1  - optional var determing the text width (default: TEXTWIDTH_TRANS)
-# Operating with:  $transactions_global
+# Operating with:  $transactions
 makeOutputTransactions() {
     local _textWidth
-    if [[ -z "$1" ]]; then
+    if [[ -z "$1" ]] ; then
         _textWidth="${TEXTWIDTH_TRANS}"
     else
         _textWidth="$1"
     fi
-    for ((i=${currentAmountOfTransactions}; i > 0; i=$(($i-1)))) ; do
-        echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${transactions[${i},${TA_TIMERECEIVED}]}" \
+    for ((i=${currentAmountOfTransactions} ; i >= 0 ; i=$(($i-1)))) ; do
+        local _currentTaTime=$(date -d "@${transactions[${i},${TA_TIME}]}" +%d-%m-%Y" at "%H:%M:%S)
+
+        # 1st line: Transaction and date
+        echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${_currentTaTime}" \
                         "${_textWidth}")"\n"
-        if (( ${_textWidth} >= 43 ));then
-            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}" \
+
+        # 2nd line: Confirmations and narration
+        if (( ${_textWidth} >= 43 )) ; then
+            narrationContent='---'
+            if [[ -n "${transactions[${i},${TA_NARRATION}]}" ]] ; then
+                narrationContent="${transactions[${i},${TA_NARRATION}]}"
+            fi
+            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_NARRATION}: ${narrationContent}" \
                             "${_textWidth}")"\n"
         else
             echo "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}\n"
         fi
-        if (( ${_textWidth} >= 70 ));then
+
+        if (( ${_textWidth} >= 70 )) ; then
+            # 3rd line: Address
+            local _address="${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}"
+            local _lineLength=$(echo -n ${_address} | wc -c)
+            if [[ "${transactions[${i},${TA_CATEGORY}]}" = "${TEXT_TRANSFERRED}" ]] ; then
+                # It's a SENDED entry, so show it's fee
+                if [[ ${_lineLength} -lt ${_textWidth} ]] ; then
+                    echo $(fillLine "${_address}-_-${TEXT_FEE}: ${transactions[${i},${TA_FEE}]}" \
+                                    "${_textWidth}")"\n"
+                else
+                    echo "${_address:0:${_textWidth}}\n"
+                    echo $(fillLine "${_address:${_textWidth}}-_-${TEXT_FEE}: ${transactions[${i},${TA_FEE}]}" \
+                                    "${_textWidth}")"\n"
+                fi
+            else
+                if [[ ${_lineLength} -lt ${_textWidth} ]] ; then
+                    echo "${_address}\n"
+                else
+                    echo "${_address:0:${_textWidth}}\n"
+                    echo "${_address:${_textWidth}}\n"
+                fi
+            fi
+            # 4th line: Transaction Id
             echo $(fillLine "${TEXT_TXID}: ${transactions[${i},${TA_TXID}]}" \
-                            "${_textWidth}")"\n"
-        fi
-        if [[ -n "${transactions[${i},10]}" ]] ; then
-            echo $(fillLine "${TEXT_NARRATION}: ${transactions[${i},${TA_NARRATION}]}" \
                             "${_textWidth}")"\n"
         fi
         echo "\n"
@@ -645,11 +675,11 @@ advancedmenu() {
     case ${_mainMenuPick} in
         "${CMD_GET_WALLET_INFO}")
             viewWalletInfo;;
+        "${CMD_STAKING_ANALYSE}")
+            viewStakingPrediction;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
             sry;;
         "${CMD_CHANGE_WALLET_PW}")
-            sry;;
-        "${CMD_STAKING_ANALYSE}")
             sry;;
         "${CMD_SETUP_PI}")
             sry;;
@@ -674,12 +704,17 @@ receiveCoins() {
     executeCURL "getaddressesbyaccount" "\"Default Address\""
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
-    curl_result_global=${curl_result_global//']'/''}
+    local _defaultAddress=${curl_result_global//']'/''}
+    executeCURL "liststealthaddresses"
+    curl_result_global=${curl_result_global//','/'\n'}
+    curl_result_global=${curl_result_global//'['/''}
+    local _defaultStealthAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
+
     dialog --backtitle "${TITLE_BACK}" \
                --colors \
                --title "${TITLE_RECEIVE}" \
                --no-shadow \
-               --infobox "${TEXT_FEEDBACK_RECEIVE}\n${curl_result_global}" 0 0
+               --infobox "${TEXT_FEEDBACK_RECEIVE}\n\n${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 0 0
     read -s
     refreshMainMenu_GUI
 }
@@ -863,6 +898,7 @@ refreshMainMenu_GUI() {
 # Goal: Refresh the main menu - which means we must gather new data
 # and redraw gui
 refreshMainMenu_DATA() {
+    unset transactions
     declare -A transactions
 
     # have to recalc layout since it might have changed

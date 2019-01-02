@@ -14,7 +14,11 @@
 # Input: $1 - start (optional - default "0")
 #        $2 - if "true" stakes will be displayed (optional - default "true")
 viewAllTransactions() {
+    unset transactions
+    declare -A transactions
+
     local _start
+    local _focus='help'
     if [[ -z "$1" ]]; then
         _start="0"
     else
@@ -27,6 +31,9 @@ viewAllTransactions() {
     else
         _displayStakes="false"
         _displayStakesButton="${BUTTON_LABEL_SHOW_STAKES}"
+    fi
+    if [[ -n "$3" ]] ; then
+        _focus="${3}"
     fi
     _prevButton="${BUTTON_LABEL_PREVIOUS}"
     _nextButton="${BUTTON_LABEL_NEXT}"
@@ -47,11 +54,26 @@ viewAllTransactions() {
                     '"*",'"${COUNT_TRANS_VIEW},${_start}"',"0"'
     fi
     getTransactions
-    if [[ ${#transactions_global[@]} -eq 0 ]] && [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
-        viewAllTransactions "$(( ${_start} - ${COUNT_TRANS_VIEW} ))" \
-                           "${_displayStakes}"
-    fi
     local _page=$(( (${_start} / ${COUNT_TRANS_VIEW}) + 1 ))
+
+    if [[ ${_start} -le 0 ]] ; then
+        # Disable "Previous" button on first page
+        previousButton=""
+        buttonTypeOK="yes"
+        buttonTypeCancel="no"
+    else
+        previousButton="--extra-button --extra-label ${_prevButton}"
+        buttonTypeOK="ok"
+        buttonTypeCancel="cancel"
+    fi
+    if [[ ${currentAmountOfTransactions} -le 0 ]] ; then
+        # Disable "Next" button if there are no more transactions
+        nextButton=""
+        _focus="extra"
+    else
+        nextButton="--help-button --help-label ${_nextButton}"
+    fi
+
     dialog --no-shadow \
         --begin 0 0 \
         --no-lines \
@@ -59,41 +81,33 @@ viewAllTransactions() {
         \
         --and-widget \
         --colors \
-        --extra-button \
-        --help-button \
         --title "${TITLE_VIEW_TRANSACTIONS} ${_page}" \
-        --ok-label "${_prevButton}" \
-        --extra-label "${_nextButton}" \
-        --help-label "${_mainMenuButton}" \
-        --cancel-label "${_displayStakesButton}" \
-        --default-button 'extra' \
+        --${buttonTypeOK}-label "${_mainMenuButton}" \
+        --${buttonTypeCancel}-label "${_displayStakesButton}" \
+        ${previousButton} \
+        ${nextButton} \
+        --default-button "${_focus}" \
         --yesno "$(makeOutputTransactions $(( ${SIZE_X_TRANS_VIEW} - 4 )))" "${SIZE_Y_TRANS_VIEW}" "${SIZE_X_TRANS_VIEW}"
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_ESC})
             refreshMainMenu_DATA;;
-        ${DIALOG_OK})
-            if [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
-                viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) \
-                                   "${_displayStakes}"
-            else
-                viewAllTransactions "0" \
-                                    "${_displayStakes}"
-            fi;;
         ${DIALOG_EXTRA})
-            viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) \
-                               "${_displayStakes}";;
-        ${DIALOG_CANCEL})
-            if [[ "${_displayStakes}" = "true" ]]; then
-            viewAllTransactions "0" \
-                                "false"
+            if [[ ${_start} -ge ${COUNT_TRANS_VIEW} ]]; then
+                viewAllTransactions $(( ${_start} - ${COUNT_TRANS_VIEW} )) "${_displayStakes}" "extra"
             else
-            viewAllTransactions "0" \
-                                "true"
+                viewAllTransactions "0" "${_displayStakes}" "extra"
             fi;;
         ${DIALOG_HELP})
+            viewAllTransactions $(( ${_start} + ${COUNT_TRANS_VIEW} )) "${_displayStakes}" "help";;
+        ${DIALOG_CANCEL})
+            if [[ "${_displayStakes}" = "true" ]]; then
+                viewAllTransactions "0" "false" "help"
+            else
+                viewAllTransactions "0" "true" "help"
+            fi;;
+        ${DIALOG_OK})
             refreshMainMenu_DATA;;
     esac
-    errorHandling "${ERROR_TRANS_FATAL}" \
-                  1
+    errorHandling "${ERROR_TRANS_FATAL}" 1
 }
