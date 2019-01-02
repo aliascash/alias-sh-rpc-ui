@@ -59,6 +59,8 @@ getTransactions() {
                     transactions[${_i},${TA_CONFIRMATIONS}]="${detail#*:}";;
                 currency)
                     transactions[${_i},${TA_CURRENCY}]="${detail#*:}";;
+                fee)
+                    transactions[${_i},${TA_FEE}]="${detail#*:}";;
                 generated)
                     transactions[${_i},${TA_GENERATED}]="${detail#*:}";;
                 narration)
