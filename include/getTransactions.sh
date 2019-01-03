@@ -52,6 +52,8 @@ getTransactions() {
                             transactions[${_i},${TA_CATEGORY}]="${TEXT_STAKE}";;
                         immature)
                             transactions[${_i},${TA_CATEGORY}]="${TEXT_IMMATURE}";;
+                        contributed)
+                            transactions[${_i},${TA_CATEGORY}]="${TEXT_CONTRIBUTE}";;
                         *)
                             transactions[${_i},${TA_CATEGORY}]="${TEXT_TRANSFERRED}";;
                     esac;;
