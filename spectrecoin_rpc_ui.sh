@@ -197,7 +197,7 @@ startDaemon() {
             for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
                 echo "${_itemBuffer}"
             done
-            sudo service spectrecoind start
+            sudo systemctl start spectrecoind
         fi
         for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
@@ -584,7 +584,7 @@ goodbye() {
             info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             reset
-            sudo service spectrecoind stop
+            sudo systemctl stop spectrecoind
             echo ''
             info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
