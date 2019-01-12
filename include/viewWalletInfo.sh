@@ -17,12 +17,14 @@ makeWalletInfoOutput() {
     echo "Version:            ${info_global[${WALLET_VERSION}]}\n"
     if ${_showBalance} ; then
         echo "Balance XSPEC:      ${info_global[${WALLET_BALANCE_XSPEC}]}\n"
+        echo "Stake XSPEC:        ${info_global[${WALLET_STAKE}]}\n"
         echo "Balance SPECTRE:    ${info_global[${WALLET_BALANCE_SPECTRE}]}\n"
-        echo "Stake:              ${info_global[${WALLET_STAKE}]}\n"
+        echo "Stake SPECTRE:      ${info_global[${WALLET_SPECTRE_STAKE}]}\n"
     else
         echo "Balance XSPEC:      ---\n"
+        echo "Stake XSPEC:        ---\n"
         echo "Balance SPECTRE:    ---\n"
-        echo "Stake:              ---\n"
+        echo "Stake SPECTRE:      ---\n"
     fi
     echo "Connections:        ${info_global[${WALLET_CONNECTIONS}]}\n"
     echo "Data received:      ${info_global[${WALLET_DATARECEIVED}]}\n"

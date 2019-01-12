@@ -314,6 +314,12 @@ getInfo() {
     # Set default if wallet is not encrypted
     info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_HAS_NO_PW}"
 
+    # Set some defaults
+    info_global[${WALLET_BALANCE_XSPEC}]="0"
+    info_global[${WALLET_BALANCE_SPECTRE}]="0"
+    info_global[${WALLET_STAKE}]="0"
+    info_global[${WALLET_SPECTRE_STAKE}]="0"
+
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
         case ${_itemBuffer%%:*} in
@@ -325,6 +331,8 @@ getInfo() {
                 info_global[${WALLET_BALANCE_SPECTRE}]="${_itemBuffer#*:}";;
             'stake')
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
+            'spectrestake')
+                info_global[${WALLET_SPECTRE_STAKE}]="${_itemBuffer#*:}";;
             'connections')
                 info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
             'datareceived')
@@ -439,9 +447,13 @@ makeOutputInfo() {
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-${_balance}" \
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-\Z4${_balance}\Zn" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z6${info_global[${WALLET_BALANCE_SPECTRE}]}\Zn" \
+    _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_SPECTRE}]}+${info_global[${WALLET_SPECTRE_STAKE}]}" | bc)
+    if [[ ${_balance} == '.'* ]]; then
+        _balance="0"${_balance}
+    fi
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z4${_balance}\Zn" \
                     "${_textWidth}")"\n"
     #
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
@@ -451,7 +463,9 @@ makeOutputInfo() {
     fi
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[${WALLET_UNLOCKED_UNTIL}]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${info_global[${WALLET_BALANCE_XSPEC}]}\Zn-_-(\Z5${info_global[${WALLET_STAKE}]}\Zn ${TEXT_MATRUING_COINS})" \
+    echo $(fillLine "${TEXT_CURRENCY}: \Z4${info_global[${WALLET_BALANCE_XSPEC}]}\Zn-_-(\Z5${info_global[${WALLET_STAKE}]}\Zn ${TEXT_MATRUING_COINS})" \
+                    "${_textWidth}")"\n"
+    echo $(fillLine "${TEXT_CURRENCY_2}: \Z4${info_global[${WALLET_BALANCE_SPECTRE}]}\Zn-_-(\Z5${info_global[${WALLET_SPECTRE_STAKE}]}\Zn ${TEXT_MATRUING_COINS})" \
                     "${_textWidth}")"\n"
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
