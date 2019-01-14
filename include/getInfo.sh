@@ -32,6 +32,10 @@ getInfo() {
     info_global[${WALLET_BALANCE_SPECTRE}]="0"
     info_global[${WALLET_STAKE}]="0"
     info_global[${WALLET_SPECTRE_STAKE}]="0"
+    info_global[${WALLET_BALANCE_XSPEC_UNCONF}]="0"
+    info_global[${WALLET_BALANCE_SPECTRE_UNCONF}]="0"
+    info_global[${WALLET_STAKE_WEIGHT}]="0"
+    info_global[${WALLET_SPECTRE_STAKE_WEIGHT}]="0"
 
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
