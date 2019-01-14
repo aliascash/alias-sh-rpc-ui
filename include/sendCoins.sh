@@ -60,12 +60,14 @@ sendCoins() {
             # $sendInput[2] = Narration
             mapfile -t sendInput <<< "${_buffer}"
 
-            # Check destination address
-            if [[ ${sendInput[0]} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
-                _destinationAddress="${sendInput[0]}"
-            else
-                errorHandling "${ERROR_SEND_INVALID_ADDRESS}"
-                sendCoins
+            if [[ ${info_global[${WALLET_TESTNET}]} = false ]] ; then
+                # Check destination address
+                if [[ ${sendInput[0]} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
+                    _destinationAddress="${sendInput[0]}"
+                else
+                    errorHandling "${ERROR_SEND_INVALID_ADDRESS}"
+                    sendCoins
+                fi
             fi
 
             if [[ ${sendInput[1]} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [[ 1 -eq "$(echo "${sendInput[1]} > 0" | bc)" ]]; then
