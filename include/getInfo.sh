@@ -50,6 +50,10 @@ getInfo() {
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
             'spectrestake')
                 info_global[${WALLET_SPECTRE_STAKE}]="${_itemBuffer#*:}";;
+            'stakeweight')
+                info_global[${WALLET_STAKE_WEIGHT}]="${_itemBuffer#*:}";;
+            'spectrestakeweight')
+                info_global[${WALLET_SPECTRE_STAKE_WEIGHT}]="${_itemBuffer#*:}";;
             'connections')
                 info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
             'datareceived')
