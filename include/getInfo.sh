@@ -42,6 +42,10 @@ getInfo() {
                 info_global[${WALLET_BALANCE_XSPEC}]="${_itemBuffer#*:}";;
             'spectrebalance')
                 info_global[${WALLET_BALANCE_SPECTRE}]="${_itemBuffer#*:}";;
+            'unconfirmedbalance')
+                info_global[${WALLET_BALANCE_XSPEC_UNCONF}]="${_itemBuffer#*:}";;
+            'unconfirmedspectrebalance')
+                info_global[${WALLET_BALANCE_SPECTRE_UNCONF}]="${_itemBuffer#*:}";;
             'stake')
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
             'spectrestake')
