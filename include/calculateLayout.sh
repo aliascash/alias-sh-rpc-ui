@@ -48,8 +48,8 @@ calculateLayout() {
     # Size for the displayed info in main menu
     SIZE_X_INFO=${SIZE_X_MENU}
     _max_buff=$(($(tput lines) - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
-    if [[ ${_max_buff} -gt 17 ]] ; then
-        SIZE_Y_INFO=17
+    if [[ ${_max_buff} -gt 21 ]] ; then
+        SIZE_Y_INFO=21
     else
         SIZE_Y_INFO=${_max_buff}
     fi
