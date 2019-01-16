@@ -42,6 +42,7 @@ fi
 
 # Include used functions
 . include/calculateLayout.sh
+. include/changePasswordDialog.sh
 . include/constants.sh
 . include/getInfo.sh
 . include/getStakingPrediction.sh
@@ -603,7 +604,7 @@ advancedmenu() {
         "${CMD_MAIN_ENCRYPT_WALLET}")
             sry;;
         "${CMD_CHANGE_WALLET_PW}")
-            sry;;
+            changePasswordDialog;;
         "${CMD_SETUP_PI}")
             sry;;
         "${CMD_USER_COMMAND}")
