@@ -651,8 +651,9 @@ receiveCoins() {
 #
 # Return: nothing
 passwordDialog() {
+    local _wallet_password
     exec 3>&1
-    local _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
+    _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
         --no-shadow \
         --insecure \
         --passwordbox "${TEXT_PW_EXPL}" 0 0 \
