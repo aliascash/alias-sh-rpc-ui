@@ -15,7 +15,7 @@
 #
 # Input $1 - address (important for address book functionality)
 #
-sendCoins() {
+sendXSPEC() {
     local _amount
     local _destinationAddress=$1
     local _buffer
@@ -39,7 +39,7 @@ sendCoins() {
         --title "${TITLE_SEND}" \
         --form "${_s}" 16 65 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 35 0 \
-        "${TEXT_SEND_AMOUNT_EXPL}:" 4 1 "${_amount}" 4 22 20 0 \
+        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY}:" 4 1 "${_amount}" 4 22 20 0 \
         "${TEXT_SEND_NARRATION}:" 6 1 "${_narration}" 6 22 24 0 \
         2>&1 1>&3)
     exit_status=$?
@@ -52,7 +52,7 @@ sendCoins() {
             refreshMainMenu_GUI;;
         ${DIALOG_EXTRA})
             sry
-            sendCoins "test1";;
+            sendXSPEC "test1";;
         ${DIALOG_OK})
             # Convert buffer into array
             # $sendInput[0] = Destination address
@@ -65,8 +65,8 @@ sendCoins() {
                 if [[ ${sendInput[0]} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
                     _destinationAddress="${sendInput[0]}"
                 else
-                    errorHandling "${ERROR_SEND_INVALID_ADDRESS}"
-                    sendCoins
+                    errorHandling "${ERROR_SEND_INVALID_XSPEC_ADDRESS}"
+                    sendXSPEC
                 fi
             fi
 
@@ -97,9 +97,9 @@ sendCoins() {
                 refreshMainMenu_DATA
             else
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
-                sendCoins "${_destinationAddress}"
+                sendXSPEC "${_destinationAddress}"
             fi
-            sendCoins "${_destinationAddress}";;
+            sendXSPEC "${_destinationAddress}";;
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1

@@ -805,8 +805,10 @@ refreshMainMenu_GUI() {
             #setWalletPW;;
         "${CMD_MAIN_TRANS}")
             viewAllTransactions;;
-        "${CMD_MAIN_SEND}")
-            sendCoins;;
+        "${CMD_MAIN_SEND_XSPEC}")
+            sendXSPEC;;
+        "${CMD_MAIN_SEND_SPECTRE}")
+            sendSPECTRE;;
         "${CMD_MAIN_RECEIVE}")
             receiveCoins;;
         "${CMD_MAIN_ADVANCED_MENU}")
