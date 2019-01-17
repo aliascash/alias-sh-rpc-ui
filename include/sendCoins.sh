@@ -42,8 +42,8 @@ sendCoins() {
         "${TEXT_SEND_AMOUNT_EXPL}:" 4 1 "${_amount}" 4 22 20 0 \
         "${TEXT_SEND_NARRATION}:" 6 1 "${_narration}" 6 22 24 0 \
         2>&1 1>&3)
-    IFS=${oldIFS}
     exit_status=$?
+    IFS=${oldIFS}
     exec 3>&-
     case ${exit_status} in
         ${DIALOG_CANCEL})
