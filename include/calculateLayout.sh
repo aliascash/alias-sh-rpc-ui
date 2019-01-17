@@ -22,7 +22,7 @@ calculateLayout() {
     else
         SIZE_X_MENU=${_max_buff}
     fi
-    SIZE_Y_MENU=13
+    SIZE_Y_MENU=14
 
     #Size for the displayed transactions in main menu
     _max_buff=$((${currentTPutCols} - ${SIZE_X_MENU}))
