@@ -745,7 +745,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
             "${_cmdWallet}" "${_explWalletStatus}" \
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
-            "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND_XSPEC}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND_SPECTRE}" "${EXPL_CMD_MAIN_SEND}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -777,7 +778,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
             "${_cmdWallet}" "${_explWalletStatus}" \
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
-            "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND_XSPEC}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND_SPECTRE}" "${EXPL_CMD_MAIN_SEND}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
