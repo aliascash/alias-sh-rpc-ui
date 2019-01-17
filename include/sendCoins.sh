@@ -68,6 +68,8 @@ sendXSPEC() {
                     errorHandling "${ERROR_SEND_INVALID_XSPEC_ADDRESS}"
                     sendXSPEC
                 fi
+            else
+                _destinationAddress="${sendInput[0]}"
             fi
 
             if [[ ${sendInput[1]} =~ ^[0-9]{0,8}[.]{0,1}[0-9]{0,8}$ ]] && [[ 1 -eq "$(echo "${sendInput[1]} > 0" | bc)" ]]; then
