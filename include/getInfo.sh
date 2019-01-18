@@ -44,11 +44,11 @@ getInfo() {
                 info_global[${WALLET_VERSION}]="${_itemBuffer#*:}";;
             'balance')
                 info_global[${WALLET_BALANCE}]="${_itemBuffer#*:}";;
-            'spectrebalance')
+            'anonbalance')
                 info_global[${WALLET_BALANCE_ANON}]="${_itemBuffer#*:}";;
             'unconfirmedbalance')
                 info_global[${WALLET_BALANCE_UNCONF}]="${_itemBuffer#*:}";;
-            'unconfirmedspectrebalance')
+            'unconfirmedanonbalance')
                 info_global[${WALLET_BALANCE_UNCONF_ANON}]="${_itemBuffer#*:}";;
             'stake')
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
@@ -97,7 +97,7 @@ getInfo() {
                 info_global[${WALLET_TIMEOFFSET}]="${_itemBuffer#*:}";;
             'moneysupply')
                 info_global[${WALLET_MONEY_SUPPLY}]="${_itemBuffer#*:}";;
-            'spectresupply')
+            'anonsupply')
                 info_global[${WALLET_ANON_SUPPLY}]="${_itemBuffer#*:}";;
             'proxy')
                 info_global[${WALLET_PROXY}]="${_itemBuffer#*:}";;
