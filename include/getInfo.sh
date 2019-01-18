@@ -28,14 +28,14 @@ getInfo() {
     info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_HAS_NO_PW}"
 
     # Set some defaults
-    info_global[${WALLET_BALANCE_XSPEC}]="0"
-    info_global[${WALLET_BALANCE_SPECTRE}]="0"
+    info_global[${WALLET_BALANCE}]="0"
+    info_global[${WALLET_BALANCE_ANON}]="0"
     info_global[${WALLET_STAKE}]="0"
-    info_global[${WALLET_SPECTRE_STAKE}]="0"
-    info_global[${WALLET_BALANCE_XSPEC_UNCONF}]="0"
-    info_global[${WALLET_BALANCE_SPECTRE_UNCONF}]="0"
+    info_global[${WALLET_STAKE_ANON}]="0"
+    info_global[${WALLET_BALANCE_UNCONF}]="0"
+    info_global[${WALLET_BALANCE_UNCONF_ANON}]="0"
     info_global[${WALLET_STAKE_WEIGHT}]="0"
-    info_global[${WALLET_SPECTRE_STAKE_WEIGHT}]="0"
+    info_global[${WALLET_STAKE_WEIGHT_ANON}]="0"
 
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
@@ -43,21 +43,21 @@ getInfo() {
             'version')
                 info_global[${WALLET_VERSION}]="${_itemBuffer#*:}";;
             'balance')
-                info_global[${WALLET_BALANCE_XSPEC}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_BALANCE}]="${_itemBuffer#*:}";;
             'spectrebalance')
-                info_global[${WALLET_BALANCE_SPECTRE}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_BALANCE_ANON}]="${_itemBuffer#*:}";;
             'unconfirmedbalance')
-                info_global[${WALLET_BALANCE_XSPEC_UNCONF}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_BALANCE_UNCONF}]="${_itemBuffer#*:}";;
             'unconfirmedspectrebalance')
-                info_global[${WALLET_BALANCE_SPECTRE_UNCONF}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_BALANCE_UNCONF_ANON}]="${_itemBuffer#*:}";;
             'stake')
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
             'spectrestake')
-                info_global[${WALLET_SPECTRE_STAKE}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_STAKE_ANON}]="${_itemBuffer#*:}";;
             'stakeweight')
                 info_global[${WALLET_STAKE_WEIGHT}]="${_itemBuffer#*:}";;
             'spectrestakeweight')
-                info_global[${WALLET_SPECTRE_STAKE_WEIGHT}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_STAKE_WEIGHT_ANON}]="${_itemBuffer#*:}";;
             'connections')
                 info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
             'datareceived')
@@ -96,9 +96,9 @@ getInfo() {
             'timeoffset')
                 info_global[${WALLET_TIMEOFFSET}]="${_itemBuffer#*:}";;
             'moneysupply')
-                info_global[${WALLET_MONEYSUPPLY}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_MONEY_SUPPLY}]="${_itemBuffer#*:}";;
             'spectresupply')
-                info_global[${WALLET_SPECTRESUPPLY}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_ANON_SUPPLY}]="${_itemBuffer#*:}";;
             'proxy')
                 info_global[${WALLET_PROXY}]="${_itemBuffer#*:}";;
             'proof-of-work')

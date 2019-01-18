@@ -340,17 +340,17 @@ makeOutputInfo() {
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
         echo "${TEXT_HEADLINE_WALLET_INFO}\n"
     fi
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_BALANCE_XSPEC_UNCONF}]}+${info_global[${WALLET_STAKE}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_BALANCE_UNCONF}]}+${info_global[${WALLET_STAKE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
     echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-\Z4${_balance}\Zn" \
                     "${_textWidth}")"\n"
-    _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_SPECTRE}]}+${info_global[${WALLET_BALANCE_SPECTRE_UNCONF}]}+${info_global[${WALLET_SPECTRE_STAKE}]}" | bc)
+    _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_BALANCE_UNCONF_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z4${_balance}\Zn" \
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_ANON}:-_-\Z4${_balance}\Zn" \
                     "${_textWidth}")"\n"
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[${WALLET_UNLOCKED_UNTIL}]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
@@ -363,20 +363,20 @@ makeOutputInfo() {
     # Available for staking: getStakeWeight()
     # Aging: getBalance() - getStakeWeight
     # Staked: getStake()
-    local _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}-${info_global[${WALLET_STAKE_WEIGHT}]}" | bc)
+    local _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}-${info_global[${WALLET_STAKE_WEIGHT}]}" | bc)
     echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
                     "${_textWidth}")"\n"
     echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE}]}\n"
     #
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
-        echo "\n${TEXT_HEADLINE_STAKING_INFO} ${TEXT_CURRENCY_2}\n"
+        echo "\n${TEXT_HEADLINE_STAKING_INFO} ${TEXT_CURRENCY_ANON}\n"
     elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
         echo "\n"
     fi
-    _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_SPECTRE}]}-${info_global[${WALLET_SPECTRE_STAKE_WEIGHT}]}" | bc)
-    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_SPECTRE_STAKE_WEIGHT}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
+    _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}-${info_global[${WALLET_STAKE_WEIGHT_ANON}]}" | bc)
+    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT_ANON}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
                     "${_textWidth}")"\n"
-    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_SPECTRE_STAKE}]}\n"
+    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE_ANON}]}\n"
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
                     "${_textWidth}")"\n"
     #
@@ -745,8 +745,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
             "${_cmdWallet}" "${_explWalletStatus}" \
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
-            "${CMD_MAIN_SEND_XSPEC}" "${EXPL_CMD_MAIN_SEND}" \
-            "${CMD_MAIN_SEND_SPECTRE}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND_ANON}" "${EXPL_CMD_MAIN_SEND}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -778,8 +778,8 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_REFRESH}" "${EXPL_CMD_MAIN_REFRESH}" \
             "${_cmdWallet}" "${_explWalletStatus}" \
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
-            "${CMD_MAIN_SEND_XSPEC}" "${EXPL_CMD_MAIN_SEND}" \
-            "${CMD_MAIN_SEND_SPECTRE}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_SEND_ANON}" "${EXPL_CMD_MAIN_SEND}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -807,10 +807,10 @@ refreshMainMenu_GUI() {
             #setWalletPW;;
         "${CMD_MAIN_TRANS}")
             viewAllTransactions;;
-        "${CMD_MAIN_SEND_XSPEC}")
-            sendXSPEC;;
-        "${CMD_MAIN_SEND_SPECTRE}")
-            sendSPECTRE;;
+        "${CMD_MAIN_SEND}")
+            sendCoins;;
+        "${CMD_MAIN_SEND_ANON}")
+            sendAnonCoins;;
         "${CMD_MAIN_RECEIVE}")
             receiveCoins;;
         "${CMD_MAIN_ADVANCED_MENU}")

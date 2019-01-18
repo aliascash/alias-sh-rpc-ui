@@ -15,12 +15,12 @@
 #
 # Input $1 - address (important for address book functionality)
 #
-sendXSPEC() {
+sendCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
     local _narration=''
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_STAKE}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
@@ -52,7 +52,7 @@ sendXSPEC() {
             refreshMainMenu_GUI;;
         ${DIALOG_EXTRA})
             sry
-            sendXSPEC "test1";;
+            sendCoins "test1";;
         ${DIALOG_OK})
             # Convert buffer into array
             # $sendInput[0] = Destination address
@@ -65,8 +65,8 @@ sendXSPEC() {
                 if [[ ${sendInput[0]} =~ ^[S][a-km-zA-HJ-NP-Z1-9]{25,33}$ ]]; then
                     _destinationAddress="${sendInput[0]}"
                 else
-                    errorHandling "${ERROR_SEND_INVALID_XSPEC_ADDRESS}"
-                    sendXSPEC
+                    errorHandling "${ERROR_SEND_INVALID_ADDRESS}"
+                    sendCoins
                 fi
             else
                 _destinationAddress="${sendInput[0]}"
@@ -99,23 +99,23 @@ sendXSPEC() {
                 refreshMainMenu_DATA
             else
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
-                sendXSPEC "${_destinationAddress}"
+                sendCoins "${_destinationAddress}"
             fi
-            sendXSPEC "${_destinationAddress}";;
+            sendCoins "${_destinationAddress}";;
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
 }
-sendSPECTRE() {
+sendAnonCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
     local _narration=''
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_SPECTRE}]}+${info_global[${WALLET_SPECTRE_STAKE}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_2}\n"
+    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_ANON}\n"
           _s+="${TEXT_SEND_EXPL}\n"
           _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
@@ -130,7 +130,7 @@ sendSPECTRE() {
         --title "${TITLE_SEND}" \
         --form "${_s}" 16 65 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 102 0 \
-        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_2}:" 4 1 "${_amount}" 4 22 20 0 \
+        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_ANON}:" 4 1 "${_amount}" 4 22 20 0 \
         "${TEXT_SEND_NARRATION}:" 6 1 "${_narration}" 6 22 24 0 \
         2>&1 1>&3)
     exit_status=$?
@@ -143,7 +143,7 @@ sendSPECTRE() {
             refreshMainMenu_GUI;;
         ${DIALOG_EXTRA})
             sry
-            sendSPECTRE "test1";;
+            sendAnonCoins "test1";;
         ${DIALOG_OK})
             # Convert buffer into array
             # $sendInput[0] = Destination address
@@ -156,8 +156,8 @@ sendSPECTRE() {
                 if [[ ${sendInput[0]} =~ ^[a-km-zA-HJ-NP-Z1-9]{102}$ ]]; then
                     _destinationAddress="${sendInput[0]}"
                 else
-                    errorHandling "${ERROR_SEND_INVALID_SPECTRE_ADDRESS}"
-                    sendSPECTRE
+                    errorHandling "${ERROR_SEND_INVALID_ANON_ADDRESS}"
+                    sendAnonCoins
                 fi
             else
                 _destinationAddress="${sendInput[0]}"
@@ -190,9 +190,9 @@ sendSPECTRE() {
                 refreshMainMenu_DATA
             else
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
-                sendSPECTRE "${_destinationAddress}"
+                sendAnonCoins "${_destinationAddress}"
             fi
-            sendSPECTRE "${_destinationAddress}";;
+            sendAnonCoins "${_destinationAddress}";;
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
