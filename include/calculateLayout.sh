@@ -74,11 +74,11 @@ calculateLayout() {
     #
     # Amount of transactions that can be displayed in main menu
     # = ((amount of terminal lines - amount of border lines - y-offset) / amount of lines per transaction ) + 1
-    COUNT_TRANS_MENU=$(( ((${SIZE_Y_TRANS} - 2 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) + 1 ))
+    COUNT_TRANS_MENU=$(( ((${SIZE_Y_TRANS} - 2 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) ))
     #
     # Amount of transactions that can be displayed in the view all transactions dialog
     # = ((amount of terminal lines - amount of border lines - y-offset) / amount of lines per transaction ) + 1
-    COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 4 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) + 1 ))
+    COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 4 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) ))
     #
     TEXTHIGHT_INFO=$(( ${SIZE_Y_INFO} - 2 ))
 
