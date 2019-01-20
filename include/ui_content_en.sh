@@ -179,6 +179,7 @@ TEXT_NO_PASS_GIVEN="No password given"
 TEXT_NO_NEW_PASS_GIVEN="No new password given"
 TEXT_NEW_PASS_NOT_EQUAL="New passwords do not match"
 TEXT_PASS_CHANGE_SUCCESSFUL="Passphrase change successfully executed"
+TEXT_WALLET_ENCRYPTION_SUCCESSFUL="Wallet successfully encrypted. Restarting daemon..."
 #
 TEXT_USERCOMMAND_EXPL="Here you can enter commands that will be send to the Daemon."
 TEXT_USERCOMMAND_CMD_EXPL="type help for info"

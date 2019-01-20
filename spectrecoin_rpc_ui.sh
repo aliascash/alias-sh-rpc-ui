@@ -42,7 +42,6 @@ fi
 
 # Include used functions
 . include/calculateLayout.sh
-. include/changePasswordDialog.sh
 . include/constants.sh
 . include/getInfo.sh
 . include/getStakingPrediction.sh
@@ -55,6 +54,7 @@ fi
 . include/viewStakingPrediction.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
+. include/walletEncryption.sh
 
 rtc=0
 _init
@@ -602,7 +602,7 @@ advancedmenu() {
         "${CMD_STAKING_ANALYSE}")
             viewStakingPrediction;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            sry;;
+            encryptWallet;;
         "${CMD_CHANGE_WALLET_PW}")
             changePasswordDialog;;
         "${CMD_SETUP_PI}")
@@ -802,9 +802,7 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_LOCK_WALLET}")
             lockWallet;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            # todo change with new dialog version
-            sry;;
-            #setWalletPW;;
+            encryptWallet;;
         "${CMD_MAIN_TRANS}")
             viewAllTransactions;;
         "${CMD_MAIN_SEND}")

@@ -73,3 +73,24 @@ changePasswordDialog() {
     unset newPassword2
     refreshMainMenu_DATA
 }
+
+encryptWallet() {
+    unset newPassword1
+    unset newPassword2
+
+    getPassword "${TEXT_NEW_PW1_EXPL}" newPassword1
+    getPassword "${TEXT_NEW_PW2_EXPL}" newPassword2
+    if [[ -z "${newPassword1}" ]] ; then
+        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NO_NEW_PASS_GIVEN}" 6 30
+        encryptWallet
+    elif [[ "${newPassword1}" != "${newPassword2}" ]] ; then
+        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NEW_PASS_NOT_EQUAL}" 6 30
+        encryptWallet
+    else
+        executeCURL "encryptwallet" "\"${newPassword1}\""
+        dialog --title "${TITLE_SUCCESS}" --no-shadow --msgbox "${TEXT_WALLET_ENCRYPTION_SUCCESSFUL}" 6 30
+    fi
+    unset newPassword1
+    unset newPassword2
+    refreshMainMenu_DATA
+}
