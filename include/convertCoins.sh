@@ -59,26 +59,26 @@ convertCoins() {
             curl_result_global=${curl_result_global//','/'\n'}
             curl_result_global=${curl_result_global//'['/''}
             _destinationAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
-            _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}"
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY} > ${TEXT_CURRENCY_ANON}"
             _conversionCmd="sendspectoanon"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}
             fi
+            _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}"
             ;;
         ${CONVERT_ANON_TO_PUBLIC})
             executeCURL "getaddressesbyaccount" "\"Default Address\""
             curl_result_global=${curl_result_global//','/'\n'}
             curl_result_global=${curl_result_global//'['/''}
             _destinationAddress=${curl_result_global//']'/''}
-            _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_ANON}"
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY_ANON} > ${TEXT_CURRENCY}"
             _conversionCmd="sendanontospec"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}
             fi
+            _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_ANON}"
             _ringSizeParam=',10'
             ;;
     esac
