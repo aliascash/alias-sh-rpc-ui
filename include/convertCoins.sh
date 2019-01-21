@@ -52,8 +52,7 @@ convertCoins() {
     getConversionDestination
     case $? in
         ${CONVERT_NOTHING})
-            return
-            ;;
+            refreshMainMenu_GUI;;
         ${CONVERT_PUBLIC_TO_ANON})
             executeCURL "liststealthaddresses"
             curl_result_global=${curl_result_global//','/'\n'}
