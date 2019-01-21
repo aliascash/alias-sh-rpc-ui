@@ -15,13 +15,10 @@
 # ${CONVERT_PUBLIC_TO_ANON} .. Convert public coins to anon coins
 getConversionDestination() {
     calculateLayout
-    dialog --no-shadow \
-        --begin 0 0 \
-        --no-lines \
-        --infobox "" "${currentTPutLines}" "${currentTPutCols}" \
-        \
-        --and-widget \
+    dialog \
+        --backtitle "${TITLE_BACK}" \
         --colors \
+        --no-shadow \
         --title "${TITLE_PLEASE_CHOOSE}" \
         --ok-label "${BUTTON_LABEL_PUBLIC_TO_ANON}" \
         --cancel-label "${BUTTON_LABEL_ANON_TO_PUBLIC}" \
