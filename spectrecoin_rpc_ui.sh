@@ -43,6 +43,9 @@ fi
 # Include used functions
 . include/calculateLayout.sh
 . include/constants.sh
+. include/convertCoins.sh
+. include/createTransactionList.sh
+. include/createWalletInfo.sh
 . include/getInfo.sh
 . include/getStakingPrediction.sh
 . include/getTransactions.sh
@@ -616,6 +619,7 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
             "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
             "${CMD_MAIN_SEND_ANON}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_CONVERT_COINS}" "${EXPL_CMD_MAIN_CONVERT_COINS}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -649,6 +653,7 @@ refreshMainMenu_GUI() {
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
             "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
             "${CMD_MAIN_SEND_ANON}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_CONVERT_COINS}" "${EXPL_CMD_MAIN_CONVERT_COINS}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -678,6 +683,8 @@ refreshMainMenu_GUI() {
             sendCoins;;
         "${CMD_MAIN_SEND_ANON}")
             sendAnonCoins;;
+        "${CMD_MAIN_CONVERT_COINS}")
+            convertCoins;;
         "${CMD_MAIN_RECEIVE}")
             receiveCoins;;
         "${CMD_MAIN_ADVANCED_MENU}")
