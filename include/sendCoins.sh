@@ -7,6 +7,34 @@
 #
 # ============================================================================
 
+# ============================================================================
+# Ask user in which direction he wants to convert coins.
+# Return:
+# ${SEND_NOTHING} .. Nothing should be sent, back to main manu
+# ${SEND_PUBLIC_COINS} .. Send public coins
+# ${SEND_PRIVATE_COINS} .. Send anon coins
+getCoinTypeToSend() {
+    calculateLayout
+    dialog \
+        --backtitle "${TITLE_BACK}" \
+        --colors \
+        --no-shadow \
+        --title "${TITLE_PLEASE_CHOOSE}" \
+        --ok-label "${TEXT_CURRENCY}" \
+        --cancel-label "${TEXT_CURRENCY_ANON}" \
+        --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
+        --default-button "extra" \
+        --yesno "${TEXT_COIN_TYPE_TO_SEND_QUESTION}" 7 45
+    exit_status=$?
+    case ${exit_status} in
+        ${DIALOG_EXTRA})
+            return ${SEND_NOTHING};;
+        ${DIALOG_CANCEL})
+            return ${SEND_PRIVATE_COINS};;
+        ${DIALOG_OK})
+            return ${SEND_PUBLIC_COINS};;
+    esac
+}
 
 # ============================================================================
 # Goal: Display form for the user to enter transaction details
@@ -15,7 +43,7 @@
 #
 # Input $1 - address (important for address book functionality)
 #
-sendCoins() {
+sendPublicCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
@@ -35,7 +63,8 @@ sendCoins() {
         --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
         --extra-button \
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
-        --no-shadow --colors \
+        --no-shadow \
+        --colors \
         --title "${TITLE_SEND}" \
         --form "${_s}" 16 65 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 35 0 \
@@ -126,7 +155,8 @@ sendAnonCoins() {
         --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
         --extra-button \
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
-        --no-shadow --colors \
+        --no-shadow \
+        --colors \
         --title "${TITLE_SEND}" \
         --form "${_s}" 16 65 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 102 0 \
@@ -196,4 +226,16 @@ sendAnonCoins() {
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
+}
+
+sendCoins(){
+    getCoinTypeToSend
+    case $? in
+        ${SEND_NOTHING})
+            refreshMainMenu_GUI;;
+        ${SEND_PRIVATE_COINS})
+            sendAnonCoins;;
+        ${SEND_PUBLIC_COINS})
+            sendPublicCoins;;
+    esac
 }
