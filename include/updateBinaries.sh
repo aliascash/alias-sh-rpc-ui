@@ -13,7 +13,7 @@
 updateBinaries() {
     dialog --backtitle "${TITLE_BACK}" \
         --title "${TITLE_UPDATE_BINARIES}" \
-        --yesno "${TEXT_QUESTION_DO_UPDATE}" 7 40
+        --yesno "\n${TEXT_QUESTION_DO_UPDATE}" 7 40
 
     # Get exit status
     # 0 means user hit [yes] button.
@@ -34,7 +34,7 @@ updateBinaries() {
         *)
             dialog --backtitle "${TITLE_BACK}" \
                 --title "${TITLE_UPDATE_BINARIES}" \
-                --msgbox "${TEXT_UPDATE_CANCELED}" 6 20
+                --msgbox "\n${TEXT_UPDATE_CANCELED}" 6 20
             ;;
     esac
     refreshMainMenu_DATA
