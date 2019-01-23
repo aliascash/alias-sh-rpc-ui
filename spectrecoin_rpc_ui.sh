@@ -53,6 +53,7 @@ fi
 . include/init_daemon_configuration.sh
 . include/sendCoins.sh
 . include/setWalletPW.sh
+. include/updateBinaries.sh
 . include/userCmdInput.sh
 . include/viewStakingPrediction.sh
 . include/viewTransactions.sh
@@ -460,6 +461,7 @@ advancedmenu() {
         "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+        "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
         "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
         2>&1 1>&3)
     exit_status=$?
@@ -477,8 +479,8 @@ advancedmenu() {
             encryptWallet;;
         "${CMD_CHANGE_WALLET_PW}")
             changePasswordDialog;;
-        "${CMD_SETUP_PI}")
-            sry;;
+        "${CMD_UPDATE}")
+            updateBinaries;;
         "${CMD_USER_COMMAND}")
             userCommandInput;;
         "${CMD_GET_PEER_INFO}")
