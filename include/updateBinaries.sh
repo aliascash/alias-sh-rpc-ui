@@ -27,7 +27,7 @@ updateBinaries() {
             sudo systemctl stop spectrecoind
             echo ''
             info "Downloading and starting update script"
-            bash <(curl -s https://raw.githubusercontent.com/spectrecoin/installer/simpleUpdater/linux/updateSpectrecoin.sh)
+            sudo bash <(curl -s https://raw.githubusercontent.com/spectrecoin/installer/simpleUpdater/linux/updateSpectrecoin.sh)
             info "Update finished, press return to restart spectrecoind"
             read a
             ;;
