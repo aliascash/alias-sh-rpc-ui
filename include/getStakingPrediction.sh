@@ -77,7 +77,7 @@ calculateStakingPrediction()
     local _newestStakeDate=${stakes[${amountOfStakes},${TA_TIME}]}
     local _oldestStakeDate=${stakes[0,${TA_TIME}]}
     local _dataTimeFrame=$((${_newestStakeDate} - ${_oldestStakeDate}))
-    local _totalCoins=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_STAKE}]}" | bc)
+    local _totalCoins=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
     local _stakedCoinRate=$(echo "scale=16 ; $_stakedAmount / $_totalCoins" | bc)
     local _buff=$(echo "scale=16 ; ${_stakedCoinRate} + 1" | bc)
     local _buff2=$(echo "scale=16 ; 31536000 / ${_dataTimeFrame}" | bc)

@@ -43,16 +43,22 @@ fi
 # Include used functions
 . include/calculateLayout.sh
 . include/constants.sh
+. include/convertCoins.sh
+. include/createTransactionList.sh
+. include/createWalletInfo.sh
+. include/getInfo.sh
 . include/getStakingPrediction.sh
 . include/getTransactions.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
 . include/sendCoins.sh
 . include/setWalletPW.sh
+. include/updateBinaries.sh
 . include/userCmdInput.sh
 . include/viewStakingPrediction.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
+. include/walletEncryption.sh
 
 rtc=0
 _init
@@ -197,7 +203,7 @@ startDaemon() {
             for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
                 echo "${_itemBuffer}"
             done
-            sudo service spectrecoind start
+            sudo systemctl start spectrecoind
         fi
         for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
@@ -293,103 +299,6 @@ secToHumanReadable() {
 }
 
 # ============================================================================
-# Gathers the data form the CURL result for the getinfo command
-#
-# Input: $curl_result_global
-# Output: $info_global array
-getInfo() {
-    unset info_global
-    local _oldIFS=$IFS
-    local _itemBuffer
-    local _unixtime
-
-    # Remove leading '{' and trailing '}'
-    curl_result_global=${curl_result_global#'{'}
-    curl_result_global=${curl_result_global%'}'}
-
-    # Replace '{' and '}' inside of result string with ','
-    curl_result_global=${curl_result_global//\{/,}
-    curl_result_global=${curl_result_global//\}/,}
-
-    # Set default if wallet is not encrypted
-    info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_HAS_NO_PW}"
-
-    IFS=','
-    for _itemBuffer in ${curl_result_global}; do
-        case ${_itemBuffer%%:*} in
-            'version')
-                info_global[${WALLET_VERSION}]="${_itemBuffer#*:}";;
-            'balance')
-                info_global[${WALLET_BALANCE_XSPEC}]="${_itemBuffer#*:}";;
-            'spectrebalance')
-                info_global[${WALLET_BALANCE_SPECTRE}]="${_itemBuffer#*:}";;
-            'stake')
-                info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
-            'connections')
-                info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
-            'datareceived')
-                info_global[${WALLET_DATARECEIVED}]="${_itemBuffer#*:}";;
-            'datasent')
-                info_global[${WALLET_DATASENT}]="${_itemBuffer#*:}";;
-            'ip')
-                info_global[${WALLET_IP}]="${_itemBuffer#*:}";;
-            'unlocked_until')
-                _unixtime="${_itemBuffer#*':'}"
-                if [[ "$_unixtime" -gt 0 ]]; then
-                    info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_IS_UNLOCKED}"
-                else
-                    info_global[${WALLET_UNLOCKED_UNTIL}]="${TEXT_WALLET_IS_LOCKED}"
-                fi;;
-            'errors')
-                if [[ "${_itemBuffer#*':'}" == 'none' ]]; then
-                    info_global[${WALLET_ERRORS}]="${TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME}"
-                else
-                    info_global[${WALLET_ERRORS}]="\Z1${_itemBuffer#*:}\Zn"
-                fi;;
-            'mode')
-                info_global[${WALLET_MODE}]="${_itemBuffer#*:}";;
-            'state')
-                info_global[${WALLET_STATE}]="${_itemBuffer#*:}";;
-            'protocolversion')
-                info_global[${WALLET_PROTOCOLVERSION}]="${_itemBuffer#*:}";;
-            'walletversion')
-                info_global[${WALLET_WALLETVERSION}]="${_itemBuffer#*:}";;
-            'newmint')
-                info_global[${WALLET_NEWMINT}]="${_itemBuffer#*:}";;
-            'reserve')
-                info_global[${WALLET_RESERVE}]="${_itemBuffer#*:}";;
-            'blocks')
-                info_global[${WALLET_BLOCKS}]="${_itemBuffer#*:}";;
-            'timeoffset')
-                info_global[${WALLET_TIMEOFFSET}]="${_itemBuffer#*:}";;
-            'moneysupply')
-                info_global[${WALLET_MONEYSUPPLY}]="${_itemBuffer#*:}";;
-            'spectresupply')
-                info_global[${WALLET_SPECTRESUPPLY}]="${_itemBuffer#*:}";;
-            'proxy')
-                info_global[${WALLET_PROXY}]="${_itemBuffer#*:}";;
-            'proof-of-work')
-                # PoW is a sub-entry of 'difficulty'
-                info_global[${WALLET_PROOF_OF_WORK}]="${_itemBuffer#*:}";;
-            'proof-of-stake')
-                # PoS is a sub-entry of 'difficulty'
-                info_global[${WALLET_PROOF_OF_STAKE}]="${_itemBuffer#*:}";;
-            'testnet')
-                info_global[${WALLET_TESTNET}]="${_itemBuffer#*:}";;
-            'keypoolsize')
-                info_global[${WALLET_KEYPOOLSIZE}]="${_itemBuffer#*:}";;
-            'paytxfee')
-                info_global[${WALLET_PAYTXFEE}]="${_itemBuffer#*:}";;
-            'mininput')
-                info_global[${WALLET_MININPUT}]="${_itemBuffer#*:}";;
-            *)
-                ;;
-        esac
-    done
-    IFS=${_oldIFS}
-}
-
-# ============================================================================
 # Gathers the data form the CURL result for the getstakinginfo command
 #
 # Input: $curl_result_global
@@ -416,118 +325,6 @@ getStakingInfo() {
         fi
     done
     IFS=${_oldIFS}
-}
-
-# ============================================================================
-# Gathers the data form the CURL result for the getinfo command
-#
-# Input:  $1  - optional var determing the text width (default: TEXTWIDTH_INFO)
-#
-# Operating with:  $info_global
-#                  $stakinginfo_global
-makeOutputInfo() {
-    local _textWidth
-    if [[ -z "$1" ]]; then
-        _textWidth="${TEXTWIDTH_INFO}"
-    else
-        _textWidth="$1"
-    fi
-    if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
-        echo "${TEXT_HEADLINE_WALLET_INFO}\n"
-    fi
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_XSPEC}]}+${info_global[${WALLET_STAKE}]}" | bc)
-    if [[ ${_balance} == '.'* ]]; then
-        _balance="0"${_balance}
-    fi
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-${_balance}" \
-                    "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_2}:-_-\Z6${info_global[${WALLET_BALANCE_SPECTRE}]}\Zn" \
-                    "${_textWidth}")"\n"
-    #
-    if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
-        echo "\n${TEXT_HEADLINE_STAKING_INFO}\n"
-    elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
-        echo "\n"
-    fi
-    echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[${WALLET_UNLOCKED_UNTIL}]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
-                    "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_STAKING_COINS}: \Z4${info_global[${WALLET_BALANCE_XSPEC}]}\Zn-_-(\Z5${info_global[${WALLET_STAKE}]}\Zn ${TEXT_MATRUING_COINS})" \
-                    "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
-                    "${_textWidth}")"\n"
-    #
-    if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
-        echo "\n${TEXT_HEADLINE_CLIENT_INFO}\n"
-    elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
-        echo "\n"
-    fi
-    echo $(fillLine "${TEXT_DAEMON_VERSION}: ${info_global[${WALLET_VERSION}]}-_-${TEXT_DAEMON_ERRORS_DURING_RUNTIME}: ${info_global[${WALLET_ERRORS}]}" \
-                    "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_DAEMON_IP}: ${info_global[${WALLET_IP}]}-_-${TEXT_DAEMON_PEERS}: ${info_global[${WALLET_CONNECTIONS}]}" \
-                    "${_textWidth}")"\n"
-    echo $(fillLine "${TEXT_DAEMON_DOWNLOADED_DATA}: ${info_global[${WALLET_DATARECEIVED}]}-_-${TEXT_DAEMON_UPLOADED_DATA}: ${info_global[${WALLET_DATASENT}]}" \
-                    "${_textWidth}")"\n"
-}
-
-# ============================================================================
-# Gathers the data form the CURL result for the getinfo command
-#
-# Input:  $1  - optional var determing the text width (default: TEXTWIDTH_TRANS)
-# Operating with:  $transactions
-makeOutputTransactions() {
-    local _textWidth
-    if [[ -z "$1" ]] ; then
-        _textWidth="${TEXTWIDTH_TRANS}"
-    else
-        _textWidth="$1"
-    fi
-    for ((i=${currentAmountOfTransactions} ; i >= 0 ; i=$(($i-1)))) ; do
-        local _currentTaTime=$(date -d "@${transactions[${i},${TA_TIME}]}" +%d-%m-%Y" at "%H:%M:%S)
-
-        # 1st line: Transaction and date
-        echo $(fillLine "${transactions[${i},${TA_CATEGORY}]}: ${transactions[${i},${TA_AMOUNT}]} ${transactions[${i},${TA_CURRENCY}]}-_-${_currentTaTime}" \
-                        "${_textWidth}")"\n"
-
-        # 2nd line: Confirmations and narration
-        if (( ${_textWidth} >= 43 )) ; then
-            narrationContent='---'
-            if [[ -n "${transactions[${i},${TA_NARRATION}]}" ]] ; then
-                narrationContent="${transactions[${i},${TA_NARRATION}]}"
-            fi
-            echo $(fillLine "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}-_-${TEXT_NARRATION}: ${narrationContent}" \
-                            "${_textWidth}")"\n"
-        else
-            echo "${TEXT_CONFIRMATIONS}: ${transactions[${i},${TA_CONFIRMATIONS}]}\n"
-        fi
-
-        if (( ${_textWidth} >= 70 )) ; then
-            # 3rd line: Address
-            local _address="${TEXT_ADDRESS}: ${transactions[${i},${TA_ADDRESS}]}"
-            local _lineLength=$(echo -n ${_address} | wc -c)
-            if [[ "${transactions[${i},${TA_CATEGORY}]}" = "${TEXT_TRANSFERRED}" ]] ; then
-                # It's a SENDED entry, so show it's fee
-                if [[ ${_lineLength} -lt ${_textWidth} ]] ; then
-                    echo $(fillLine "${_address}-_-${TEXT_FEE}: ${transactions[${i},${TA_FEE}]}" \
-                                    "${_textWidth}")"\n"
-                else
-                    echo "${_address:0:${_textWidth}}\n"
-                    echo $(fillLine "${_address:${_textWidth}}-_-${TEXT_FEE}: ${transactions[${i},${TA_FEE}]}" \
-                                    "${_textWidth}")"\n"
-                fi
-            else
-                if [[ ${_lineLength} -lt ${_textWidth} ]] ; then
-                    echo "${_address}\n"
-                else
-                    echo "${_address:0:${_textWidth}}\n"
-                    echo "${_address:${_textWidth}}\n"
-                fi
-            fi
-            # 4th line: Transaction Id
-            echo $(fillLine "${TEXT_TXID}: ${transactions[${i},${TA_TXID}]}" \
-                            "${_textWidth}")"\n"
-        fi
-        echo "\n"
-    done
 }
 
 # ============================================================================
@@ -584,7 +381,7 @@ goodbye() {
             info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             reset
-            sudo service spectrecoind stop
+            sudo systemctl stop spectrecoind
             echo ''
             info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
@@ -664,6 +461,7 @@ advancedmenu() {
         "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+        "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
         "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
         2>&1 1>&3)
     exit_status=$?
@@ -678,11 +476,11 @@ advancedmenu() {
         "${CMD_STAKING_ANALYSE}")
             viewStakingPrediction;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            sry;;
+            encryptWallet;;
         "${CMD_CHANGE_WALLET_PW}")
-            sry;;
-        "${CMD_SETUP_PI}")
-            sry;;
+            changePasswordDialog;;
+        "${CMD_UPDATE}")
+            updateBinaries;;
         "${CMD_USER_COMMAND}")
             userCommandInput;;
         "${CMD_GET_PEER_INFO}")
@@ -728,8 +526,9 @@ receiveCoins() {
 #
 # Return: nothing
 passwordDialog() {
+    local _wallet_password
     exec 3>&1
-    local _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
+    _wallet_password=$(dialog --backtitle "${TITLE_BACK}" \
         --no-shadow \
         --insecure \
         --passwordbox "${TEXT_PW_EXPL}" 0 0 \
@@ -821,6 +620,7 @@ refreshMainMenu_GUI() {
             "${_cmdWallet}" "${_explWalletStatus}" \
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
             "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_CONVERT_COINS}" "${EXPL_CMD_MAIN_CONVERT_COINS}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -853,6 +653,7 @@ refreshMainMenu_GUI() {
             "${_cmdWallet}" "${_explWalletStatus}" \
             "${CMD_MAIN_TRANS}" "${EXPL_CMD_MAIN_VIEWTRANS}" \
             "${CMD_MAIN_SEND}" "${EXPL_CMD_MAIN_SEND}" \
+            "${CMD_MAIN_CONVERT_COINS}" "${EXPL_CMD_MAIN_CONVERT_COINS}" \
             "${CMD_MAIN_RECEIVE}" "${EXPL_CMD_MAIN_RECEIVE}" \
             "${CMD_MAIN_ADVANCED_MENU}" "${EXPL_CMD_MAIN_ADVANCEDMENU}" \
             "${CMD_MAIN_QUIT}" "${EXPL_CMD_MAIN_EXIT}" \
@@ -875,13 +676,13 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_LOCK_WALLET}")
             lockWallet;;
         "${CMD_MAIN_ENCRYPT_WALLET}")
-            # todo change with new dialog version
-            sry;;
-            #setWalletPW;;
+            encryptWallet;;
         "${CMD_MAIN_TRANS}")
             viewAllTransactions;;
         "${CMD_MAIN_SEND}")
             sendCoins;;
+        "${CMD_MAIN_CONVERT_COINS}")
+            convertCoins;;
         "${CMD_MAIN_RECEIVE}")
             receiveCoins;;
         "${CMD_MAIN_ADVANCED_MENU}")

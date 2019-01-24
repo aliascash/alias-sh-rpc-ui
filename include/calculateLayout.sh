@@ -22,7 +22,7 @@ calculateLayout() {
     else
         SIZE_X_MENU=${_max_buff}
     fi
-    SIZE_Y_MENU=13
+    SIZE_Y_MENU=14
 
     #Size for the displayed transactions in main menu
     _max_buff=$((${currentTPutCols} - ${SIZE_X_MENU}))
@@ -48,8 +48,8 @@ calculateLayout() {
     # Size for the displayed info in main menu
     SIZE_X_INFO=${SIZE_X_MENU}
     _max_buff=$(($(tput lines) - ${POS_Y_MENU} - ${SIZE_Y_MENU}))
-    if [[ ${_max_buff} -gt 16 ]] ; then
-        SIZE_Y_INFO=16
+    if [[ ${_max_buff} -gt 21 ]] ; then
+        SIZE_Y_INFO=21
     else
         SIZE_Y_INFO=${_max_buff}
     fi
@@ -74,11 +74,11 @@ calculateLayout() {
     #
     # Amount of transactions that can be displayed in main menu
     # = ((amount of terminal lines - amount of border lines - y-offset) / amount of lines per transaction ) + 1
-    COUNT_TRANS_MENU=$(( ((${SIZE_Y_TRANS} - 2 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) + 1 ))
+    COUNT_TRANS_MENU=$(( ((${SIZE_Y_TRANS} - 2 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) ))
     #
     # Amount of transactions that can be displayed in the view all transactions dialog
     # = ((amount of terminal lines - amount of border lines - y-offset) / amount of lines per transaction ) + 1
-    COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 4 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) + 1 ))
+    COUNT_TRANS_VIEW=$(( ((${SIZE_Y_TRANS} - 4 - ${POS_Y_TRANS}) / ${amountOfLinesPerTransaction}) ))
     #
     TEXTHIGHT_INFO=$(( ${SIZE_Y_INFO} - 2 ))
 
