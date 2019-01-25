@@ -42,6 +42,7 @@ fi
 
 # Include used functions
 . include/calculateLayout.sh
+. include/changeLanguage.sh
 . include/constants.sh
 . include/convertCoins.sh
 . include/createTransactionList.sh
@@ -486,7 +487,7 @@ advancedmenu() {
         "${CMD_GET_PEER_INFO}")
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
-            sry;;
+            changeLanguage;;
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
