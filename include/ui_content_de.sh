@@ -42,7 +42,7 @@ TITLE_WALLET_INFO=" Wallet Info "
 TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Bitte wählen "
 TITLE_UPDATE_BINARIES=" Spectrecoin aktualisieren "
-TITLE_LANGUAGE_SELECTION="Sprachauswahl"
+TITLE_LANGUAGE_SELECTION="Aktuelle Sprache: deutsch"
 #
 BUTTON_LABEL_ENCRYPT="Verschlüsseln"
 BUTTON_LABEL_RESTART_DAEMON="Daemon neustarten"
