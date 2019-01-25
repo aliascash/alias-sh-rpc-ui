@@ -42,6 +42,7 @@ TITLE_WALLET_INFO=" Wallet Info "
 TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Please choose "
 TITLE_UPDATE_BINARIES=" Update Spectrecoin "
+TITLE_LANGUAGE_SELECTION="Language selection"
 #
 BUTTON_LABEL_ENCRYPT="Encrypt"
 BUTTON_LABEL_RESTART_DAEMON="Restart daemon"
@@ -243,3 +244,6 @@ TEXT_AMOUNT_TO_CONVERT="Amount to convert"
 #
 TEXT_QUESTION_DO_UPDATE="Update Spectrecoin binaries?\nSpectrecoin daemon will be stopped!\n"
 TEXT_UPDATE_CANCELED="Update canceled"
+#
+TEXT_CHOOSE_LANGUAGE="Choose a language"
+TEXT_CHOOSE_LANGUAGE_CANCELED="Language switch canceled"
