@@ -212,7 +212,7 @@ TEXT_GOODBYE_FEEDBACK="Any feedback appreciated, please let us know. Thank you!"
 TEXT_FEEDBACK_WALLET_LOCKED="Wallet successfully locked.\n\n\Z5You will not be able to stake anymore.\Zn\n\nUse \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn in main menu to unlock the wallet for staking only again."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Wallet successfully unlocked."
 TEXT_SUGGESTION_STAKING="It will take a short amount of time for the daemon to update the staking status, after the wallet was unlocked/locked.\nUse the \Z4${CMD_MAIN_REFRESH}\Zn command in main menu to refresh the screen."
-TEXT_FEEDBACK_RECEIVE="Marking the text will automatically copy it to clipboard.\nPress return to continue to main menu."
+TEXT_FEEDBACK_RECEIVE="Press return to continue to main menu."
 TEXT_DEFAULT_ADDRESS="Default XSPEC address"
 TEXT_DEFAULT_STEALTH_ADDRESS="Default SPECTRE address"
 #
