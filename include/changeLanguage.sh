@@ -51,7 +51,9 @@ changeLanguage() {
     case ${exit_status} in
         0)
             entryPositionInList=$(echo "${CHOICE}*2" | bc -l)
-            . include/ui_content_${languageArray[${entryPositionInList}]}.sh
+            UI_LANGUAGE=${languageArray[${entryPositionInList}]}
+            updateSettings
+            . include/ui_content_${UI_LANGUAGE}.sh
             ;;
         *)
             dialog --backtitle "${TITLE_BACK}" \

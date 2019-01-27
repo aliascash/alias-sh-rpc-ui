@@ -37,8 +37,8 @@ else
     VERSION='unknown'
 fi
 
-# ToDo: Possibility to switch between different language files
-. include/ui_content_en.sh
+# At first handle settings
+. include/handleSettings.sh
 
 # Include used functions
 . include/calculateLayout.sh
