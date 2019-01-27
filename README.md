@@ -6,5 +6,15 @@ user interface to the Spectrecoin daemon.
 Configuration file for Spectrecoin daemon is automatically created during first start.
 Please stop daemon if you want to make changes afterwards.
 
-More documentation soon...
+## Language settings
+For correct display of language specific UTF-8 characters it is very
+important to have proper language settings. If you encounter broken characters
+on the user interface, you might run the following cmd as root:
+
+```
+dpkg-reconfigure locales
+```
+
+On the following dialog you need to choose the UTF-8 entry for your language.
+For german this will be `de_DE.UTF-8`.
 
