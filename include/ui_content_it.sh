@@ -42,7 +42,7 @@ TITLE_WALLET_INFO=" Wallet Info "
 TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Please choose "
 TITLE_UPDATE_BINARIES=" Update Spectrecoin "
-TITLE_LANGUAGE_SELECTION=" Current language: english "
+TITLE_LANGUAGE_SELECTION=" Current language: italian "
 #
 BUTTON_LABEL_ENCRYPT="Encrypt"
 BUTTON_LABEL_RESTART_DAEMON="Restart daemon"

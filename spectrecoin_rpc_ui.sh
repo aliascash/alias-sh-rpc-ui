@@ -37,11 +37,12 @@ else
     VERSION='unknown'
 fi
 
-# ToDo: Possibility to switch between different language files
-. include/ui_content_en.sh
+# At first handle settings
+. include/handleSettings.sh
 
 # Include used functions
 . include/calculateLayout.sh
+. include/changeLanguage.sh
 . include/constants.sh
 . include/convertCoins.sh
 . include/createTransactionList.sh
@@ -486,7 +487,7 @@ advancedmenu() {
         "${CMD_GET_PEER_INFO}")
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
-            sry;;
+            changeLanguage;;
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
@@ -805,7 +806,7 @@ fi
 message="\n"
 message+="$(sh ./include/logo.sh | base64 -d)"
 message+="\n"
-message+="                  Use at your own risc!!!\n\n"
+message+="${TEXT_USE_AT_YOUR_OWN_RISC}"
 #message+="    Terminal: $(tput longname)\n"
 #message+="    Dialog $(dialog --version)\n"
 #message+="      Interface version: ${VERSION}\n"
