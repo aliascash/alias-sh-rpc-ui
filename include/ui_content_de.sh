@@ -247,3 +247,5 @@ TEXT_UPDATE_CANCELED="Update abgebrochen"
 #
 TEXT_CHOOSE_LANGUAGE="Bitte Sprache auswählen"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Sprachumschaltung abgebrochen"
+#
+TEXT_USE_AT_YOUR_OWN_RISC="          Verwendung unter eigener Verantworkung!!!\n\n"

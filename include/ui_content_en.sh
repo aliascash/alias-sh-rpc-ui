@@ -247,3 +247,5 @@ TEXT_UPDATE_CANCELED="Update canceled"
 #
 TEXT_CHOOSE_LANGUAGE="Choose a language"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Language switch canceled"
+#
+TEXT_USE_AT_YOUR_OWN_RISC="                  Use at your own risc!!!\n\n"

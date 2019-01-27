@@ -806,7 +806,7 @@ fi
 message="\n"
 message+="$(sh ./include/logo.sh | base64 -d)"
 message+="\n"
-message+="                  Use at your own risc!!!\n\n"
+message+="${TEXT_USE_AT_YOUR_OWN_RISC}"
 #message+="    Terminal: $(tput longname)\n"
 #message+="    Dialog $(dialog --version)\n"
 #message+="      Interface version: ${VERSION}\n"
