@@ -122,7 +122,7 @@ ERROR_SEND_INVALID_AMOUNT="Le montant doit etre un nombre, avec:\n- plus grand q
 ERROR_CURL_MSG_PROMPT="Erreur message CURL:"
 ERROR_401_UNAUTHORIZED="Erreur: RPC login en échec. Avez-vous changé le mot de passe dans redémarrer le démon? Note: Vous pouvez arrêter le démon avec la commande: wallet-stop"
 ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à sprectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
-ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à sprectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à spectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
 #
 # use \ for a new line - note: there will be no auto line breaking
 ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) déjà en cours d'éxécution!\Mais aucune connexion n'a pu être établie.\Cela signifie que le démon vient de démarrer."
@@ -204,7 +204,7 @@ TEXT_GAUGE_PROCESS_STAKING_DATA="Traitement des données de staking..."
 TEXT_GAUGE_GET_TRANS="Obtention des données de transaction du démon..."
 TEXT_GAUGE_PROCESS_TRANS="Traitement des données de transaction...."
 #
-TEXT_GOODBYE_WARNING="\Z1Si vous prévoyez d'éteindre le système, le démon doit être arrêté d'abord pour éviter toute corruption de données!\Zn\n\nVoulez-vous arrêter le démon (fin du staking) ou seulement quitter l'UI?\Zn"
+TEXT_GOODBYE_WARNING="\Z1Avant d'éteindre le système, arrêtez d'abord le démon pour éviter une corruption de données!\Zn\n\nArrêter le démon (fin du staking) ou bien quitter l'UI?\Zn"
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Le démon est toujours en cours d'éxécution."
 TEXT_GOODBYE_DAEMON_STOPPED="Démon arrêté."
 TEXT_GOODBYE_FEEDBACK="Les remarques sont les bienvenues, merci d'avance!"
