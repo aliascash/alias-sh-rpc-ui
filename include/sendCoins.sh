@@ -24,7 +24,7 @@ getCoinTypeToSend() {
         --cancel-label "${TEXT_CURRENCY_ANON}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
-        --yesno "${TEXT_COIN_TYPE_TO_SEND_QUESTION}" 7 45
+        --yesno "${TEXT_COIN_TYPE_TO_SEND_QUESTION}" 7 52
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_EXTRA})
@@ -66,10 +66,10 @@ sendPublicCoins() {
         --no-shadow \
         --colors \
         --title "${TITLE_SEND}" \
-        --form "${_s}" 16 65 0 \
-        "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 35 0 \
-        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY}:" 4 1 "${_amount}" 4 22 20 0 \
-        "${TEXT_SEND_NARRATION}:" 6 1 "${_narration}" 6 22 24 0 \
+        --form "${_s}" 16 70 0 \
+        "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 35 0 \
+        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY}:" 4 2 "${_amount}" 4 26 24 0 \
+        "${TEXT_SEND_NARRATION}:" 6 2 "${_narration}" 6 26 24 0 \
         2>&1 1>&3)
     exit_status=$?
     IFS=${oldIFS}
@@ -158,10 +158,10 @@ sendAnonCoins() {
         --no-shadow \
         --colors \
         --title "${TITLE_SEND}" \
-        --form "${_s}" 16 65 0 \
-        "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 1 "${_destinationAddress}" 2 22 102 0 \
-        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_ANON}:" 4 1 "${_amount}" 4 22 20 0 \
-        "${TEXT_SEND_NARRATION}:" 6 1 "${_narration}" 6 22 24 0 \
+        --form "${_s}" 17 70 0 \
+        "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 102 0 \
+        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_ANON}:" 4 2 "${_amount}" 4 26 24 0 \
+        "${TEXT_SEND_NARRATION}:" 6 2 "${_narration}" 6 26 24 0 \
         2>&1 1>&3)
     exit_status=$?
     IFS=${oldIFS}
