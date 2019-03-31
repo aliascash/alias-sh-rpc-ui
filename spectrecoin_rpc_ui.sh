@@ -56,6 +56,7 @@ fi
 . include/setWalletPW.sh
 . include/updateBinaries.sh
 . include/userCmdInput.sh
+. include/viewLog.sh
 . include/viewStakingPrediction.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
@@ -194,48 +195,46 @@ startDaemon() {
         errorHandling "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" 1
     else
         # UI should connect to local daemon, try to start it
-        (
-            local _oldIFS=$IFS
-            local _itemBuffer
-            IFS='\\'
-            if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-                for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
-                    echo "${_itemBuffer}"
-                done
-            else
-                for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
-                    echo "${_itemBuffer}"
-                done
-                sudo systemctl start spectrecoind
-            fi
-            for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
+        local _oldIFS=$IFS
+        local _itemBuffer
+        IFS='\\'
+        if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+            for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
                 echo "${_itemBuffer}"
             done
-            local _i=60
-            while [[ -z "${curl_result_global}" ]] && [[ ${_i} -gt 0 ]]; do
-                echo "- ${_i} ${ERROR_DAEMON_WAITING_MSG}"
-                _i=$((_i-5))
-                sleep 5
-                connectToDaemon "getinfo"
+        else
+            for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
+                echo "${_itemBuffer}"
             done
+            sudo systemctl start spectrecoind
+        fi
+        for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
+            echo "${_itemBuffer}"
+        done
+        local _i=60
+        while [[ -z "${curl_result_global}" ]] && [[ ${_i} -gt 0 ]]; do
+            viewLog
+            connectToDaemon "getinfo"
             if [[ -z "${curl_result_global}" ]]; then
-                # exit script
-                errorHandling "${ERROR_DAEMON_NO_CONNECT}" \
-                              1
-            else
-                for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
-                    echo "${_itemBuffer}"
-                done
+                dialog --no-shadow \
+                    --colors \
+                    --ok-label "${BUTTON_LABEL_RETURN}" \
+                    --cancel-label "${BUTTON_LABEL_EXIT}" \
+                    --default-button 'ok' \
+                    --yesno "${TEXT_GOODBYE_DAEMON_NOT_SYNCED}" 0 0
+                exit_status=$?
+                case ${exit_status} in
+                    ${DIALOG_CANCEL})
+                        reset
+                        echo ''
+                        info "${TEXT_GOODBYE_FEEDBACK}"
+                        echo ''
+                        exit 0;;
+                esac
             fi
-            for _itemBuffer in ${ERROR_DAEMON_WAITING_END}; do
-                echo "${_itemBuffer}"
-            done
-            sleep 1
-            IFS=${_oldIFS}
-        ) | dialog --backtitle "${TITLE_BACK}" \
-                   --title "${TITLE_STARTING_DAEMON}" \
-                   --no-shadow \
-                   --progressbox 20 45
+        done
+        sleep 1
+        IFS=${_oldIFS}
     fi
     refreshMainMenu_DATA
 }
