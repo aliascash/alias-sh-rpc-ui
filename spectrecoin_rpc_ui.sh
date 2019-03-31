@@ -186,54 +186,57 @@ cutCURLresult() {
 #
 startDaemon() {
     if [[ "${rpcconnect}" != "127.0.0.1" ]]; then
+        # UI should connect to remote daemon, which was not available.
+        # Show proper error message
         local _s="Settings:\n"
               _s+="RPC USER:${rpcuser}\nRPC PW:${rpcpassword}\n"
               _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
-        errorHandling "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" \
-                      1
+        errorHandling "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" 1
+    else
+        # UI should connect to local daemon, try to start it
+        (
+            local _oldIFS=$IFS
+            local _itemBuffer
+            IFS='\\'
+            if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+                for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
+                    echo "${_itemBuffer}"
+                done
+            else
+                for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
+                    echo "${_itemBuffer}"
+                done
+                sudo systemctl start spectrecoind
+            fi
+            for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
+                echo "${_itemBuffer}"
+            done
+            local _i=60
+            while [[ -z "${curl_result_global}" ]] && [[ ${_i} -gt 0 ]]; do
+                echo "- ${_i} ${ERROR_DAEMON_WAITING_MSG}"
+                _i=$((_i-5))
+                sleep 5
+                connectToDaemon "getinfo"
+            done
+            if [[ -z "${curl_result_global}" ]]; then
+                # exit script
+                errorHandling "${ERROR_DAEMON_NO_CONNECT}" \
+                              1
+            else
+                for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
+                    echo "${_itemBuffer}"
+                done
+            fi
+            for _itemBuffer in ${ERROR_DAEMON_WAITING_END}; do
+                echo "${_itemBuffer}"
+            done
+            sleep 1
+            IFS=${_oldIFS}
+        ) | dialog --backtitle "${TITLE_BACK}" \
+                   --title "${TITLE_STARTING_DAEMON}" \
+                   --no-shadow \
+                   --progressbox 20 45
     fi
-    (
-         local _oldIFS=$IFS
-         local _itemBuffer
-         IFS='\\'
-         if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
-            for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
-                echo "${_itemBuffer}"
-            done
-        else
-            for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
-                echo "${_itemBuffer}"
-            done
-            sudo systemctl start spectrecoind
-        fi
-        for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
-            echo "${_itemBuffer}"
-        done
-        local _i=60
-        while [[ -z "${curl_result_global}" ]] && [[ ${_i} -gt 0 ]]; do
-            echo "- ${_i} ${ERROR_DAEMON_WAITING_MSG}"
-            _i=$((_i-5))
-            sleep 5
-            connectToDaemon "getinfo"
-        done
-        if [[ -z "${curl_result_global}" ]]; then
-            # exit script
-            errorHandling "${ERROR_DAEMON_NO_CONNECT}" \
-                          1
-        else
-            for _itemBuffer in ${ERROR_DAEMON_WAITING_MSG_SUCCESS}; do
-                echo "${_itemBuffer}"
-            done
-        fi
-        for _itemBuffer in ${ERROR_DAEMON_WAITING_END}; do
-            echo "${_itemBuffer}"
-        done
-        sleep 1
-        IFS=${_oldIFS}
-    ) | dialog --backtitle "${TITLE_BACK}" \
-               --title "${TITLE_STARTING_DAEMON}" \
-               --no-shadow \
-               --progressbox 20 45
     refreshMainMenu_DATA
 }
 
