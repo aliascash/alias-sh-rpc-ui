@@ -66,6 +66,9 @@ BUTTON_LABEL_SHOW_BALANCE="Zeige Saldo"
 BUTTON_LABEL_HIDE_BALANCE="Verberge Saldo"
 BUTTON_LABEL_PUBLIC_TO_ANON="XSPEC in SPECTRE"
 BUTTON_LABEL_ANON_TO_PUBLIC="SPECTRE in XSPEC"
+BUTTON_LABEL_CLOSE="Fenster schliessen"
+BUTTON_LABEL_RETURN="Zurück"
+BUTTON_LABEL_EXIT="UI beenden"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Sperren"
@@ -208,6 +211,9 @@ TEXT_GOODBYE_WARNING="\Z1Wenn das System heruntergefahren werden soll, muss der 
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Daemon läuft noch."
 TEXT_GOODBYE_DAEMON_STOPPED="Daemon gestoppt."
 TEXT_GOODBYE_FEEDBACK="Jegliches Feedback ist gern gesehen! Vielen Dank."
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="Der Spectrecoin Daemon ist noch nicht vollständig synchronisiert.\n\nZurück zur Logausgabe oder das UI beenden?"
+#
+TEXT_LOGFILE_HEADER="Der Daemon ist synchronisiert, wenn unten Ausgaben der Art \Z1'height='\Zn gefolgt von der aktuellen Blockchain-Höhe zu sehen sind. Bitte Geduld, das kann etwas dauern! (Links/Rechts scrollen mit den Pfeiltasten)"
 #
 TEXT_FEEDBACK_WALLET_LOCKED="Wallet erfolgreich gesperrt.\n\n\Z5Es wird nicht mehr gestaked.\Zn\n\nBitte \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn im Hauptmenü benutzen, um Staking wieder zu aktivieren."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Wallet erfolgreich entsperrt."

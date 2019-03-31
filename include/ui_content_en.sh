@@ -26,7 +26,7 @@ TITLE_MENU=" ${TITLE_BACK} "
 TITLE_GAUGE=" Please wait "
 TITLE_ERROR=" ERROR "
 TITLE_SUCCESS=" Success "
-TITLE_STARTING_DAEMON=" Starting Daemon "
+TITLE_STARTING_DAEMON=" Starting Daemon - You need to wait until "
 TITLE_GOODBYE=" GOODBYE "
 TITLE_SEND=" Send XSPEC "
 TITLE_CONVERT=" Convert coins "
@@ -66,6 +66,9 @@ BUTTON_LABEL_SHOW_BALANCE="Show balance"
 BUTTON_LABEL_HIDE_BALANCE="Hide balance"
 BUTTON_LABEL_PUBLIC_TO_ANON="XSPEC to SPECTRE"
 BUTTON_LABEL_ANON_TO_PUBLIC="SPECTRE to XSPEC"
+BUTTON_LABEL_CLOSE="Close window"
+BUTTON_LABEL_RETURN="Return"
+BUTTON_LABEL_EXIT="Exit"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Lock"
@@ -208,6 +211,9 @@ TEXT_GOODBYE_WARNING="\Z1If you plan to shutdown the system, daemon must be stop
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Daemon is still running."
 TEXT_GOODBYE_DAEMON_STOPPED="Daemon stopped."
 TEXT_GOODBYE_FEEDBACK="Any feedback appreciated, please let us know. Thank you!"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The spectrecoin daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+#
+TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #
 TEXT_FEEDBACK_WALLET_LOCKED="Wallet successfully locked.\n\n\Z5You will not be able to stake anymore.\Zn\n\nUse \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn in main menu to unlock the wallet for staking only again."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Wallet successfully unlocked."

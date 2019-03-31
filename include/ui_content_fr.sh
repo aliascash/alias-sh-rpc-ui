@@ -66,6 +66,9 @@ BUTTON_LABEL_SHOW_BALANCE="Montrer le solde"
 BUTTON_LABEL_HIDE_BALANCE="Cacher le solde"
 BUTTON_LABEL_PUBLIC_TO_ANON="XSPEC vers SPECTRE"
 BUTTON_LABEL_ANON_TO_PUBLIC="SPECTRE vers XSPEC"
+BUTTON_LABEL_CLOSE="Close window"
+BUTTON_LABEL_RETURN="Return"
+BUTTON_LABEL_EXIT="Exit"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Verrouiller"
@@ -208,6 +211,9 @@ TEXT_GOODBYE_WARNING="\Z1Si vous prévoyez d'éteindre le système, le démon do
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Le démon est toujours en cours d'éxécution."
 TEXT_GOODBYE_DAEMON_STOPPED="Démon arrêté."
 TEXT_GOODBYE_FEEDBACK="Les remarques sont les bienvenues, merci d'avance!"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The spectrecoin daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+#
+TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #
 TEXT_FEEDBACK_WALLET_LOCKED="Portefeuille correctement verrouillé.\n\n\Z5Vous ne serez plus en mesure de staker.\Zn\n\nUtilisez \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn dans le menu principal pour déverrouiler le portefeuille pour seulement staker à nouveau."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Portefeuille correctement déverrouillé."
