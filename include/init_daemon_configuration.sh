@@ -55,4 +55,9 @@ initDaemonConfiguration(){
 
     # Now load configuration
     . ${configfileLocation}
+
+    if [[ -z "${logfile}" ]] ; then
+        # Configuration value not found, set default
+        logfile=~/.spectrecoin/debug.log
+    fi
 }
