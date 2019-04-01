@@ -21,6 +21,7 @@ viewLog() {
            --title " ${logfile} " \
            --no-shadow \
            --colors \
+           --begin 6 2 \
            --ok-label "${BUTTON_LABEL_CLOSE}" \
            --tailbox "${logfile}" \
            ${LOG_TAIL_WINDOW_X} ${LOG_TAIL_WINDOW_Y}
