@@ -465,6 +465,7 @@ advancedmenu() {
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
         "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+        "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
         "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
         2>&1 1>&3)
     exit_status=$?
@@ -490,6 +491,8 @@ advancedmenu() {
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
             changeLanguage;;
+        "${CMD_VIEW_LOG}")
+            viewLog;;
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
