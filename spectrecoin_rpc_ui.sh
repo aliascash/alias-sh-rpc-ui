@@ -492,7 +492,8 @@ advancedmenu() {
         "${CMD_CHANGE_LANGUAGE}")
             changeLanguage;;
         "${CMD_VIEW_LOG}")
-            viewLog;;
+            viewLog
+            refreshMainMenu_DATA;;
         "${CMD_MAIN_MENU}")
             refreshMainMenu_DATA;;
         *)
