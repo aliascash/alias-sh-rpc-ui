@@ -15,7 +15,7 @@ viewLog() {
            --colors \
            --begin 2 2 \
            --no-lines \
-           --infobox "${TEXT_LOGFILE_HEADER}" ${LOG_TAIL_WINDOW_HEADER} ${LOG_TAIL_WINDOW_Y} \
+           --infobox "${TEXT_LOGFILE_HEADER}" ${LOG_TAIL_WINDOW_HEADER_X} ${LOG_TAIL_WINDOW_Y} \
            \
            --and-widget \
            --title " ${logfile} " \
