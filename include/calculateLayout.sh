@@ -89,4 +89,7 @@ calculateLayout() {
     fi
     SIZE_Y_GAUGE=0
     #
+    LOG_TAIL_WINDOW_HEADER_X=5
+    LOG_TAIL_WINDOW_Y=$((${currentTPutCols} - 4))
+    LOG_TAIL_WINDOW_X=$((${currentTPutLines} - 7))
 }

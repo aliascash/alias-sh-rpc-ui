@@ -92,8 +92,8 @@ convertCoins() {
         --colors \
         --title "${_convertDialogTitle}" \
         --form "${_headline}" 12 65 0 \
-        "${TEXT_AMOUNT_TO_CONVERT}:" 2 1 "${_amount}" 2 22 20 0 \
-        "${TEXT_SEND_NARRATION}:" 4 1 "${_narration}" 4 22 24 0 \
+        "${TEXT_AMOUNT_TO_CONVERT}:" 2 2 "${_amount}" 2 29 24 0 \
+        "${TEXT_SEND_NARRATION}:" 4 2 "${_narration}" 4 29 24 0 \
         " " 5 1 "" 5 0 0 0\
         2>&1 1>&3)
     exit_status=$?
