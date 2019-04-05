@@ -125,8 +125,3 @@ updateBinaries() {
     esac
 #    refreshMainMenu_DATA
 }
-
-. ./include/constants.sh
-. ./include/helpers_console.sh
-. ./include/ui_content_de.sh
-updateBinaries
