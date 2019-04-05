@@ -123,5 +123,5 @@ updateBinaries() {
             performUpdate
             ;;
     esac
-#    refreshMainMenu_DATA
+    refreshMainMenu_DATA
 }
