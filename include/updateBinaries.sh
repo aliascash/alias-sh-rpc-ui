@@ -57,6 +57,8 @@ chooseVersionToInstall() {
     # - From the 2nd field only the first 10 chars where used
     # - 3rd field is just a dummy to fill the 3rd argument for each
     #   parameter tripple of the dialog radiolist
+    # - "v*" is searched to break the for loop at this point, as here
+    #   the old, unsupported Spectrecoin versions begin.
     dialog \
         --backtitle "${TITLE_BACK}" \
         --colors \
@@ -67,6 +69,7 @@ chooseVersionToInstall() {
                             grep -e tag_name -e published_at -e tarball_url |
                             cut -d: -f2 |
                             cut -d '"' -f2) ; do
+                if [[ ${i} == v* ]] ; then break ; fi
                 echo "${i:0:10}" ;
             done ) 2>${choosenVersionFile}
     if [[ $? = ${DIALOG_OK} ]] ; then
