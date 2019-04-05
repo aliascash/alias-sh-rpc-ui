@@ -43,6 +43,7 @@ TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Please choose "
 TITLE_UPDATE_BINARIES=" Update Spectrecoin "
 TITLE_LANGUAGE_SELECTION=" Current language: italian "
+TITLE_AVAILABLE_VERSIONS=" Available versions "
 #
 BUTTON_LABEL_ENCRYPT="Encrypt"
 BUTTON_LABEL_RESTART_DAEMON="Restart daemon"
@@ -69,6 +70,8 @@ BUTTON_LABEL_ANON_TO_PUBLIC="SPECTRE to XSPEC"
 BUTTON_LABEL_CLOSE="Close window"
 BUTTON_LABEL_RETURN="Return"
 BUTTON_LABEL_EXIT="Exit"
+BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE="Latest release"
+BUTTON_LABEL_UPDATE_CHOOSE_VERSION="Choose version"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Lock"
@@ -252,6 +255,7 @@ TEXT_AMOUNT_TO_CONVERT="Amount to convert"
 #
 TEXT_QUESTION_DO_UPDATE="Update Spectrecoin binaries?\nSpectrecoin daemon will be stopped!\n"
 TEXT_UPDATE_CANCELED="Update canceled"
+TEXT_UPDATE_CHOOSE_VERSION_HINT="Please select desired version with space:"
 #
 TEXT_CHOOSE_LANGUAGE="Choose a language"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Language switch canceled"
