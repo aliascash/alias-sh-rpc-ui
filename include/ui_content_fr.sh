@@ -43,6 +43,7 @@ TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Veuillez choisir "
 TITLE_UPDATE_BINARIES=" Mettre à jour Spectrecoin "
 TITLE_LANGUAGE_SELECTION=" Langue actuelle: Français/French "
+TITLE_AVAILABLE_VERSIONS=" Available versions "
 #
 BUTTON_LABEL_ENCRYPT="Crypter"
 BUTTON_LABEL_RESTART_DAEMON="Redémarrer le démon"
@@ -69,6 +70,8 @@ BUTTON_LABEL_ANON_TO_PUBLIC="SPECTRE vers XSPEC"
 BUTTON_LABEL_CLOSE="Close window"
 BUTTON_LABEL_RETURN="Return"
 BUTTON_LABEL_EXIT="Exit"
+BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE="Latest release"
+BUTTON_LABEL_UPDATE_CHOOSE_VERSION="Choose version"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Verrouiller"
@@ -252,6 +255,7 @@ TEXT_AMOUNT_TO_CONVERT="Montant à convertir"
 #
 TEXT_QUESTION_DO_UPDATE="Mettre à jour les binaires Spectrecoin?\nLe démon Spectrecoin sera arrêté!\n"
 TEXT_UPDATE_CANCELED="Mise à jour annulée"
+TEXT_UPDATE_CHOOSE_VERSION_HINT="Please select desired version with space:"
 #
 TEXT_CHOOSE_LANGUAGE="Choisir une langue"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Changement de langue annulé"
