@@ -7,18 +7,91 @@
 #
 # ============================================================================
 
+choosenVersionFile=/tmp/choosenVersion-$$.txt
 
+# ============================================================================
+# Goal: Just a simple info box to show the update was canceled
+updateCanceled(){
+    dialog \
+        --backtitle "${TITLE_BACK}" \
+        --no-shadow \
+        --title "${TITLE_UPDATE_BINARIES}" \
+        --msgbox "\n${TEXT_UPDATE_CANCELED}" 9 40
+}
+
+# ============================================================================
+# Goal: Update Spectrecoin binaries
+# - Clear the screen
+# - Stop Spectrecoin daemon using sudo
+# - Download the main installation script using curl and excute it
+performUpdate(){
+    reset
+    info "Stopping spectrecoind"
+    sudo systemctl stop spectrecoind
+    echo ''
+    if [[ -n "${choosenVersion}" ]] ; then
+        info "Updating to version ${choosenVersion}"
+    fi
+    info "Downloading and starting update script"
+    curl -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s "${choosenVersion}"
+    info "Update finished, press return to restart spectrecoind"
+    read a
+}
+
+# ============================================================================
+# Goal: Update Spectrecoin binaries
+# - Determine list of available versions
+# - Open dialog window with radio list of these versions
+# - Loop here if nothing was selected
+# - Put selected version into ${choosenVersion}
+# - Start update
 chooseVersionToInstall() {
+    rm -f ${choosenVersionFile}
+    # Exactly three parameters are required per entry on the dialog radiolist.
+    # Result of curl-grep-cut-cut are three lines per release like this example:
+    #
+    # Build144
+    # 2019-03-31T15
+    # https
+    #
+    # - From the 2nd field only the first 10 chars where used
+    # - 3rd field is just a dummy to fill the 3rd argument for each
+    #   parameter tripple of the dialog radiolist
     dialog \
         --backtitle "${TITLE_BACK}" \
         --colors \
         --no-shadow \
-        --title title \
-        --radiolist Text 23 50 10 $(for i in $(curl -L -s https://api.github.com/repos/spectrecoin/spectre/releases | grep -e tag_name -e published_at -e tarball_url | cut -d: -f2 | cut -d '"' -f2) ; do echo "${i:0:10}" ; done ) 2>/tmp/choice.txt
+        --title "${TITLE_AVAILABLE_VERSIONS}" \
+        --radiolist "\n${TEXT_UPDATE_CHOOSE_VERSION_HINT}" 17 50 10 \
+            $(for i in $(curl -L -s https://api.github.com/repos/spectrecoin/spectre/releases |
+                            grep -e tag_name -e published_at -e tarball_url |
+                            cut -d: -f2 |
+                            cut -d '"' -f2) ; do
+                echo "${i:0:10}" ;
+            done ) 2>${choosenVersionFile}
+    if [[ $? = ${DIALOG_OK} ]] ; then
+        if [[ -f ${choosenVersionFile} ]] ; then
+            choosenVersion=$(cat ${choosenVersionFile})
+            rm -f ${choosenVersionFile}
+            if [[ -z "${choosenVersion}" ]] ; then
+                chooseVersionToInstall
+            else
+                performUpdate
+            fi
+        else
+            chooseVersionToInstall
+        fi
+    else
+        updateCanceled
+    fi
 }
 
 # ============================================================================
-# Goal:
+# Goal: Main update dialog
+# - Ask how to update:
+# -- Update to latest release
+# -- Or choose version to install
+# - Start update
 updateBinaries() {
     dialog \
         --backtitle "${TITLE_BACK}" \
@@ -29,7 +102,7 @@ updateBinaries() {
         --cancel-label "${BUTTON_LABEL_UPDATE_CHOOSE_VERSION}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
-        --yesno "${TEXT_QUESTION_DO_UPDATE}" 9 40
+        --yesno "\n${TEXT_QUESTION_DO_UPDATE}" 8 64
 
     # Get exit status
     # 0 means user hit [yes] button.
@@ -38,24 +111,19 @@ updateBinaries() {
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_EXTRA})
-            dialog \
-                --backtitle "${TITLE_BACK}" \
-                --title "${TITLE_UPDATE_BINARIES}" \
-                --msgbox "\n${TEXT_UPDATE_CANCELED}" 9 40
+            updateCanceled
             ;;
         ${DIALOG_CANCEL})
             chooseVersionToInstall
             ;;
         ${DIALOG_OK})
-            reset
-            info "Stopping spectrecoind"
-            sudo systemctl stop spectrecoind
-            echo ''
-            info "Downloading and starting update script"
-            curl -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s
-            info "Update finished, press return to restart spectrecoind"
-            read a
+            performUpdate
             ;;
     esac
-    refreshMainMenu_DATA
+#    refreshMainMenu_DATA
 }
+
+. ./include/constants.sh
+. ./include/helpers_console.sh
+. ./include/ui_content_de.sh
+updateBinaries
