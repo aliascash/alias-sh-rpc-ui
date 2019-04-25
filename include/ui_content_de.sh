@@ -19,10 +19,10 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK=" Spectrecoin Bash Interface (${info_global[${WALLET_VERSION}]%% *}, UI: ${VERSION}) "
+TITLE_BACK=" Spectrecoin Bash Interface "
+TITLE_MENU=" ${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI: v${VERSION}) "
 TITLE_TRANS=" Letzte Transaktionen "
 TITLE_INFO=""
-TITLE_MENU=" ${TITLE_BACK} "
 TITLE_GAUGE=" Bitte warten "
 TITLE_ERROR=" Fehler "
 TITLE_SUCCESS=" Erfolgreich "

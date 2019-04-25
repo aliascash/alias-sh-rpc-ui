@@ -1,18 +1,18 @@
 #!/bin/bash
 # ============================================================================
-# 
+#
 # Este es un componente del shell rpc ui de Spectrecoin
-# 
+#
 # Autor: 2018 HLXEasy
-# 
-# En Español (Versión=0.1) por Leo Bitman 
+#
+# En Español (Versión=0.1) por Leo Bitman
 #
 # ============================================================================
- 
+
 # ============================================================================
 # Establecer variables globales para la salida de texto (para el menú principal).
 #
-# Interpretar secuencias incrustadas en el texto del diálogo mediante el siguiente carácter: "\Z" 
+# Interpretar secuencias incrustadas en el texto del diálogo mediante el siguiente carácter: "\Z"
 # que le dice al diálogo que establezca los colores o atributos de video: 0 a 7 son los ANSI
 # utilizado en la secuencia: negro, rojo, verde, amarillo, azul, magenta, cian y blanco respectivamente.
 # Bold se establece con 'b', se restablece con 'B'.
@@ -21,10 +21,10 @@
 # Los ajustes son acumulativos,
 # por ejemplo, "\Zb\Z1" hace que el siguiente texto aparezca en negrita (quizás brillante) en rojo.
 # Se restaura la configuración normal con "\Zn".
-TITLE_BACK=" Interfaz del Monedero Spectrecoin Bash (${info_global[${WALLET_VERSION}]%% *}, UI: ${VERSION}) "
-TITLE_TRANS=" TRANSACCIONES RECIENTES " 
+TITLE_BACK=" Interfaz del Monedero Spectrecoin Bash "
+TITLE_MENU=" ${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI: v${VERSION}) "
+TITLE_TRANS=" TRANSACCIONES RECIENTES "
 TITLE_INFO=""
-TITLE_MENU=" ${TITLE_BACK} "
 TITLE_GAUGE=" Por favor espere "
 TITLE_ERROR=" ERROR "
 TITLE_SUCCESS=" Éxito "
@@ -96,7 +96,7 @@ CMD_MAIN_ADVANCED_MENU="Avanzado"
 EXPL_CMD_MAIN_ADVANCEDMENU="Opciones avanzadas."
 CMD_MAIN_QUIT="Salir"
 EXPL_CMD_MAIN_EXIT="Salir de esta interfaz."
-# 
+#
 # Menú Avanzado
 CMD_USER_COMMAND="Comando"
 EXPL_CMD_USER_COMMAND="Enviando comandos al demonio."
@@ -159,7 +159,7 @@ TEXT_DAEMON_IP="IP"
 TEXT_DAEMON_PEERS="Pares"
 TEXT_DAEMON_DOWNLOADED_DATA="Descargar"
 TEXT_DAEMON_UPLOADED_DATA="Subir"
-#  
+#
 TEXT_HEADLINE_STAKING_INFO="Info de replanteo"
 TEXT_STAKING_STATE="Staking"
 TEXT_STAKING_ON="\Z4ON\Zn"
@@ -169,7 +169,7 @@ TEXT_MATURING_COINS="envejecimiento"
 TEXT_EXP_TIME="Tiempo esperado"
 TEXT_STAKING_AVAILABLE="Disponible"
 TEXT_STAKING_STAKED="Staked"
-# 
+#
 TEXT_STAKE="\Z4STAKE\Zn"
 TEXT_IMMATURE="\Z5INMADURA\Zn"
 TEXT_RECEIVED="\Z2RECIBIDO\Zn"
@@ -180,7 +180,7 @@ TEXT_ADDRESS="Dirección"
 TEXT_TXID="TxID"
 TEXT_NARRATION="Narración"
 TEXT_FEE="Tarifa"
-# 
+#
 TEXT_CLIPBOARD_HINT="En Linux: Use \Z6[CTRL]\Zn + \Z6[SHIFT]\Zn + \Z6[V]\Zn para pegar desde el portapapeles."
 TEXT_SEND_DESTINATION_ADDRESS_EXPL="Dirección de destino"
 TEXT_SEND_DESTINATION_ADDRESS="Dirección"
@@ -188,7 +188,7 @@ TEXT_SEND_AMOUNT_EXPL="Cantidad de"
 TEXT_SEND_AMOUNT="Cantidad"
 TEXT_SEND_EXPL="Ingrese la dirección de destino."
 TEXT_SEND_NARRATION="Narración"
-# 
+#
 TEXT_PW_EXPL="Ingresar la contraseña del monedero"
 TEXT_CURRENT_PW_EXPL="Ingresar la contraseña actual del monedero"
 TEXT_NEW_PW1_EXPL="Ingresar la nueva contraseña del monedero"
@@ -198,13 +198,13 @@ TEXT_NO_NEW_PASS_GIVEN="No se ha proporcionado una nueva contraseña"
 TEXT_NEW_PASS_NOT_EQUAL="Las contraseñas nuevas no coinciden"
 TEXT_PASS_CHANGE_SUCCESSFUL="Cambio de frase de contraseña ejecutado correctamente"
 TEXT_WALLET_ENCRYPTION_SUCCESSFUL="Monedero encriptado correctamente. Reiniciando el demonio ..."
-# 
+#
 TEXT_USERCOMMAND_EXPL="Aquí puede ingresar comandos que se enviarán al demonio."
 TEXT_USERCOMMAND_CMD_EXPL="escriba help para info"
 TEXT_USERCOMMAND_CMD="Comando"
 TEXT_USERCOMMAND_PARAMS_EXPL="separados por espacios"
 TEXT_USERCOMMAND_PARAMS="Parámetro"
-# 
+#
 TEXT_GAUGE_ALLDONE="Todo listo."
 TEXT_GAUGE_DEFAULT="Obteniendo datos del demonio..."
 TEXT_GAUGE_GET_INFO="Obteniendo datos de info general del demonio..."
@@ -213,26 +213,26 @@ TEXT_GAUGE_GET_STAKING_DATA="Obteniendo datos de staking del demonio..."
 TEXT_GAUGE_PROCESS_STAKING_DATA="Procesando datos de staking..."
 TEXT_GAUGE_GET_TRANS="Obteniendo datos de transacciones del demonio..."
 TEXT_GAUGE_PROCESS_TRANS="Procesando datos de transacciones..."
-# 
+#
 TEXT_GOODBYE_WARNING="\Z1Si planea apagar el sistema, ¡el demonio debe detenerse antes para evitar inconsistencias en la base de datos!\Zn\n\n¿Desea detener el demonio (no más staking) o sólo salir de la IU?\Zn"
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="El demonio todavía se está ejecutando."
 TEXT_GOODBYE_DAEMON_STOPPED="Demonio detenido."
 TEXT_GOODBYE_FEEDBACK="Cualquier comentario apreciado, por favor déjanos saber. ¡Gracias!"
 TEXT_GOODBYE_DAEMON_NOT_SYNCED="El demonio spectrecoin todavía no está completamente sincronizado.\n\nVuelva y muestre la salida del registro o salga a cmdline?"
-# 
+#
 TEXT_LOGFILE_HEADER="El demonio está sincronizado si ve \Z1'height = '\Zn seguido de la altura actual de la cadena en la salida del registro a continuación. Tenga paciencia, esto tomará un tiempo! Desplácese hacia la izquierda/derecha con las teclas del cursor."
-# 
+#
 TEXT_FEEDBACK_WALLET_LOCKED="El monedero se ha bloqueado exitosamente.\n\n\Z5Ya no podrá stake más.\Zn\n\nUtilice \Z4${CMD_MAIN_UNLOCK_WALLET}\Zn en el menú principal para desbloquear la billetera y staking de nuevo."
 TEXT_FEEDBACK_WALLET_UNLOCKED="Monedero desbloqueado exitosamente."
 TEXT_SUGGESTION_STAKING="El demonio tardará un poco en actualizar el estado de staking, luego de que el monedero se desbloquee/bloquee.\nUtilice el comando \Z4${CMD_MAIN_REFRESH}\Zn en el menú principal para actualizar la pantalla."
 TEXT_FEEDBACK_RECEIVE="Presione regresar para continuar con el menú principal."
 TEXT_DEFAULT_ADDRESS="Dirección XSPEC predeterminada"
 TEXT_DEFAULT_STEALTH_ADDRESS="Dirección SPECTRE predeterminada"
-# 
+#
 TEXT_SEND_UNLOCK_WALLET_AGAIN="Aviso\nPor favor, tenga en cuenta:\nTiene que 'desbloquear' el monedero para volver a staking.\n"
 TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE="\nAumente el tamaño del terminal al menos"
 TEXT_PLACEHOLDER_FUNCTION="\nUnder construction...\n\nSry ahora mismo, este es un marcador de posición."
-# 
+#
 TEXT_ESTIMATIONS="Estimaciones"
 TEXT_ONE_MONTH="un mes"
 TEXT_HALF_YEAR="medio año"
@@ -250,15 +250,15 @@ TEXT_STAKING_ANALYSIS_REWARD_PER_YEAR="- Tasa de recompensa de staking por año"
 TEXT_STAKING_ANALYSIS_COINS_IN_ONE_MONTH="- Total de monedas en un mes"
 TEXT_STAKING_ANALYSIS_STAKED_COINS_IN="- Monedas Staked en"
 TEXT_STAKING_ANALYSIS_TOTAL_COINS_IN="- Total de monedas en"
-# 
+#
 TEXT_COIN_TYPE_TO_SEND_QUESTION="\n¿Qué tipo de moneda desea enviar?"
 TEXT_CONVERSION_QUESTION="\n¿En qué dirección quieres convertir?"
 TEXT_AMOUNT_TO_CONVERT="Cantidad a convertir"
-# 
+#
 TEXT_QUESTION_DO_UPDATE="¿Actualizar binarios de Spectrecoin?\nSe detendrá el demonio de Spectrecoin!\n"
 TEXT_UPDATE_CANCELED="Actualización cancelada"
 TEXT_UPDATE_CHOOSE_VERSION_HINT="Seleccione la versión deseada con espacio:"
-# 
+#
 TEXT_CHOOSE_LANGUAGE="Elegir un idioma"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Cambio de idioma cancelado"
 #
