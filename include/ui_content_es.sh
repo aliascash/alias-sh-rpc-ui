@@ -22,7 +22,6 @@
 # por ejemplo, "\Zb\Z1" hace que el siguiente texto aparezca en negrita (quizás brillante) en rojo.
 # Se restaura la configuración normal con "\Zn".
 TITLE_BACK=" Interfaz del Monedero Spectrecoin Bash "
-TITLE_MENU=" ${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI: v${VERSION}) "
 TITLE_TRANS=" TRANSACCIONES RECIENTES "
 TITLE_INFO=""
 TITLE_GAUGE=" Por favor espere "

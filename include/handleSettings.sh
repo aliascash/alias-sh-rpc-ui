@@ -20,12 +20,14 @@ handleSettings() {
             if [[ -e "include/ui_content_${UI_LANGUAGE}.sh" ]] ; then
                 # Language file existing
                 . "include/ui_content_${UI_LANGUAGE}.sh"
+                TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
                 return
             fi
         fi
     fi
     # Use default
     . include/ui_content_en.sh
+    TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
 }
 
 updateSettings() {
