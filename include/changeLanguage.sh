@@ -34,7 +34,7 @@ changeLanguage() {
     #read -rsp "Press any key to continue..." -n1 key
 
     exec 3>&1
-    CHOICE=$(dialog --backtitle "TITLE_BACK" \
+    CHOICE=$(dialog --backtitle "${TITLE_BACK}" \
                     --colors \
                     --no-shadow \
                     --title "${TITLE_LANGUAGE_SELECTION}" \
