@@ -34,7 +34,7 @@ changeLanguage() {
     #read -rsp "Press any key to continue..." -n1 key
 
     exec 3>&1
-    CHOICE=$(dialog --backtitle "TITLE_BACK" \
+    CHOICE=$(dialog --backtitle "${TITLE_BACK}" \
                     --colors \
                     --no-shadow \
                     --title "${TITLE_LANGUAGE_SELECTION}" \
@@ -50,8 +50,9 @@ changeLanguage() {
     # 255 means user hit [Esc] key.
     case ${exit_status} in
         0)
-            entryPositionInList=$(echo "${CHOICE}*2" | bc -l)
-            UI_LANGUAGE=${languageArray[${entryPositionInList}]}
+#            entryPositionInList=$(echo "${CHOICE}*2" | bc -l)
+#            UI_LANGUAGE=${languageArray[${entryPositionInList}]}
+            UI_LANGUAGE=${CHOICE}
             updateSettings
             . include/ui_content_${UI_LANGUAGE}.sh
             ;;
