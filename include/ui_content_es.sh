@@ -21,7 +21,7 @@
 # Los ajustes son acumulativos,
 # por ejemplo, "\Zb\Z1" hace que el siguiente texto aparezca en negrita (quizás brillante) en rojo.
 # Se restaura la configuración normal con "\Zn".
-TITLE_BACK=" Interfaz del Monedero Spectrecoin Bash RPC (${VERSION}) "
+TITLE_BACK=" Interfaz del Monedero Spectrecoin Bash (${info_global[${WALLET_VERSION}]%% *}, UI: ${VERSION}) "
 TITLE_TRANS=" TRANSACCIONES RECIENTES " 
 TITLE_INFO=""
 TITLE_MENU=" ${TITLE_BACK} "
@@ -152,7 +152,7 @@ TEXT_WALLET_IS_UNLOCKED="\Z4desbloqueado\Zn"
 TEXT_WALLET_IS_LOCKED="\Z1bloqueado\Zn"
 #
 TEXT_HEADLINE_CLIENT_INFO="Info del cliente"
-TEXT_DAEMON_VERSION="Demonio"
+TEXT_DAEMON_VERSION="Version"
 TEXT_DAEMON_ERRORS_DURING_RUNTIME="Errores"
 TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME="ninguno"
 TEXT_DAEMON_IP="IP"

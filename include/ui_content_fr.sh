@@ -19,7 +19,7 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK=" Interface Portefeuille Spectrecoin Bash RPC (${VERSION}) "
+TITLE_BACK=" Interface Portefeuille Spectrecoin Bash (${info_global[${WALLET_VERSION}]%% *}, UI: ${VERSION}) "
 TITLE_TRANS=" TRANSACTIONS RECENTES "
 TITLE_INFO=""
 TITLE_MENU=" ${TITLE_BACK} "
@@ -150,7 +150,7 @@ TEXT_WALLET_IS_UNLOCKED="\Z4déverrouillé\Zn"
 TEXT_WALLET_IS_LOCKED="\Z1vérrouillé\Zn"
 #
 TEXT_HEADLINE_CLIENT_INFO="Client info"
-TEXT_DAEMON_VERSION="Démon"
+TEXT_DAEMON_VERSION="Version"
 TEXT_DAEMON_ERRORS_DURING_RUNTIME="Erreurs"
 TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME="aucune"
 TEXT_DAEMON_IP="IP"
