@@ -37,9 +37,6 @@ else
     VERSION='unknown'
 fi
 
-# At first handle settings
-. include/handleSettings.sh
-
 # Include used functions
 . include/calculateLayout.sh
 . include/changeLanguage.sh
@@ -50,6 +47,7 @@ fi
 . include/getInfo.sh
 . include/getStakingPrediction.sh
 . include/getTransactions.sh
+. include/handleSettings.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
 . include/sendCoins.sh
@@ -724,6 +722,10 @@ refreshMainMenu_DATA() {
     drawGauge "48" \
             "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
+
+    # At this point, after getInfo() call, the wallet version is known
+    handleSettings
+
     if [[ ${SIZE_X_TRANS} -gt 0 ]] ; then
         drawGauge "66" \
                 "${TEXT_GAUGE_GET_TRANS}"
@@ -800,6 +802,8 @@ done
 checkRequirement dialog
 checkRequirement bc
 checkRequirement curl
+
+handleSettings
 
 export NCURSES_NO_UTF8_ACS=1
 printf '\033[8;29;134t'

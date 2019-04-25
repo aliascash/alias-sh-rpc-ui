@@ -33,5 +33,3 @@ updateSettings() {
 UI_LANGUAGE=${UI_LANGUAGE}
 EOF
 }
-
-handleSettings
