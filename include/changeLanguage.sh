@@ -50,8 +50,9 @@ changeLanguage() {
     # 255 means user hit [Esc] key.
     case ${exit_status} in
         0)
-            entryPositionInList=$(echo "${CHOICE}*2" | bc -l)
-            UI_LANGUAGE=${languageArray[${entryPositionInList}]}
+#            entryPositionInList=$(echo "${CHOICE}*2" | bc -l)
+#            UI_LANGUAGE=${languageArray[${entryPositionInList}]}
+            UI_LANGUAGE=${CHOICE}
             updateSettings
             . include/ui_content_${UI_LANGUAGE}.sh
             ;;
