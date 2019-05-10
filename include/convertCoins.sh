@@ -49,15 +49,16 @@ convertCoins() {
     local _conversionCmd=''
     local _ringSizeParam=''
 
+    executeCURL "liststealthaddresses"
+    curl_result_global=${curl_result_global//','/'\n'}
+    curl_result_global=${curl_result_global//'['/''}
+    _destinationAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
+
     getConversionDestination
     case $? in
         ${CONVERT_NOTHING})
             refreshMainMenu_GUI;;
         ${CONVERT_PUBLIC_TO_ANON})
-            executeCURL "liststealthaddresses"
-            curl_result_global=${curl_result_global//','/'\n'}
-            curl_result_global=${curl_result_global//'['/''}
-            _destinationAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY} > ${TEXT_CURRENCY_ANON}"
             _conversionCmd="sendspectoanon"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
@@ -67,10 +68,6 @@ convertCoins() {
             _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}"
             ;;
         ${CONVERT_ANON_TO_PUBLIC})
-            executeCURL "getaddressesbyaccount" "\"Default Address\""
-            curl_result_global=${curl_result_global//','/'\n'}
-            curl_result_global=${curl_result_global//'['/''}
-            _destinationAddress=${curl_result_global//']'/''}
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY_ANON} > ${TEXT_CURRENCY}"
             _conversionCmd="sendanontospec"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
@@ -132,7 +129,7 @@ convertCoins() {
                               "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
                     unlockWalletForStaking
                 fi
-                refreshMainMenu_GUI
+                refreshMainMenu_DATA
             else
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
                 convertCoins
