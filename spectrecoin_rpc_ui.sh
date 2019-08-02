@@ -56,6 +56,7 @@ fi
 . include/userCmdInput.sh
 . include/viewLog.sh
 . include/viewStakingPrediction.sh
+. include/viewSystemStats.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
 . include/walletEncryption.sh
@@ -457,14 +458,16 @@ advancedmenu() {
         --no-shadow \
         --menu "" 0 0 10 \
         \
-        "${_cmdWallet}" "${_explWalletStatus}" \
         "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
         "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
         "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+        "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+        "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+        "${_cmdWallet}" "${_explWalletStatus}" \
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
         "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
-        "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
         "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
         2>&1 1>&3)
     exit_status=$?
@@ -474,6 +477,10 @@ advancedmenu() {
             refreshMainMenu_DATA;;
     esac
     case ${_mainMenuPick} in
+        "${CMD_GET_SYSTEM_STATS}")
+            viewSystemStats
+            exit 100
+            advancedmenu;;
         "${CMD_GET_WALLET_INFO}")
             viewWalletInfo;;
         "${CMD_STAKING_ANALYSE}")
