@@ -708,35 +708,37 @@ refreshMainMenu_DATA() {
     unset transactions
     declare -A transactions
 
+    dialog --no-shadow \
+           --infobox "Loading..." 0 0
     # have to recalc layout since it might have changed
     # (needed for transactions amount to fetch)
     calculateLayout
-    drawGauge "0" \
-            "${TEXT_GAUGE_GET_STAKING_DATA}"
+#    drawGauge "0" \
+#            "${TEXT_GAUGE_GET_STAKING_DATA}"
     executeCURL "getstakinginfo"
-    drawGauge "15" \
-            "${TEXT_GAUGE_PROCESS_STAKING_DATA}"
+#    drawGauge "15" \
+#            "${TEXT_GAUGE_PROCESS_STAKING_DATA}"
     getStakingInfo
-    drawGauge "33" \
-            "${TEXT_GAUGE_GET_INFO}"
+#    drawGauge "33" \
+#            "${TEXT_GAUGE_GET_INFO}"
     executeCURL "getinfo"
-    drawGauge "48" \
-            "${TEXT_GAUGE_PROCESS_INFO}"
+#    drawGauge "48" \
+#            "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
 
     # At this point, after getInfo() call, the wallet version is known
     handleSettings
 
     if [[ ${SIZE_X_TRANS} -gt 0 ]] ; then
-        drawGauge "66" \
-                "${TEXT_GAUGE_GET_TRANS}"
+#        drawGauge "66" \
+#                "${TEXT_GAUGE_GET_TRANS}"
         executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
-        drawGauge "85" \
-                "${TEXT_GAUGE_PROCESS_TRANS}"
+#        drawGauge "85" \
+#                "${TEXT_GAUGE_PROCESS_TRANS}"
         getTransactions
     fi
-    drawGauge "100" \
-            "${TEXT_GAUGE_ALLDONE}"
+#    drawGauge "100" \
+#            "${TEXT_GAUGE_ALLDONE}"
     refreshMainMenu_GUI
 }
 
