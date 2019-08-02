@@ -448,7 +448,8 @@ advancedmenu() {
         _explWalletStatus="${EXPL_CMD_CHANGE_WALLET_PW}"
     fi
     exec 3>&1
-    local _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+    local _mainMenuPick
+    _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
         --colors \
         --title "${TITLE_ADV_MENU}" \
         --nocancel \
@@ -468,10 +469,10 @@ advancedmenu() {
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
-#    case ${exit_status} in
-#        ${DIALOG_ESC})
-#            refreshMainMenu_DATA;;
-#    esac
+    case ${exit_status} in
+        ${DIALOG_ESC})
+            refreshMainMenu_DATA;;
+    esac
     case ${_mainMenuPick} in
         "${CMD_GET_WALLET_INFO}")
             viewWalletInfo;;
@@ -666,13 +667,13 @@ refreshMainMenu_GUI() {
             exit_status=$?
     fi
     exec 3>&-
-#    case ${exit_status} in
-#        "${DIALOG_ESC}")
-#            goodbye;;
-#        "${DIALOG_ERROR}")
-#            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
-#                           1;;
-#    esac
+    case ${exit_status} in
+        "${DIALOG_ESC}")
+            goodbye;;
+        "${DIALOG_ERROR}")
+            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
+                           1;;
+    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
