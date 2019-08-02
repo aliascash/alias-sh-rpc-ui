@@ -13,7 +13,7 @@ viewLog() {
     dialog --backtitle "${TITLE_BACK}" \
            --no-shadow \
            --colors \
-           --begin 2 2 \
+           --begin 2 0 \
            --no-lines \
            --infobox "${TEXT_LOGFILE_HEADER}" ${LOG_TAIL_WINDOW_HEADER_X} ${LOG_TAIL_WINDOW_Y} \
            \
@@ -21,7 +21,7 @@ viewLog() {
            --title " ${logfile} " \
            --no-shadow \
            --colors \
-           --begin 6 2 \
+           --begin $((${LOG_TAIL_WINDOW_HEADER_X}+1)) 0 \
            --ok-label "${BUTTON_LABEL_CLOSE}" \
            --tailbox "${logfile}" \
            ${LOG_TAIL_WINDOW_X} ${LOG_TAIL_WINDOW_Y}
