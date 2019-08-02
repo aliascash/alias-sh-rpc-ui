@@ -812,19 +812,19 @@ if [[ $(tput lines) -lt 28 ]] || [[ $(tput cols) -lt 74 ]]; then
     simpleMsg "${TITLE_SUGGESTION}" \
               "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
               "${BUTTON_LABEL_CONTINUE}"
+else
+    message="\n"
+    message+="$(sh ./include/logo.sh | base64 -d)"
+    message+="\n"
+    message+="${TEXT_USE_AT_YOUR_OWN_RISC}"
+    #message+="    Terminal: $(tput longname)\n"
+    #message+="    Dialog $(dialog --version)\n"
+    #message+="      Interface version: ${VERSION}\n"
+
+    simpleMsg "- --- === WARNING === --- -" \
+              "${message}" \
+              "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
 fi
-message="\n"
-message+="$(sh ./include/logo.sh | base64 -d)"
-message+="\n"
-message+="${TEXT_USE_AT_YOUR_OWN_RISC}"
-#message+="    Terminal: $(tput longname)\n"
-#message+="    Dialog $(dialog --version)\n"
-#message+="      Interface version: ${VERSION}\n"
-
-simpleMsg "- --- === WARNING === --- -" \
-          "${message}" \
-          "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
-
 #trap refreshMainMenu_DATA INT
 #while :; do
     refreshMainMenu_DATA
