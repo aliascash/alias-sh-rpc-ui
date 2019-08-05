@@ -10,7 +10,6 @@
 # String     -  "string"
 # Boolean    -  <ON|OFF>
 # Attribute  -  (foreground,background,highlight?)
-# COLOURS    -  CYAN,GREEN,BLACK,WHITE,BLUE, YELLOW, RED
 
 # Set aspect-ration.
 aspect = 9
@@ -46,13 +45,13 @@ title_color = (BLUE,WHITE,ON)
 border_color = (WHITE,WHITE,ON)
 
 # Active button color
-button_active_color = (GREEN,BLACK,ON)
+button_active_color = (WHITE,BLUE,ON)
 
 # Inactive button color
 button_inactive_color = dialog_color
 
 # Active button key color
-button_key_active_color = (BLUE,WHITE,ON)
+button_key_active_color = button_active_color
 
 # Inactive button key color
 button_key_inactive_color = (RED,WHITE,OFF)
@@ -124,7 +123,7 @@ itemhelp_color = (WHITE,BLACK,OFF)
 form_active_text_color = button_active_color
 
 # Form text color
-form_text_color = (GREEN,BLACK,ON)
+form_text_color = (WHITE,CYAN,ON)
 
 # Readonly form item color
 form_item_readonly_color = (CYAN,WHITE,ON)
