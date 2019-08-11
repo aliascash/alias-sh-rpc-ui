@@ -801,6 +801,14 @@ checkRequirement() {
     fi
 }
 
+checkDialogRCConfig() {
+    if [[ ! -e ~/.dialogrc ]] ; then
+        info "~/.dialogrc not found, installing it"
+        cp sample_config_daemon/dialogrc ~/.dialogrc
+        chmod 644 ~/.dialogrc
+    fi
+}
+
 while getopts c:h? option; do
     case ${option} in
         c) configfileLocation="${OPTARG}";;
@@ -812,6 +820,7 @@ done
 checkRequirement dialog
 checkRequirement bc
 checkRequirement curl
+checkDialogRCConfig
 
 handleSettings
 
