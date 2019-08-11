@@ -28,7 +28,11 @@ viewSystemStats() {
     local _swap=$(grep "SwapTotal" /proc/meminfo \
                             | tr -s ' ' \
                             | cut -d' '  -f 2)
-    local _pi_version=$(cat /sys/firmware/devicetree/base/model)
+    #local _pi_version=$(cat /sys/firmware/devicetree/base/model)
+    local _pi_version=""
+    while IFS= read -r -d '' substring || [[ $substring ]]; do
+       _pi_version+="$substring"
+    done </sys/firmware/devicetree/base/model
     local _cpu_max_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq)
     local _cpu_max_freq="$(echo ${_cpu_max_freq} | sed 's/\(.\{1\}\)\(.\{1\}\)\(.*\)/\1.\2/')GHz"
     local _cpu_threshold_freq=$(cat /sys/devices/system/cpu/cpufreq/ondemand/up_threshold)
@@ -50,7 +54,7 @@ viewSystemStats() {
           fi
     local _exit_status
     dialog \
-        --backtitle "${TITLE_BACK}" \
+        --backtitle "${TITLE_MENU}" \
         --colors \
         --no-shadow \
         --title "${TITLE_SYSTEM_STATS}" \
