@@ -10,8 +10,17 @@
 configfileLocation=~/.spectrecoin/spectrecoin.conf
 defaultPassword=supersupersuperlongpassword
 
-writeConfiguration(){
+generatePassword(){
     randomRPCPassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 44 | head -n 1)
+}
+
+updateConfiguration(){
+    generatePassword
+    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" -i ${configfileLocation}
+}
+
+createConfiguration(){
+    generatePassword
     sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/spectrecoin.conf > ${configfileLocation}
 }
 
@@ -36,10 +45,12 @@ initDaemonConfiguration(){
             if grep -q "^rpcpassword=${defaultPassword}" ${configfileLocation} ; then
                 echo ''
                 warning "============================================================="
-                warning "You are using the default rpc password! Consider changing it!"
+                warning "You are using the default rpc password!"
+                warning "It will be replaced with a random password now."
                 warning "============================================================="
                 info "Press return to continue"
                 read -s
+                updateConfiguration
             fi
         else
             echo ''
@@ -50,7 +61,7 @@ initDaemonConfiguration(){
         fi
     else
         # Daemon config not existing, create one
-        writeConfiguration
+        createConfiguration
     fi
 
     # Now load configuration

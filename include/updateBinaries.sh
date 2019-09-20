@@ -33,7 +33,7 @@ performUpdate(){
         info "Updating to version ${choosenVersion}"
     fi
     info "Downloading and starting update script"
-    curl -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s "${choosenVersion}"
+    curl ${cacertParam} -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s "${choosenVersion}"
     info "Update finished, press return to restart spectrecoind"
     read a
 }
@@ -65,7 +65,7 @@ chooseVersionToInstall() {
         --no-shadow \
         --title "${TITLE_AVAILABLE_VERSIONS}" \
         --radiolist "\n${TEXT_UPDATE_CHOOSE_VERSION_HINT}" 17 50 10 \
-            $(for i in $(curl -L -s https://api.github.com/repos/spectrecoin/spectre/releases |
+            $(for i in $(curl ${cacertParam} -L -s https://api.github.com/repos/spectrecoin/spectre/releases |
                             grep -e tag_name -e published_at -e tarball_url |
                             cut -d: -f2 |
                             cut -d '"' -f2) ; do
