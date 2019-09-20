@@ -33,7 +33,10 @@ performUpdate(){
         info "Updating to version ${choosenVersion}"
     fi
     info "Downloading and starting update script"
-    curl -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s "${choosenVersion}"
+    if [[ -e /etc/ssl/certs/ca-certificates.crt ]] ; then
+        cacertParam="--cacert /etc/ssl/certs/ca-certificates.crt"
+    fi
+    curl ${cacertParam} -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s "${choosenVersion}"
     info "Update finished, press return to restart spectrecoind"
     read a
 }
