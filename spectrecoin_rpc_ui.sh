@@ -114,7 +114,7 @@ executeCURL() {
 connectToDaemon() {
     local _action=$1
     local _parameters=$2
-    curl_result_global=$( curl \
+    curl_result_global=$( curl ${cacertParam} \
                           --user "${rpcuser}:${rpcpassword}" \
                           --silent \
                           --data-binary \
@@ -809,6 +809,15 @@ checkDialogRCConfig() {
     fi
 }
 
+# ============================================================================
+# Use ca-certificates if available
+setupCacertParam() {
+    if [[ -e /etc/ssl/certs/ca-certificates.crt ]] ; then
+        cacertParam="--cacert /etc/ssl/certs/ca-certificates.crt"
+    fi
+}
+
+
 while getopts c:h? option; do
     case ${option} in
         c) configfileLocation="${OPTARG}";;
@@ -817,12 +826,13 @@ while getopts c:h? option; do
     esac
 done
 
+cacertParam=''
 checkRequirement dialog
 checkRequirement bc
 checkRequirement curl
 checkDialogRCConfig
-
 handleSettings
+setupCacertParam
 
 #Putty fix
 #export NCURSES_NO_UTF8_ACS=1
