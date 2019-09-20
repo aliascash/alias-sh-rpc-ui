@@ -456,7 +456,7 @@ advancedmenu() {
         --nocancel \
         --ok-label "${BUTTON_LABEL_ENTER}" \
         --no-shadow \
-        --menu "" 0 0 10 \
+        --menu "" 0 0 12 \
         \
         "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
         "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
