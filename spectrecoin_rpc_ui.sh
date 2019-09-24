@@ -813,7 +813,7 @@ checkDialogRCConfig() {
 # Use ca-certificates if available
 setupCacertParam() {
     if [[ -e /etc/ssl/certs/ca-certificates.crt ]] ; then
-        cacertParam="--cacert /etc/ssl/certs/ca-certificates.crt"
+        cacertParam=--cacert /etc/ssl/certs/ca-certificates.crt
     fi
 }
 
