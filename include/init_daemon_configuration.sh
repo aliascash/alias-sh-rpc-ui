@@ -10,17 +10,25 @@
 configfileLocation=~/.spectrecoin/spectrecoin.conf
 defaultPassword=supersupersuperlongpassword
 
+stopSpectrecoind(){
+    info "Stop Spectrecoin daemon in case it is already running"
+    sudo systemctl stop spectrecoind
+    info "Done"
+}
+
 generatePassword(){
     randomRPCPassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 44 | head -n 1)
 }
 
 updateConfiguration(){
     generatePassword
+    stopSpectrecoind
     sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" -i ${configfileLocation}
 }
 
 createConfiguration(){
     generatePassword
+    stopSpectrecoind
     sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/spectrecoin.conf > ${configfileLocation}
 }
 
