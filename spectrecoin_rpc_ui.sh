@@ -114,7 +114,7 @@ executeCURL() {
 connectToDaemon() {
     local _action=$1
     local _parameters=$2
-    curl_result_global=$( curl ${cacertParam} \
+    curl_result_global=$( curl \
                           --user "${rpcuser}:${rpcpassword}" \
                           --silent \
                           --data-binary \
@@ -813,7 +813,7 @@ checkDialogRCConfig() {
 # Use ca-certificates if available
 setupCacertParam() {
     if [[ -e /etc/ssl/certs/ca-certificates.crt ]] ; then
-        cacertParam="--cacert /etc/ssl/certs/ca-certificates.crt"
+        cacertParam='--cacert /etc/ssl/certs/ca-certificates.crt'
     fi
 }
 
