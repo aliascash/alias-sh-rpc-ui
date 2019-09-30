@@ -114,7 +114,7 @@ executeCURL() {
 connectToDaemon() {
     local _action=$1
     local _parameters=$2
-    curl_result_global=$( curl ${cacertParam} \
+    curl_result_global=$( curl \
                           --user "${rpcuser}:${rpcpassword}" \
                           --silent \
                           --data-binary \
