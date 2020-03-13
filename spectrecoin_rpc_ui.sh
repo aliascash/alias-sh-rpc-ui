@@ -522,11 +522,11 @@ receiveCoins() {
     local _defaultStealthAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
 
     dialog --backtitle "${TITLE_BACK}" \
-               --colors \
-               --title "${TITLE_RECEIVE}" \
-               --no-shadow \
-               --infobox "${TEXT_FEEDBACK_RECEIVE}\n\n${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 0 0
-    read -s
+           --colors \
+           --title "${TITLE_RECEIVE}" \
+           --ok-label "${BUTTON_LABEL_OK}" \
+           --no-shadow \
+           --infobox "${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 12 "${SIZE_X_TRANS_VIEW}"
     refreshMainMenu_GUI
 }
 
