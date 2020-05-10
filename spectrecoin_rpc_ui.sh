@@ -452,30 +452,49 @@ advancedmenu() {
     exec 3>&1
     local _mainMenuPick
     if [[ "${developerMode}" = 1 ]] ; then
-        DEVELOPER_CMD="'${CMD_MAIN_MENU}' '${EXPL_CMD_MAIN_MENU}' '${CMD_DEVELOPER_COMMAND}' '${EXPL_CMD_DEVELOPER_COMMAND}'"
+        _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+            --colors \
+            --title "${TITLE_ADV_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" 0 0 12 \
+            \
+            "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
+            "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+            "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+            "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+            "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+            "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+            "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+            "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+            "${CMD_DEVELOPER_COMMAND}" "${EXPL_CMD_DEVELOPER_COMMAND}" \
+            2>&1 1>&3
+        )
     else
-        DEVELOPER_CMD="'${CMD_MAIN_MENU}' '${EXPL_CMD_MAIN_MENU}'"
+        _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+            --colors \
+            --title "${TITLE_ADV_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" 0 0 12 \
+            \
+            "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
+            "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+            "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+            "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+            "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+            "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+            "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+            "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+            2>&1 1>&3
+        )
     fi
-    _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
-        --colors \
-        --title "${TITLE_ADV_MENU}" \
-        --nocancel \
-        --ok-label "${BUTTON_LABEL_ENTER}" \
-        --no-shadow \
-        --menu "" 0 0 12 \
-        \
-        "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
-        "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
-        "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
-        "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
-        "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
-        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
-        "${_cmdWallet}" "${_explWalletStatus}" \
-        "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
-        "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
-        "${DEVELOPER_CMD}" \
-        2>&1 1>&3
-    )
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
