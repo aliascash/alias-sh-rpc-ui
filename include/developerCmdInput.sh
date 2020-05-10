@@ -103,16 +103,11 @@ developerCommandInput() {
             done
             idx=1
             while [[ ${idx} -le ${EXECUTION_AMOUNT} ]] ; do
-                idx=$((idx+1))
-                gauge=$(echo "${idx}*100/${EXECUTION_AMOUNT}" | bc)
-                drawGauge "${gauge}" \
-                          "${TEXT_GAUGE_DEFAULT}"
                 executeCURL "${USER_DAEMON_COMMAND}" \
-                            "${USER_DAEMON_PARAMS}"
+                            "${USER_DAEMON_PARAMS} #${idx}"
                 echo "${curl_result_global}" >> /tmp/${EXECUTION_TIMESTAMP}-cmd-result.txt
+                idx=$((idx+1))
             done
-            drawGauge "100" \
-                      "${TEXT_GAUGE_ALLDONE}"
             curlUserFeedbackHandling
             developerCommandInput;;
     esac
