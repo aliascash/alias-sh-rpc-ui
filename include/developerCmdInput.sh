@@ -48,9 +48,9 @@ developerCommandInput() {
         --form "$_s" 0 0 0 \
         "${TEXT_USERCOMMAND_CMD_EXPL}" 1 12 "" 1 11 -1 0 \
         "${TEXT_USERCOMMAND_CMD}:" 2 1 "${USER_DAEMON_COMMAND}" 2 11 33 0 \
-        "${TEXT_USERCOMMAND_PARAMS_EXPL}" 4 12 "" 3 11 -1 0 \
-        "${TEXT_USERCOMMAND_PARAMS}:" 5 1 "${USER_DAEMON_PARAMS}" 5 11 65 0 \
-        "${TEXT_USERCOMMAND_AMOUNT}:" 7 1 "${EXECUTION_AMOUNT}" 7 11 5 0 \
+        "${TEXT_USERCOMMAND_AMOUNT}:" 4 1 "${EXECUTION_AMOUNT}" 4 11 5 0 \
+        "${TEXT_USERCOMMAND_PARAMS_EXPL}" 6 12 "" 6 11 -1 0 \
+        "${TEXT_USERCOMMAND_PARAMS}:" 7 1 "${USER_DAEMON_PARAMS}" 7 11 65 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -67,10 +67,13 @@ developerCommandInput() {
             _i=0
             local _argContainsSpaces="false"
             unset USER_DAEMON_PARAMS
+            unset EXECUTION_AMOUNT
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
                 if [[ ${_i} -eq 1 ]]; then
                     USER_DAEMON_COMMAND="${_itemBuffer}"
+                elif [[ ${_i} -eq 2 ]]; then
+                    EXECUTION_AMOUNT="${_itemBuffer}"
                 else
                     if [[ ${_i} -gt 2 ]]; then
                         if [[ ${_argContainsSpaces} != "true" ]]; then
