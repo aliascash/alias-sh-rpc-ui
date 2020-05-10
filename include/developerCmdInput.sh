@@ -99,7 +99,7 @@ developerCommandInput() {
                 fi
             done
             idx=1
-            while [[ ${idx} -lt ${EXECUTION_AMOUNT} ]] ; do
+            while [[ ${idx} -le ${EXECUTION_AMOUNT} ]] ; do
                 idx=$((idx+1))
                 gauge=$(echo "${idx}*100/${EXECUTION_AMOUNT}" | bc)
                 drawGauge "${gauge}" \
