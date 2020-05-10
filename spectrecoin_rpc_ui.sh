@@ -44,6 +44,7 @@ fi
 . include/convertCoins.sh
 . include/createTransactionList.sh
 . include/createWalletInfo.sh
+. include/developerCmdInput.sh
 . include/getInfo.sh
 . include/getStakingPrediction.sh
 . include/getTransactions.sh
@@ -450,6 +451,11 @@ advancedmenu() {
     fi
     exec 3>&1
     local _mainMenuPick
+    if [[ "${developerMode}" = 1 ]] ; then
+        DEVELOPER_CMD="'${CMD_DEVELOPER_COMMAND}' '${EXPL_CMD_DEVELOPER_COMMAND}' 2>&1 1>&3"
+    else
+        DEVELOPER_CMD='2>&1 1>&3'
+    fi
     _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
         --colors \
         --title "${TITLE_ADV_MENU}" \
@@ -469,7 +475,8 @@ advancedmenu() {
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
         "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
         "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
-        2>&1 1>&3)
+        "${DEVELOPER_CMD}"
+    )
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
@@ -493,6 +500,8 @@ advancedmenu() {
             updateBinaries;;
         "${CMD_USER_COMMAND}")
             userCommandInput;;
+        "${CMD_DEVELOPER_COMMAND}")
+            developerCommandInput;;
         "${CMD_GET_PEER_INFO}")
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
