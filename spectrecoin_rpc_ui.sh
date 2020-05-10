@@ -452,9 +452,9 @@ advancedmenu() {
     exec 3>&1
     local _mainMenuPick
     if [[ "${developerMode}" = 1 ]] ; then
-        DEVELOPER_CMD="'${CMD_DEVELOPER_COMMAND}' '${EXPL_CMD_DEVELOPER_COMMAND}' 2>&1 1>&3"
+        DEVELOPER_CMD="'${CMD_MAIN_MENU}' '${EXPL_CMD_MAIN_MENU}' '${CMD_DEVELOPER_COMMAND}' '${EXPL_CMD_DEVELOPER_COMMAND}'"
     else
-        DEVELOPER_CMD='2>&1 1>&3'
+        DEVELOPER_CMD="'${CMD_MAIN_MENU}' '${EXPL_CMD_MAIN_MENU}'"
     fi
     _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
         --colors \
@@ -473,8 +473,8 @@ advancedmenu() {
         "${_cmdWallet}" "${_explWalletStatus}" \
         "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
         "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
-        "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
-        "${DEVELOPER_CMD}"
+        "${DEVELOPER_CMD}" \
+        2>&1 1>&3
     )
     exit_status=$?
     exec 3>&-
