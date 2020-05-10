@@ -466,7 +466,6 @@ advancedmenu() {
         \
         "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
         "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
-        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
         "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
         "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
         "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
