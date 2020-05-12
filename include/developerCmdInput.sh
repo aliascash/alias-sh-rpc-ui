@@ -104,7 +104,7 @@ developerCommandInput() {
             idx=1
             while [[ ${idx} -le ${EXECUTION_AMOUNT} ]] ; do
                 executeCURL "${USER_DAEMON_COMMAND}" \
-                            "${USER_DAEMON_PARAMS} #${idx}"
+                            "${USER_DAEMON_PARAMS}"
                 echo "${curl_result_global}" >> /tmp/${EXECUTION_TIMESTAMP}-cmd-result.txt
                 idx=$((idx+1))
             done
