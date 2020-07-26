@@ -6,6 +6,13 @@ user interface to the Spectrecoin daemon.
 Configuration file for Spectrecoin daemon is automatically created during first start.
 Please stop daemon if you want to make changes afterwards.
 
+## Licensing
+
+- SPDX-FileCopyrightText: © 2020 Alias Developers
+- SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+
+SPDX-License-Identifier: MIT
+
 ## Language settings
 For correct display of language specific UTF-8 characters it is very
 important to have proper language settings. If you encounter broken characters

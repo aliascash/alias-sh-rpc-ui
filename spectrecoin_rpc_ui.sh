@@ -6,6 +6,10 @@
 # DESCRIPTION:  DIALOG based RPC interface for Spectrecoin.
 #               It's a lightwight UI for spectrecoind, the Spectrecoin daemon
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # REQUIREMENTS: bash 4.x, bc, curl, dialog
 # OPTIONS:      Call script with '-h'
 # NOTES:        You may resize your terminal to get most of it

@@ -3,6 +3,10 @@
 #
 # Este es un componente del shell rpc ui de Spectrecoin
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # Autor: 2018 HLXEasy
 #
 # En Español (Versión=0.1) por Leo Bitman
