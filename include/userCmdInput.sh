@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -13,7 +13,7 @@
 
 # ============================================================================
 # This function provides a mask for the user to enter commands, that are
-# send to the spectrecoind daemon. The result will then be displayed.
+# send to the aliaswalletd daemon. The result will then be displayed.
 #
 # Input: USER_DAEMON_COMMAND global var. that stores the last entered command
 #        USER_DAEMON_PARAMS global var. that stores the last entered parameters

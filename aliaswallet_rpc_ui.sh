@@ -1,10 +1,10 @@
 #!/bin/bash
 # ============================================================================
 #
-# FILE:         spectrecoin_rpc_ui.sh
+# FILE:         aliaswallet_rpc_ui.sh
 #
-# DESCRIPTION:  DIALOG based RPC interface for Spectrecoin.
-#               It's a lightwight UI for spectrecoind, the Spectrecoin daemon
+# DESCRIPTION:  DIALOG based RPC interface for Aliaswallet.
+#               It's a lightwight UI for aliaswalletd, the Aliaswallet daemon
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -15,9 +15,9 @@
 # NOTES:        You may resize your terminal to get most of it
 # AUTHOR:       dave#0773@discord
 # AUTHOR:       HLXEasy
-# PROJECT:      https://spectreproject.io/
-#               https://github.com/spectrecoin/spectre
-#               https://github.com/spectrecoin/spectrecoin-sh-rpc-ui
+# PROJECT:      https://alias.cash/
+#               https://github.com/aliascash/alias
+#               https://github.com/aliascash/aliaswallet-sh-rpc-ui
 #
 # ============================================================================
 
@@ -74,7 +74,7 @@ helpMe ()
 {
     echo "
 
-    This script opens a dialog based UI to handle a Spectrecoin wallet.
+    This script opens a dialog based UI to handle a Aliaswallet wallet.
 
     Usage:
     ${0} [options]
@@ -82,7 +82,7 @@ helpMe ()
     Optional parameters:
     -c <config-file-to-use>
         Optional configuration file. Using this option you might connect to
-        different spectrecoind instances. If the configuration file is not
+        different aliaswalletd instances. If the configuration file is not
         existing, a minimal one with a random rpc password will be generated.
         Default: ${configfileLocation}
     -h  Show this help
@@ -129,7 +129,7 @@ connectToDaemon() {
 
 # ============================================================================
 # Every CURL command will yield to a reply, but this reply
-# is very long and surrounded by plain CURL data (non spectrecoind)
+# is very long and surrounded by plain CURL data (non aliaswalletd)
 #
 # Goal: after this function call the global string curl_result_global will
 #       contain just wallet data (bash-optimized)
@@ -186,7 +186,7 @@ cutCURLresult() {
 }
 
 # ============================================================================
-# Starts the daemon (spectrecoind)
+# Starts the daemon (aliaswalletd)
 #
 startDaemon() {
     if [[ "${rpcconnect}" != "127.0.0.1" ]]; then
@@ -201,7 +201,7 @@ startDaemon() {
         local _oldIFS=$IFS
         local _itemBuffer
         IFS='\\'
-        if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+        if (( $(ps -ef | grep -v grep | grep aliaswalletd | wc -l) > 0 )) ; then
             for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
                 echo "${_itemBuffer}"
             done
@@ -209,7 +209,7 @@ startDaemon() {
             for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
                 echo "${_itemBuffer}"
             done
-            sudo systemctl start spectrecoind
+            sudo systemctl start aliaswalletd
         fi
         for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
@@ -317,6 +317,7 @@ getStakingInfo() {
     local _time
     curl_result_global=${curl_result_global#'{'}
     curl_result_global=${curl_result_global%'}'}
+    # Satisfy IntelliJ editor: '
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
@@ -387,7 +388,7 @@ goodbye() {
             info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             reset
-            sudo systemctl stop spectrecoind
+            sudo systemctl stop aliaswalletd
             echo ''
             info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})

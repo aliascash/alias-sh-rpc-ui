@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 #
-# Este es un componente del shell rpc ui de Spectrecoin
+# Este es un componente del shell rpc ui de Aliaswallet
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -25,7 +25,7 @@
 # Los ajustes son acumulativos,
 # por ejemplo, "\Zb\Z1" hace que el siguiente texto aparezca en negrita (quizás brillante) en rojo.
 # Se restaura la configuración normal con "\Zn".
-TITLE_BACK=" Interfaz del Monedero Spectrecoin Bash "
+TITLE_BACK=" Interfaz del Monedero Aliaswallet Bash "
 TITLE_TRANS=" TRANSACCIONES RECIENTES "
 TITLE_INFO=""
 TITLE_GAUGE=" Por favor espere "
@@ -46,7 +46,7 @@ TITLE_ADV_MENU=" Opciones avanzadas "
 TITLE_WALLET_INFO=" Info del monedero "
 TITLE_STAKING_INFO=" Info de STAKING "
 TITLE_PLEASE_CHOOSE=" Por favor elija "
-TITLE_UPDATE_BINARIES=" Actualizar Spectrecoin "
+TITLE_UPDATE_BINARIES=" Actualizar Aliaswallet "
 TITLE_LANGUAGE_SELECTION=" Idioma actual: Español "
 TITLE_AVAILABLE_VERSIONS=" Versiones disponibles "
 TITLE_SYSTEM_STATS=" System Stats "
@@ -115,7 +115,7 @@ EXPL_CMD_STAKING_ANALYSE="Obtener detalles de staking."
 CMD_GET_WALLET_INFO="Monedero"
 EXPL_CMD_GET_WALLET_INFO="Obtener info del monedero."
 CMD_UPDATE="Actualizar"
-EXPL_CMD_UPDATE="Actualizar los binarios de Spectrecoin"
+EXPL_CMD_UPDATE="Actualizar los binarios de Aliaswallet"
 CMD_VIEW_LOG="Archivo Log"
 EXPL_CMD_VIEW_LOG="Ver archivo Log"
 CMD_CHANGE_LANGUAGE="Idioma"
@@ -144,8 +144,8 @@ ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No se pudo establecer una conexión con Spr
 ERROR_DAEMON_NO_CONNECT="El demonio no respondió en 60 segundos.\nNo se pudo establecer una conexión con Sprectrecoind.\nEs posible que deba verificar su configuración."
 #
 # use \ para una nueva línea - nota: no habrá ruptura de línea automática
-ERROR_DAEMON_ALREADY_RUNNING="¡Spectrecoind (demonio) ya se está ejecutando!\Pero no se pudo establecer conexión.\Esto significa que el demonio se acaba de iniciar."
-ERROR_DAEMON_STARTING="Spectrecoind no se está ejecutando.\Iniciando Spectrecoind (demonio)..."
+ERROR_DAEMON_ALREADY_RUNNING="¡Aliaswalletd (demonio) ya se está ejecutando!\Pero no se pudo establecer conexión.\Esto significa que el demonio se acaba de iniciar."
+ERROR_DAEMON_STARTING="Aliaswalletd no se está ejecutando.\Iniciando Aliaswalletd (demonio)..."
 ERROR_DAEMON_WAITING_BEGIN="El demonio necesita algo de tiempo para inicializarse.\Esperando 1 minuto al demonio..."
 ERROR_DAEMON_WAITING_MSG="segundos para ir..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS="Demonio conectado.\Todo está bien."
@@ -239,7 +239,7 @@ TEXT_GOODBYE_WARNING="\Z1Si planea apagar el sistema, ¡el demonio debe deteners
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="El demonio todavía se está ejecutando."
 TEXT_GOODBYE_DAEMON_STOPPED="Demonio detenido."
 TEXT_GOODBYE_FEEDBACK="Cualquier comentario apreciado, por favor déjanos saber. ¡Gracias!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="El demonio spectrecoin todavía no está completamente sincronizado.\n\nVuelva y muestre la salida del registro o salga a cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="El demonio aliaswallet todavía no está completamente sincronizado.\n\nVuelva y muestre la salida del registro o salga a cmdline?"
 #
 TEXT_LOGFILE_HEADER="El demonio está sincronizado si ve \Z1'height = '\Zn seguido de la altura actual de la cadena en la salida del registro a continuación. Tenga paciencia, esto tomará un tiempo! Desplácese hacia la izquierda/derecha con las teclas del cursor."
 #
@@ -276,7 +276,7 @@ TEXT_COIN_TYPE_TO_SEND_QUESTION="\n¿Qué tipo de moneda desea enviar?"
 TEXT_CONVERSION_QUESTION="\n¿En qué dirección quieres convertir?"
 TEXT_AMOUNT_TO_CONVERT="Cantidad a convertir"
 #
-TEXT_QUESTION_DO_UPDATE="¿Actualizar binarios de Spectrecoin?\nSe detendrá el demonio de Spectrecoin!\n"
+TEXT_QUESTION_DO_UPDATE="¿Actualizar binarios de Aliaswallet?\nSe detendrá el demonio de Aliaswallet!\n"
 TEXT_UPDATE_CANCELED="Actualización cancelada"
 TEXT_UPDATE_CHOOSE_VERSION_HINT="Seleccione la versión deseada con espacio:"
 #

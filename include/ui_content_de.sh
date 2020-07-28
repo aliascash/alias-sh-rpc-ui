@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -23,7 +23,7 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK=" Spectrecoin Bash Interface "
+TITLE_BACK=" Aliaswallet Bash Interface "
 TITLE_TRANS=" Letzte Transaktionen "
 TITLE_INFO=""
 TITLE_GAUGE=" Bitte warten "
@@ -44,7 +44,7 @@ TITLE_ADV_MENU=" Erweiterte Optionen "
 TITLE_WALLET_INFO=" Wallet Info "
 TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Bitte wählen "
-TITLE_UPDATE_BINARIES=" Spectrecoin aktualisieren "
+TITLE_UPDATE_BINARIES=" Aliaswallet aktualisieren "
 TITLE_LANGUAGE_SELECTION=" Aktuelle Sprache: deutsch "
 TITLE_AVAILABLE_VERSIONS=" Verfügbare Versionen "
 TITLE_SYSTEM_STATS=" Systeminformation "
@@ -113,7 +113,7 @@ EXPL_CMD_STAKING_ANALYSE="Staking-Details anzeigen."
 CMD_GET_WALLET_INFO="Wallet"
 EXPL_CMD_GET_WALLET_INFO="Wallet-Info anzeigen."
 CMD_UPDATE="Update"
-EXPL_CMD_UPDATE="Spectrecoin aktualisieren"
+EXPL_CMD_UPDATE="Aliaswallet aktualisieren"
 CMD_VIEW_LOG="Logfile"
 EXPL_CMD_VIEW_LOG="Log anzeigen"
 CMD_CHANGE_LANGUAGE="Sprache"
@@ -138,13 +138,13 @@ ERROR_SEND_INVALID_ANON_ADDRESS="\Z1Ungültige Adresse eingegeben.\Zn\n\nEine g�
 ERROR_SEND_INVALID_AMOUNT="Betrag muss eine Zahl wie folgt sein:\n- Grösser 0\n- Max. 8 Stellen hinter dem Dezimalpunkt"
 ERROR_CURL_MSG_PROMPT="CURL Fehlermeldung:"
 ERROR_401_UNAUTHORIZED="Fehler: RPC-Login fehlgeschlagen. Evtl. das Passwort ohne Daemon-Neustart geändert? Hinweis: Der Daemon kann mit dem Befehl 'wallet-stop' gestoppt werden."
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Keine Verbindung zum spectrecoind möglich.\nBitte Konfiguration prüfen."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Keine Verbindung zum aliaswalletd möglich.\nBitte Konfiguration prüfen."
 ERROR_DAEMON_NO_CONNECT="Daemon hat innerhalb von 60s nicht reagiert.\nVerbindung konnte nicht aufgebaut werden.\nBitte Konfiguration prüfen."
 #
 # use \ for a new line - note: there will be no auto line breaking
-ERROR_DAEMON_ALREADY_RUNNING="Spectrecoin Daemon läuft bereits aber es konnte keine Verbindung aufgebaut werden. Bitte warten."
-ERROR_DAEMON_STARTING="Spectrecoind Daemon läuft nicht, wird jetzt gestartet..."
-ERROR_DAEMON_WAITING_BEGIN="Der Spectrecoind Daemon braucht etwas Zeit für Initialisierung/Sync. Warte eine Minute..."
+ERROR_DAEMON_ALREADY_RUNNING="Aliaswallet Daemon läuft bereits aber es konnte keine Verbindung aufgebaut werden. Bitte warten."
+ERROR_DAEMON_STARTING="Aliaswalletd Daemon läuft nicht, wird jetzt gestartet..."
+ERROR_DAEMON_WAITING_BEGIN="Der Aliaswalletd Daemon braucht etwas Zeit für Initialisierung/Sync. Warte eine Minute..."
 ERROR_DAEMON_WAITING_MSG="Sekunden noch..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS="Daemon verbunden, alles gut."
 ERROR_DAEMON_WAITING_END="Vorbereitungen erledigt, starte GUI..."
@@ -233,11 +233,11 @@ TEXT_GAUGE_PROCESS_STAKING_DATA="Staking Data verarbeiten..."
 TEXT_GAUGE_GET_TRANS="Transaktionsdaten vom Daemon holen..."
 TEXT_GAUGE_PROCESS_TRANS="Transaktionsdaten verarbeiten..."
 #
-TEXT_GOODBYE_WARNING="\Z1Wenn das System heruntergefahren werden soll, muss der Spectrecoin-Daemon vorher gestoppt werden, um Dateninkonsistenzen zu vermeiden!\Zn\n\nSoll der Daemon jetzt gestoppt (kein weiteres Staking) oder nur das GUI beendet werden?\Zn"
+TEXT_GOODBYE_WARNING="\Z1Wenn das System heruntergefahren werden soll, muss der Aliaswallet-Daemon vorher gestoppt werden, um Dateninkonsistenzen zu vermeiden!\Zn\n\nSoll der Daemon jetzt gestoppt (kein weiteres Staking) oder nur das GUI beendet werden?\Zn"
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Daemon läuft noch."
 TEXT_GOODBYE_DAEMON_STOPPED="Daemon gestoppt."
 TEXT_GOODBYE_FEEDBACK="Jegliches Feedback ist gern gesehen! Vielen Dank."
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="Der Spectrecoin Daemon ist noch nicht vollständig synchronisiert.\n\nZurück zur Logausgabe oder das UI beenden?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="Der Aliaswallet Daemon ist noch nicht vollständig synchronisiert.\n\nZurück zur Logausgabe oder das UI beenden?"
 #
 TEXT_LOGFILE_HEADER="Der Daemon ist synchronisiert, wenn unten Ausgaben der Art \Z1'height='\Zn gefolgt von der aktuellen Blockchain-Höhe zu sehen sind. Bitte Geduld, das kann etwas dauern! (Links/Rechts scrollen mit den Pfeiltasten)"
 #
@@ -274,7 +274,7 @@ TEXT_COIN_TYPE_TO_SEND_QUESTION="\nWelchen Coin-Typ möchten Sie senden?"
 TEXT_CONVERSION_QUESTION="\nIn welche Richtung möchten Sie Coins konvertieren?"
 TEXT_AMOUNT_TO_CONVERT="Zu konvertierender Betrag"
 #
-TEXT_QUESTION_DO_UPDATE="Spectrecoin aktualisieren?\nDer Spectrecoin-Daemon wird gestoppt!\n"
+TEXT_QUESTION_DO_UPDATE="Aliaswallet aktualisieren?\nDer Aliaswallet-Daemon wird gestoppt!\n"
 TEXT_UPDATE_CANCELED="Update abgebrochen"
 TEXT_UPDATE_CHOOSE_VERSION_HINT="Bitte gewünschte Version mit Leertaste selektieren:"
 #

@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -59,7 +59,7 @@ setWalletPW() {
                         executeCURL "encryptwallet" "\"${_pw}\""
                         #walletpassphrasechange "oldpassphrase" "newpassphrase"
                         # maybe stops daemon?
-                        sudo service spectrecoind stop
+                        sudo service aliaswalletd stop
                         dialog --backtitle "${TITLE_BACK}" \
                                --no-shadow \
                                --colors \

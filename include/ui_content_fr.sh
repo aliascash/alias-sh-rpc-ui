@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -23,7 +23,7 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK=" Interface Portefeuille Spectrecoin Bash "
+TITLE_BACK=" Interface Portefeuille Aliaswallet Bash "
 TITLE_TRANS=" TRANSACTIONS RECENTES "
 TITLE_INFO=""
 TITLE_GAUGE=" Veuillez patienter "
@@ -44,7 +44,7 @@ TITLE_ADV_MENU=" Options avancées "
 TITLE_WALLET_INFO=" Info Portefeuille "
 TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Veuillez choisir "
-TITLE_UPDATE_BINARIES=" Mettre à jour Spectrecoin "
+TITLE_UPDATE_BINARIES=" Mettre à jour Aliaswallet "
 TITLE_LANGUAGE_SELECTION=" Langue actuelle: Français/French "
 TITLE_AVAILABLE_VERSIONS=" Available versions "
 TITLE_SYSTEM_STATS=" System Stats "
@@ -113,7 +113,7 @@ EXPL_CMD_STAKING_ANALYSE="Obtenir détails du staking."
 CMD_GET_WALLET_INFO="Portefeuille"
 EXPL_CMD_GET_WALLET_INFO="Obtenir les infos du portefeuille."
 CMD_UPDATE="Mise à jour"
-EXPL_CMD_UPDATE="Mie à jour des binaires Spectrecoin"
+EXPL_CMD_UPDATE="Mie à jour des binaires Aliaswallet"
 CMD_VIEW_LOG="Logfile"
 EXPL_CMD_VIEW_LOG="View log"
 CMD_CHANGE_LANGUAGE="Langue"
@@ -138,12 +138,12 @@ ERROR_SEND_INVALID_ANON_ADDRESS="\Z1Vous avez entré une adresse invalide.\Zn\n\
 ERROR_SEND_INVALID_AMOUNT="Le montant doit etre un nombre, avec:\n- plus grand que 0\n- max. 8 décimales"
 ERROR_CURL_MSG_PROMPT="Erreur message CURL:"
 ERROR_401_UNAUTHORIZED="Erreur: RPC login en échec. Avez-vous changé le mot de passe dans redémarrer le démon? Note: Vous pouvez arrêter le démon avec la commande: wallet-stop"
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à sprectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
-ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à sprectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à aliaswalletd n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à aliaswalletd n'a pu être établie.\nVous devriez vérifier votre configuration."
 #
 # use \ for a new line - note: there will be no auto line breaking
-ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) déjà en cours d'éxécution!\Mais aucune connexion n'a pu être établie.\Cela signifie que le démon vient de démarrer."
-ERROR_DAEMON_STARTING="Spectrecoind arrêté.\Démarrage Spectrecoind (démon)..."
+ERROR_DAEMON_ALREADY_RUNNING="Aliaswalletd (daemon) déjà en cours d'éxécution!\Mais aucune connexion n'a pu être établie.\Cela signifie que le démon vient de démarrer."
+ERROR_DAEMON_STARTING="Aliaswalletd arrêté.\Démarrage Aliaswalletd (démon)..."
 ERROR_DAEMON_WAITING_BEGIN="Le démon a besoin de temps pour s'initialiser.\Attendre 1 minute pour le démon..."
 ERROR_DAEMON_WAITING_MSG="secondes restantes..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS="Démon connecté.\Tout va bien."
@@ -237,7 +237,7 @@ TEXT_GOODBYE_WARNING="\Z1Avant d'éteindre le système, arrêtez le démon d'abo
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Le démon est toujours en cours d'éxécution."
 TEXT_GOODBYE_DAEMON_STOPPED="Démon arrêté."
 TEXT_GOODBYE_FEEDBACK="Les remarques sont les bienvenues, merci d'avance!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="The spectrecoin daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The aliaswallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
 #
 TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #
@@ -274,7 +274,7 @@ TEXT_COIN_TYPE_TO_SEND_QUESTION="\nQuel type de jeton voulez-vous envoyer?"
 TEXT_CONVERSION_QUESTION="\nDans quelle direction voulez-vous convertir?"
 TEXT_AMOUNT_TO_CONVERT="Montant à convertir"
 #
-TEXT_QUESTION_DO_UPDATE="Mettre à jour les binaires Spectrecoin?\nLe démon Spectrecoin sera arrêté!\n"
+TEXT_QUESTION_DO_UPDATE="Mettre à jour les binaires Aliaswallet?\nLe démon Aliaswallet sera arrêté!\n"
 TEXT_UPDATE_CANCELED="Mise à jour annulée"
 TEXT_UPDATE_CHOOSE_VERSION_HINT="Please select desired version with space:"
 #

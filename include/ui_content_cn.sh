@@ -1,7 +1,7 @@
 ﻿#!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
 #
 # SPDX-FileCopyrightText: © 2020 Alias Developers
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
@@ -113,7 +113,7 @@ EXPL_CMD_STAKING_ANALYSE="查看挖矿明细."
 CMD_GET_WALLET_INFO="钱包"
 EXPL_CMD_GET_WALLET_INFO="查看钱包信息."
 CMD_UPDATE="更新"
-EXPL_CMD_UPDATE="Update Spectrecoin binaries"
+EXPL_CMD_UPDATE="Update Aliaswallet binaries"
 CMD_VIEW_LOG="Logfile"
 EXPL_CMD_VIEW_LOG="View log"
 CMD_CHANGE_LANGUAGE="语言"
@@ -138,12 +138,12 @@ ERROR_SEND_INVALID_ANON_ADDRESS="\Z1You entered an invalid address.\Zn\n\nA vali
 ERROR_SEND_INVALID_AMOUNT="Amount must be a number, with:\n- greater than 0\n- max. 8 digits behind decimal point"
 ERROR_CURL_MSG_PROMPT="CURL error message:"
 ERROR_401_UNAUTHORIZED="Error: RPC login failed. Did you change the password without restarting the daemon? Note: You can stop the daemon with the command: wallet-stop"
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to sprectrecoind could be established.\nYou may need to check your config."
-ERROR_DAEMON_NO_CONNECT="Daemon did not respond within 60 sec.\nNo connection to sprectrecoind could be established.\nYou may need to check your config."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to aliaswalletd could be established.\nYou may need to check your config."
+ERROR_DAEMON_NO_CONNECT="Daemon did not respond within 60 sec.\nNo connection to aliaswalletd could be established.\nYou may need to check your config."
 #
 # use \ for a new line - note: there will be no auto line breaking
-ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) already running!\But no connection could be established.\This means the daemon was just started."
-ERROR_DAEMON_STARTING="Spectrecoind is not running.\Starting Spectrecoind (daemon)..."
+ERROR_DAEMON_ALREADY_RUNNING="Aliaswalletd (daemon) already running!\But no connection could be established.\This means the daemon was just started."
+ERROR_DAEMON_STARTING="Aliaswalletd is not running.\Starting Aliaswalletd (daemon)..."
 ERROR_DAEMON_WAITING_BEGIN="Daemon needs some time to initialize.\Waiting 1 minute for the daemon..."
 ERROR_DAEMON_WAITING_MSG="seconds to go..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS="Daemon connected.\Everythings fine."
@@ -237,7 +237,7 @@ TEXT_GOODBYE_WARNING="\Z1If you plan to shutdown the system, daemon must be stop
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Daemon is still running."
 TEXT_GOODBYE_DAEMON_STOPPED="Daemon stopped."
 TEXT_GOODBYE_FEEDBACK="Any feedback appreciated, please let us know. Thank you!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="The spectrecoin daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The aliaswallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
 #
 TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #
@@ -274,7 +274,7 @@ TEXT_COIN_TYPE_TO_SEND_QUESTION="\nWhich coin type do you want to send?"
 TEXT_CONVERSION_QUESTION="\nIn which direction do you want to convert?"
 TEXT_AMOUNT_TO_CONVERT="Amount to convert"
 #
-TEXT_QUESTION_DO_UPDATE="Update Spectrecoin binaries?\nSpectrecoin daemon will be stopped!\n"
+TEXT_QUESTION_DO_UPDATE="Update Aliaswallet binaries?\nAliaswallet daemon will be stopped!\n"
 TEXT_UPDATE_CANCELED="Update canceled"
 TEXT_UPDATE_CHOOSE_VERSION_HINT="Please select desired version with space:"
 #
