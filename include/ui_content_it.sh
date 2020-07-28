@@ -281,4 +281,4 @@ TEXT_UPDATE_CHOOSE_VERSION_HINT="Please select desired version with space:"
 TEXT_CHOOSE_LANGUAGE="Choose a language"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Language switch canceled"
 #
-TEXT_USE_AT_YOUR_OWN_RISC="                  Use at your own risc!!!\n\n"
+TEXT_USE_AT_YOUR_OWN_RISC="                   Use at your own risk!\n\n"
