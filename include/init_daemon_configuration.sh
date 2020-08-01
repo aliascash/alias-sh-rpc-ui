@@ -33,7 +33,7 @@ updateConfiguration(){
 createConfiguration(){
     generatePassword
     stopAliaswalletd
-    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/Aliaswallet.conf > ${configfileLocation}
+    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/aliaswallet.conf > ${configfileLocation}
 }
 
 initDaemonConfiguration(){
