@@ -11,7 +11,7 @@
 #
 # ============================================================================
 
-configfileLocation=~/.aliaswallet/aliaswallet.conf
+configfileLocation=~/.aliaswallet/alias.conf
 defaultPassword=supersupersuperlongpassword
 
 stopAliaswalletd(){
@@ -33,7 +33,7 @@ updateConfiguration(){
 createConfiguration(){
     generatePassword
     stopAliaswalletd
-    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/aliaswallet.conf > ${configfileLocation}
+    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/alias.conf > ${configfileLocation}
 }
 
 initDaemonConfiguration(){
