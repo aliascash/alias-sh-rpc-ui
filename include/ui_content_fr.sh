@@ -138,8 +138,8 @@ ERROR_SEND_INVALID_ANON_ADDRESS="\Z1Vous avez entré une adresse invalide.\Zn\n\
 ERROR_SEND_INVALID_AMOUNT="Le montant doit etre un nombre, avec:\n- plus grand que 0\n- max. 8 décimales"
 ERROR_CURL_MSG_PROMPT="Erreur message CURL:"
 ERROR_401_UNAUTHORIZED="Erreur: RPC login en échec. Avez-vous changé le mot de passe dans redémarrer le démon? Note: Vous pouvez arrêter le démon avec la commande: wallet-stop"
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à aliaswalletd n'a pu être établie.\nVous devriez vérifier votre configuration."
-ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à aliaswalletd n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à Alias wallet daemon n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à Alias wallet daemon n'a pu être établie.\nVous devriez vérifier votre configuration."
 #
 # use \ for a new line - note: there will be no auto line breaking
 ERROR_DAEMON_ALREADY_RUNNING="Aliaswalletd (daemon) déjà en cours d'éxécution!\Mais aucune connexion n'a pu être établie.\Cela signifie que le démon vient de démarrer."
@@ -237,7 +237,7 @@ TEXT_GOODBYE_WARNING="\Z1Avant d'éteindre le système, arrêtez le démon d'abo
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Le démon est toujours en cours d'éxécution."
 TEXT_GOODBYE_DAEMON_STOPPED="Démon arrêté."
 TEXT_GOODBYE_FEEDBACK="Les remarques sont les bienvenues, merci d'avance!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="The aliaswallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The Alias wallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
 #
 TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #

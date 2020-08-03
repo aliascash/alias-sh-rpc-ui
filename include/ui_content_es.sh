@@ -239,7 +239,7 @@ TEXT_GOODBYE_WARNING="\Z1Si planea apagar el sistema, ¡el demonio debe deteners
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="El demonio todavía se está ejecutando."
 TEXT_GOODBYE_DAEMON_STOPPED="Demonio detenido."
 TEXT_GOODBYE_FEEDBACK="Cualquier comentario apreciado, por favor déjanos saber. ¡Gracias!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="El demonio aliaswallet todavía no está completamente sincronizado.\n\nVuelva y muestre la salida del registro o salga a cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="El demonio Alias wallet todavía no está completamente sincronizado.\n\nVuelva y muestre la salida del registro o salga a cmdline?"
 #
 TEXT_LOGFILE_HEADER="El demonio está sincronizado si ve \Z1'height = '\Zn seguido de la altura actual de la cadena en la salida del registro a continuación. Tenga paciencia, esto tomará un tiempo! Desplácese hacia la izquierda/derecha con las teclas del cursor."
 #

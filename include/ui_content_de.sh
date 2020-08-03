@@ -138,7 +138,7 @@ ERROR_SEND_INVALID_ANON_ADDRESS="\Z1Ungültige Adresse eingegeben.\Zn\n\nEine g�
 ERROR_SEND_INVALID_AMOUNT="Betrag muss eine Zahl wie folgt sein:\n- Grösser 0\n- Max. 8 Stellen hinter dem Dezimalpunkt"
 ERROR_CURL_MSG_PROMPT="CURL Fehlermeldung:"
 ERROR_401_UNAUTHORIZED="Fehler: RPC-Login fehlgeschlagen. Evtl. das Passwort ohne Daemon-Neustart geändert? Hinweis: Der Daemon kann mit dem Befehl 'wallet-stop' gestoppt werden."
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Keine Verbindung zum aliaswalletd möglich.\nBitte Konfiguration prüfen."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Keine Verbindung zum Alias wallet daemon möglich.\nBitte Konfiguration prüfen."
 ERROR_DAEMON_NO_CONNECT="Daemon hat innerhalb von 60s nicht reagiert.\nVerbindung konnte nicht aufgebaut werden.\nBitte Konfiguration prüfen."
 #
 # use \ for a new line - note: there will be no auto line breaking

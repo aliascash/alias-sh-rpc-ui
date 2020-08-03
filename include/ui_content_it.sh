@@ -138,8 +138,8 @@ ERROR_SEND_INVALID_ANON_ADDRESS="\Z1You entered an invalid address.\Zn\n\nA vali
 ERROR_SEND_INVALID_AMOUNT="Amount must be a number, with:\n- greater than 0\n- max. 8 digits behind decimal point"
 ERROR_CURL_MSG_PROMPT="CURL error message:"
 ERROR_401_UNAUTHORIZED="Error: RPC login failed. Did you change the password without restarting the daemon? Note: You can stop the daemon with the command: wallet-stop"
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to aliaswalletd could be established.\nYou may need to check your config."
-ERROR_DAEMON_NO_CONNECT="Daemon did not respond within 60 sec.\nNo connection to aliaswalletd could be established.\nYou may need to check your config."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="No connection to Alias wallet daemon could be established.\nYou may need to check your config."
+ERROR_DAEMON_NO_CONNECT="Daemon did not respond within 60 sec.\nNo connection to Alias wallet daemon could be established.\nYou may need to check your config."
 #
 # use \ for a new line - note: there will be no auto line breaking
 ERROR_DAEMON_ALREADY_RUNNING="Aliaswalletd (daemon) already running!\But no connection could be established.\This means the daemon was just started."
@@ -237,7 +237,7 @@ TEXT_GOODBYE_WARNING="\Z1If you plan to shutdown the system, daemon must be stop
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Daemon is still running."
 TEXT_GOODBYE_DAEMON_STOPPED="Daemon stopped."
 TEXT_GOODBYE_FEEDBACK="Any feedback appreciated, please let us know. Thank you!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="The aliaswallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The Alias wallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
 #
 TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #
