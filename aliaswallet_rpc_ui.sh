@@ -17,7 +17,7 @@
 # AUTHOR:       HLXEasy
 # PROJECT:      https://alias.cash/
 #               https://github.com/aliascash/alias
-#               https://github.com/aliascash/aliaswallet-sh-rpc-ui
+#               https://github.com/aliascash/alias-sh-rpc-ui
 #
 # ============================================================================
 
