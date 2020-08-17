@@ -48,19 +48,27 @@ getInfo() {
                 info_global[${WALLET_VERSION}]="${_itemBuffer#*:}";;
             'balance')
                 info_global[${WALLET_BALANCE}]="${_itemBuffer#*:}";;
-            'anonbalance'|'spectrebalance')
+            'balance_public')
+                info_global[${WALLET_BALANCE_PUBLIC}]="${_itemBuffer#*:}";;
+            'balance_private')
                 info_global[${WALLET_BALANCE_ANON}]="${_itemBuffer#*:}";;
             'unconfirmedbalance')
                 info_global[${WALLET_BALANCE_UNCONF}]="${_itemBuffer#*:}";;
-            'unconfirmedanonbalance'|'unconfirmedspectrebalance')
+            'unconfirmedbalance_public')
+                info_global[${WALLET_BALANCE_UNCONF_PUBLIC}]="${_itemBuffer#*:}";;
+            'unconfirmedbalance_private')
                 info_global[${WALLET_BALANCE_UNCONF_ANON}]="${_itemBuffer#*:}";;
             'stake')
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
-            'anonstake'|'spectrestake')
+            'stake_public')
+                info_global[${WALLET_STAKE_PUBLIC}]="${_itemBuffer#*:}";;
+            'stake_private')
                 info_global[${WALLET_STAKE_ANON}]="${_itemBuffer#*:}";;
             'stakeweight')
                 info_global[${WALLET_STAKE_WEIGHT}]="${_itemBuffer#*:}";;
-            'anonstakeweight'|'spectrestakeweight')
+            'stakeweight_public')
+                info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]="${_itemBuffer#*:}";;
+            'stakeweight_private')
                 info_global[${WALLET_STAKE_WEIGHT_ANON}]="${_itemBuffer#*:}";;
             'connections')
                 info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
@@ -101,7 +109,9 @@ getInfo() {
                 info_global[${WALLET_TIMEOFFSET}]="${_itemBuffer#*:}";;
             'moneysupply')
                 info_global[${WALLET_MONEY_SUPPLY}]="${_itemBuffer#*:}";;
-            'anonsupply')
+            'moneysupply_public')
+                info_global[${WALLET_MONEY_SUPPLY_PUBLIC}]="${_itemBuffer#*:}";;
+            'moneysupply_private')
                 info_global[${WALLET_ANON_SUPPLY}]="${_itemBuffer#*:}";;
             'proxy')
                 info_global[${WALLET_PROXY}]="${_itemBuffer#*:}";;

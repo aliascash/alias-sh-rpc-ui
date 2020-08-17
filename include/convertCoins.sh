@@ -53,7 +53,7 @@ convertCoins() {
     local _conversionCmd=''
     local _ringSizeParam=''
 
-    executeCURL "liststealthaddresses"
+    executeCURL "listprivateaddresses"
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
     _destinationAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
@@ -64,7 +64,7 @@ convertCoins() {
             refreshMainMenu_GUI;;
         ${CONVERT_PUBLIC_TO_ANON})
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY} > ${TEXT_CURRENCY_ANON}"
-            _conversionCmd="sendspectoanon"
+            _conversionCmd="sendpublictoprivate"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}
@@ -73,7 +73,7 @@ convertCoins() {
             ;;
         ${CONVERT_ANON_TO_PUBLIC})
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY_ANON} > ${TEXT_CURRENCY}"
-            _conversionCmd="sendanontospec"
+            _conversionCmd="sendprivatetopublic"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}

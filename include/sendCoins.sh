@@ -208,9 +208,9 @@ sendAnonCoins() {
                 fi
                 if [[ -z "${sendInput[2]}" ]] ; then
                     # No narration given
-                    executeCURL "sendanontoanon" "\"${_destinationAddress}\",${_amount},10"
+                    executeCURL "sendprivate" "\"${_destinationAddress}\",${_amount},10"
                 else
-                    executeCURL "sendanontoanon" "\"${_destinationAddress}\",${_amount},10,\"${sendInput[2]}\""
+                    executeCURL "sendprivate" "\"${_destinationAddress}\",${_amount},10,\"${sendInput[2]}\""
                 fi
                 if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" != "${TEXT_WALLET_HAS_NO_PW}" ]]; then
                     executeCURL "walletlock"
