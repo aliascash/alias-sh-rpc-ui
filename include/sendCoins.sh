@@ -25,7 +25,7 @@ getCoinTypeToSend() {
         --no-shadow \
         --title "${TITLE_PLEASE_CHOOSE}" \
         --ok-label "${TEXT_CURRENCY}" \
-        --cancel-label "${TEXT_CURRENCY_ANON}" \
+        --cancel-label "${TEXT_CURRENCY_PRIVATE}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
         --yesno "${TEXT_COIN_TYPE_TO_SEND_QUESTION}" 7 52
@@ -144,11 +144,11 @@ sendAnonCoins() {
     local _destinationAddress=$1
     local _buffer
     local _narration=''
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PRIVATE}]}+${info_global[${WALLET_STAKE_PRIVATE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_ANON}\n"
+    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_PRIVATE}\n"
           _s+="${TEXT_SEND_EXPL}\n"
           _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
@@ -164,7 +164,7 @@ sendAnonCoins() {
         --title "${TITLE_SEND}" \
         --form "${_s}" 17 70 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 102 0 \
-        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_ANON}:" 4 2 "${_amount}" 4 26 24 0 \
+        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_PRIVATE}:" 4 2 "${_amount}" 4 26 24 0 \
         "${TEXT_SEND_NARRATION}:" 6 2 "${_narration}" 6 26 24 0 \
         2>&1 1>&3)
     exit_status=$?
@@ -190,7 +190,7 @@ sendAnonCoins() {
                 if [[ ${sendInput[0]} =~ ^[a-km-zA-HJ-NP-Z1-9]{102}$ ]]; then
                     _destinationAddress="${sendInput[0]}"
                 else
-                    errorHandling "${ERROR_SEND_INVALID_ANON_ADDRESS}"
+                    errorHandling "${ERROR_SEND_INVALID_PRIVATE_ADDRESS}"
                     sendAnonCoins
                 fi
             else

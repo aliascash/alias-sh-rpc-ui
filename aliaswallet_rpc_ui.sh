@@ -520,18 +520,18 @@ receiveCoins() {
     executeCURL "getaddressesbyaccount" "\"Default Address\""
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
-    local _defaultAddress=${curl_result_global//']'/''}
+    local _defaultPublicAddress=${curl_result_global//']'/''}
     executeCURL "listprivateaddresses"
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
-    local _defaultStealthAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
+    local _defaultPrivateAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
 
     dialog --backtitle "${TITLE_BACK}" \
            --colors \
            --title "${TITLE_RECEIVE}" \
            --ok-label "${BUTTON_LABEL_OK}" \
            --no-shadow \
-           --infobox "${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 12 "${SIZE_X_TRANS_VIEW}"
+           --infobox "${TEXT_DEFAULT_PUBLIC_ADDRESS}:\n${_defaultPublicAddress}\n\n${TEXT_DEFAULT_PRIVATE_ADDRESS}:\n${_defaultPrivateAddress}" 12 "${SIZE_X_TRANS_VIEW}"
     refreshMainMenu_GUI
 }
 

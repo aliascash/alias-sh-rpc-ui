@@ -33,13 +33,13 @@ getInfo() {
 
     # Set some defaults
     info_global[${WALLET_BALANCE}]="0"
-    info_global[${WALLET_BALANCE_ANON}]="0"
+    info_global[${WALLET_BALANCE_PRIVATE}]="0"
     info_global[${WALLET_STAKE}]="0"
-    info_global[${WALLET_STAKE_ANON}]="0"
+    info_global[${WALLET_STAKE_PRIVATE}]="0"
     info_global[${WALLET_BALANCE_UNCONF}]="0"
-    info_global[${WALLET_BALANCE_UNCONF_ANON}]="0"
+    info_global[${WALLET_BALANCE_UNCONF_PRIVATE}]="0"
     info_global[${WALLET_STAKE_WEIGHT}]="0"
-    info_global[${WALLET_STAKE_WEIGHT_ANON}]="0"
+    info_global[${WALLET_STAKE_WEIGHT_PRIVATE}]="0"
 
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
@@ -51,25 +51,25 @@ getInfo() {
             'balance_public')
                 info_global[${WALLET_BALANCE_PUBLIC}]="${_itemBuffer#*:}";;
             'balance_private')
-                info_global[${WALLET_BALANCE_ANON}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_BALANCE_PRIVATE}]="${_itemBuffer#*:}";;
             'unconfirmedbalance')
                 info_global[${WALLET_BALANCE_UNCONF}]="${_itemBuffer#*:}";;
             'unconfirmedbalance_public')
                 info_global[${WALLET_BALANCE_UNCONF_PUBLIC}]="${_itemBuffer#*:}";;
             'unconfirmedbalance_private')
-                info_global[${WALLET_BALANCE_UNCONF_ANON}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_BALANCE_UNCONF_PRIVATE}]="${_itemBuffer#*:}";;
             'stake')
                 info_global[${WALLET_STAKE}]="${_itemBuffer#*:}";;
             'stake_public')
                 info_global[${WALLET_STAKE_PUBLIC}]="${_itemBuffer#*:}";;
             'stake_private')
-                info_global[${WALLET_STAKE_ANON}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_STAKE_PRIVATE}]="${_itemBuffer#*:}";;
             'stakeweight')
                 info_global[${WALLET_STAKE_WEIGHT}]="${_itemBuffer#*:}";;
             'stakeweight_public')
                 info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]="${_itemBuffer#*:}";;
             'stakeweight_private')
-                info_global[${WALLET_STAKE_WEIGHT_ANON}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_STAKE_WEIGHT_PRIVATE}]="${_itemBuffer#*:}";;
             'connections')
                 info_global[${WALLET_CONNECTIONS}]="${_itemBuffer#*:}";;
             'datareceived')
@@ -112,7 +112,7 @@ getInfo() {
             'moneysupply_public')
                 info_global[${WALLET_MONEY_SUPPLY_PUBLIC}]="${_itemBuffer#*:}";;
             'moneysupply_private')
-                info_global[${WALLET_ANON_SUPPLY}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_PRIVATE_SUPPLY}]="${_itemBuffer#*:}";;
             'proxy')
                 info_global[${WALLET_PROXY}]="${_itemBuffer#*:}";;
             'proof-of-work')
