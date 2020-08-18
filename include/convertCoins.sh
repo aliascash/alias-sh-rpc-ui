@@ -28,7 +28,7 @@ getConversionDestination() {
         --cancel-label "${BUTTON_LABEL_PRIVATE_TO_PUBLIC}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
-        --yesno "${TEXT_CONVERSION_QUESTION}" 7 60
+        --yesno "${TEXT_CONVERSION_QUESTION}" 7 64
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_EXTRA})

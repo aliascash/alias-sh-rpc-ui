@@ -56,7 +56,7 @@ sendPublicCoins() {
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}\n"
+    local _s="${TEXT_BALANCE} (${TEXT_CURRENCY}): ${_balance}\n"
           _s+="${TEXT_SEND_EXPL}\n"
           _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
