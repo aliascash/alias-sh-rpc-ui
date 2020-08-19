@@ -458,6 +458,7 @@ advancedmenu() {
     exec 3>&1
     local _mainMenuPick
     if [[ "${developerMode}" = 1 ]] ; then
+        # Developer mode activated, add corresponding menu entry
         _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
             --colors \
             --title "${TITLE_ADV_MENU}" \
