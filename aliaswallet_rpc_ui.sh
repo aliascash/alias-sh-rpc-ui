@@ -58,6 +58,7 @@ fi
 . include/setWalletPW.sh
 . include/updateBinaries.sh
 . include/userCmdInput.sh
+. include/viewAddresses.sh
 . include/viewLog.sh
 . include/viewStakingPrediction.sh
 . include/viewSystemStats.sh
@@ -514,28 +515,6 @@ advancedmenu() {
 }
 
 # ============================================================================
-# Goal: Display the wallets addresses for the "Default Address"-account (equals default addr)
-#
-receiveCoins() {
-    executeCURL "getaddressesbyaccount" "\"Default Address\""
-    curl_result_global=${curl_result_global//','/'\n'}
-    curl_result_global=${curl_result_global//'['/''}
-    local _defaultPublicAddress=${curl_result_global//']'/''}
-    executeCURL "listprivateaddresses"
-    curl_result_global=${curl_result_global//','/'\n'}
-    curl_result_global=${curl_result_global//'['/''}
-    local _defaultPrivateAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
-
-    dialog --backtitle "${TITLE_BACK}" \
-           --colors \
-           --title "${TITLE_RECEIVE}" \
-           --ok-label "${BUTTON_LABEL_OK}" \
-           --no-shadow \
-           --infobox "${TEXT_DEFAULT_PUBLIC_ADDRESS}:\n${_defaultPublicAddress}\n\n${TEXT_DEFAULT_PRIVATE_ADDRESS}:\n${_defaultPrivateAddress}" 12 "${SIZE_X_TRANS_VIEW}"
-    refreshMainMenu_GUI
-}
-
-# ============================================================================
 # Goal: ask for the wallet password, to unlock the wallet for staking
 #       and sending transactions. Password will never leave this function.
 #
@@ -702,7 +681,7 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_CONVERT_COINS}")
             convertCoins;;
         "${CMD_MAIN_RECEIVE}")
-            receiveCoins;;
+            viewAddresses;;
         "${CMD_MAIN_ADVANCED_MENU}")
             advancedmenu;;
         "${CMD_MAIN_QUIT}")
