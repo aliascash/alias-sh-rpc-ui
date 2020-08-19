@@ -139,7 +139,7 @@ sendPublicCoins() {
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
 }
-sendAnonCoins() {
+sendPrivateCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
@@ -177,7 +177,7 @@ sendAnonCoins() {
             refreshMainMenu_GUI;;
         ${DIALOG_EXTRA})
             sry
-            sendAnonCoins "test1";;
+            sendCoins "test1";;
         ${DIALOG_OK})
             # Convert buffer into array
             # $sendInput[0] = Destination address
@@ -191,7 +191,7 @@ sendAnonCoins() {
                     _destinationAddress="${sendInput[0]}"
                 else
                     errorHandling "${ERROR_SEND_INVALID_PRIVATE_ADDRESS}"
-                    sendAnonCoins
+                    sendCoins
                 fi
             else
                 _destinationAddress="${sendInput[0]}"
@@ -224,9 +224,9 @@ sendAnonCoins() {
                 refreshMainMenu_DATA
             else
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
-                sendAnonCoins "${_destinationAddress}"
+                sendCoins "${_destinationAddress}"
             fi
-            sendAnonCoins "${_destinationAddress}";;
+            sendCoins "${_destinationAddress}";;
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
@@ -238,8 +238,8 @@ sendCoins(){
         ${SEND_NOTHING})
             refreshMainMenu_GUI;;
         ${SEND_PRIVATE_COINS})
-            sendAnonCoins;;
+            sendPrivateCoins "$1";;
         ${SEND_PUBLIC_COINS})
-            sendPublicCoins;;
+            sendPublicCoins "$1";;
     esac
 }
