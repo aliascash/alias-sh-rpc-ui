@@ -20,8 +20,8 @@ makeWalletInfoOutput() {
     echo "\n"
     echo "Version:            ${info_global[${WALLET_VERSION}]}\n"
     if ${_showBalance} ; then
-        echo "Balance Public:     ${info_global[${WALLET_BALANCE}]}\n"
-        echo "Stake Public:       ${info_global[${WALLET_STAKE}]}\n"
+        echo "Balance Public:     ${info_global[${WALLET_BALANCE_PUBLIC}]}\n"
+        echo "Stake Public:       ${info_global[${WALLET_STAKE_PUBLIC}]}\n"
         echo "Balance Private:    ${info_global[${WALLET_BALANCE_PRIVATE}]}\n"
         echo "Stake Private:      ${info_global[${WALLET_STAKE_PRIVATE}]}\n"
     else
@@ -45,7 +45,8 @@ makeWalletInfoOutput() {
     echo "Blocks:             ${info_global[${WALLET_BLOCKS}]}\n"
     echo "Timeoffset:         ${info_global[${WALLET_TIMEOFFSET}]}\n"
     echo "Moneysupply:        ${info_global[${WALLET_MONEY_SUPPLY}]}\n"
-    echo "Private supply:     ${info_global[${WALLET_PRIVATE_SUPPLY}]}\n"
+    echo "Public supply:      ${info_global[${WALLET_MONEY_SUPPLY_PUBLIC}]}\n"
+    echo "Private supply:     ${info_global[${WALLET_MONEY_SUPPLY_PRIVATE}]}\n"
     echo "Proxy:              ${info_global[${WALLET_PROXY}]}\n"
     echo "Proof of work:      ${info_global[${WALLET_PROOF_OF_WORK}]}\n"
     echo "Proof of stake:     ${info_global[${WALLET_PROOF_OF_STAKE}]}\n"

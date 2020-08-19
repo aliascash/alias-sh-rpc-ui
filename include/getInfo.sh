@@ -33,12 +33,16 @@ getInfo() {
 
     # Set some defaults
     info_global[${WALLET_BALANCE}]="0"
+    info_global[${WALLET_BALANCE_PUBLIC}]="0"
     info_global[${WALLET_BALANCE_PRIVATE}]="0"
     info_global[${WALLET_STAKE}]="0"
+    info_global[${WALLET_STAKE_PUBLIC}]="0"
     info_global[${WALLET_STAKE_PRIVATE}]="0"
     info_global[${WALLET_BALANCE_UNCONF}]="0"
+    info_global[${WALLET_BALANCE_UNCONF_PUBLIC}]="0"
     info_global[${WALLET_BALANCE_UNCONF_PRIVATE}]="0"
     info_global[${WALLET_STAKE_WEIGHT}]="0"
+    info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]="0"
     info_global[${WALLET_STAKE_WEIGHT_PRIVATE}]="0"
 
     IFS=','
@@ -112,7 +116,7 @@ getInfo() {
             'moneysupply_public')
                 info_global[${WALLET_MONEY_SUPPLY_PUBLIC}]="${_itemBuffer#*:}";;
             'moneysupply_private')
-                info_global[${WALLET_PRIVATE_SUPPLY}]="${_itemBuffer#*:}";;
+                info_global[${WALLET_MONEY_SUPPLY_PRIVATE}]="${_itemBuffer#*:}";;
             'proxy')
                 info_global[${WALLET_PROXY}]="${_itemBuffer#*:}";;
             'proof-of-work')
