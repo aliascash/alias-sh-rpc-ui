@@ -69,7 +69,7 @@ sendPublicCoins() {
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow \
         --colors \
-        --title "${TITLE_SEND}" \
+        --title "${TITLE_SEND_PUBLIC}" \
         --form "${_s}" 16 70 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 35 0 \
         "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY}:" 4 2 "${_amount}" 4 26 24 0 \
@@ -134,7 +134,7 @@ sendPublicCoins() {
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
                 sendCoins "${_destinationAddress}"
             fi
-            sendCoins "${_destinationAddress}";;
+            sendCoins "${_destinationAddress}"
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
@@ -161,7 +161,7 @@ sendAnonCoins() {
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow \
         --colors \
-        --title "${TITLE_SEND}" \
+        --title "${TITLE_SEND_PRIVATE}" \
         --form "${_s}" 17 70 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 102 0 \
         "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_PRIVATE}:" 4 2 "${_amount}" 4 26 24 0 \
