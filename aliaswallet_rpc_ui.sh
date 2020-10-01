@@ -1,19 +1,23 @@
 #!/bin/bash
 # ============================================================================
 #
-# FILE:         spectrecoin_rpc_ui.sh
+# FILE:         aliaswallet_rpc_ui.sh
 #
-# DESCRIPTION:  DIALOG based RPC interface for Spectrecoin.
-#               It's a lightwight UI for spectrecoind, the Spectrecoin daemon
+# DESCRIPTION:  DIALOG based RPC interface for Aliaswallet.
+#               It's a lightwight UI for aliaswalletd, the Aliaswallet daemon
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # REQUIREMENTS: bash 4.x, bc, curl, dialog
 # OPTIONS:      Call script with '-h'
 # NOTES:        You may resize your terminal to get most of it
 # AUTHOR:       dave#0773@discord
 # AUTHOR:       HLXEasy
-# PROJECT:      https://spectreproject.io/
-#               https://github.com/spectrecoin/spectre
-#               https://github.com/spectrecoin/spectrecoin-sh-rpc-ui
+# PROJECT:      https://alias.cash/
+#               https://github.com/aliascash/alias
+#               https://github.com/aliascash/alias-sh-rpc-ui
 #
 # ============================================================================
 
@@ -44,6 +48,7 @@ fi
 . include/convertCoins.sh
 . include/createTransactionList.sh
 . include/createWalletInfo.sh
+. include/developerCmdInput.sh
 . include/getInfo.sh
 . include/getStakingPrediction.sh
 . include/getTransactions.sh
@@ -54,6 +59,7 @@ fi
 . include/setWalletPW.sh
 . include/updateBinaries.sh
 . include/userCmdInput.sh
+. include/viewAddresses.sh
 . include/viewLog.sh
 . include/viewStakingPrediction.sh
 . include/viewSystemStats.sh
@@ -70,7 +76,7 @@ helpMe ()
 {
     echo "
 
-    This script opens a dialog based UI to handle a Spectrecoin wallet.
+    This script opens a dialog based UI to handle a Aliaswallet wallet.
 
     Usage:
     ${0} [options]
@@ -78,7 +84,7 @@ helpMe ()
     Optional parameters:
     -c <config-file-to-use>
         Optional configuration file. Using this option you might connect to
-        different spectrecoind instances. If the configuration file is not
+        different aliaswalletd instances. If the configuration file is not
         existing, a minimal one with a random rpc password will be generated.
         Default: ${configfileLocation}
     -h  Show this help
@@ -125,7 +131,7 @@ connectToDaemon() {
 
 # ============================================================================
 # Every CURL command will yield to a reply, but this reply
-# is very long and surrounded by plain CURL data (non spectrecoind)
+# is very long and surrounded by plain CURL data (non aliaswalletd)
 #
 # Goal: after this function call the global string curl_result_global will
 #       contain just wallet data (bash-optimized)
@@ -182,7 +188,7 @@ cutCURLresult() {
 }
 
 # ============================================================================
-# Starts the daemon (spectrecoind)
+# Starts the daemon (aliaswalletd)
 #
 startDaemon() {
     if [[ "${rpcconnect}" != "127.0.0.1" ]]; then
@@ -197,7 +203,7 @@ startDaemon() {
         local _oldIFS=$IFS
         local _itemBuffer
         IFS='\\'
-        if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+        if (( $(ps -ef | grep -v grep | grep aliaswalletd | wc -l) > 0 )) ; then
             for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
                 echo "${_itemBuffer}"
             done
@@ -205,7 +211,7 @@ startDaemon() {
             for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
                 echo "${_itemBuffer}"
             done
-            sudo systemctl start spectrecoind
+            sudo systemctl start aliaswalletd
         fi
         for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
@@ -313,6 +319,7 @@ getStakingInfo() {
     local _time
     curl_result_global=${curl_result_global#'{'}
     curl_result_global=${curl_result_global%'}'}
+    # Satisfy IntelliJ editor: '
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
@@ -383,7 +390,7 @@ goodbye() {
             info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             reset
-            sudo systemctl stop spectrecoind
+            sudo systemctl stop aliaswalletd
             echo ''
             info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
@@ -450,26 +457,51 @@ advancedmenu() {
     fi
     exec 3>&1
     local _mainMenuPick
-    _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
-        --colors \
-        --title "${TITLE_ADV_MENU}" \
-        --nocancel \
-        --ok-label "${BUTTON_LABEL_ENTER}" \
-        --no-shadow \
-        --menu "" 0 0 12 \
-        \
-        "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
-        "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
-        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
-        "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
-        "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
-        "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
-        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
-        "${_cmdWallet}" "${_explWalletStatus}" \
-        "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
-        "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
-        "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
-        2>&1 1>&3)
+    if [[ "${developerMode}" = 1 ]] ; then
+        # Developer mode activated, add corresponding menu entry
+        _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+            --colors \
+            --title "${TITLE_ADV_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" 0 0 12 \
+            \
+            "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
+            "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+            "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+            "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+            "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+            "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+            "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+            "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+            "${CMD_DEVELOPER_COMMAND}" "${EXPL_CMD_DEVELOPER_COMMAND}" \
+            2>&1 1>&3
+        )
+    else
+        _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+            --colors \
+            --title "${TITLE_ADV_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" 0 0 12 \
+            \
+            "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
+            "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+            "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+            "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+            "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+            "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+            "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+            "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+            2>&1 1>&3
+        )
+    fi
     exit_status=$?
     exec 3>&-
     case ${exit_status} in
@@ -493,6 +525,8 @@ advancedmenu() {
             updateBinaries;;
         "${CMD_USER_COMMAND}")
             userCommandInput;;
+        "${CMD_DEVELOPER_COMMAND}")
+            developerCommandInput;;
         "${CMD_GET_PEER_INFO}")
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
@@ -506,28 +540,6 @@ advancedmenu() {
             errorHandling "${ERROR_ADVMENU_FATAL}" \
                           1;;
     esac
-}
-
-# ============================================================================
-# Goal: Display the wallets addresses for the "Default Address"-account (equals default addr)
-#
-receiveCoins() {
-    executeCURL "getaddressesbyaccount" "\"Default Address\""
-    curl_result_global=${curl_result_global//','/'\n'}
-    curl_result_global=${curl_result_global//'['/''}
-    local _defaultAddress=${curl_result_global//']'/''}
-    executeCURL "liststealthaddresses"
-    curl_result_global=${curl_result_global//','/'\n'}
-    curl_result_global=${curl_result_global//'['/''}
-    local _defaultStealthAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
-
-    dialog --backtitle "${TITLE_BACK}" \
-           --colors \
-           --title "${TITLE_RECEIVE}" \
-           --ok-label "${BUTTON_LABEL_OK}" \
-           --no-shadow \
-           --msgbox "${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 12 "${SIZE_X_TRANS_VIEW}"
-    refreshMainMenu_GUI
 }
 
 # ============================================================================
@@ -697,7 +709,7 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_CONVERT_COINS}")
             convertCoins;;
         "${CMD_MAIN_RECEIVE}")
-            receiveCoins;;
+            viewAddresses;;
         "${CMD_MAIN_ADVANCED_MENU}")
             advancedmenu;;
         "${CMD_MAIN_QUIT}")

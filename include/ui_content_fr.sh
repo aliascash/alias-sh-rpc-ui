@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2018 HLXEasy
 #
@@ -19,7 +23,7 @@
 # The settings are cumulative,
 # e.g., "\Zb\Z1" makes the following text bold (perhaps bright) red.
 # Restore normal settings with "\Zn".
-TITLE_BACK=" Interface Portefeuille Spectrecoin Bash "
+TITLE_BACK=" Interface Portefeuille Aliaswallet Bash "
 TITLE_TRANS=" TRANSACTIONS RECENTES "
 TITLE_INFO=""
 TITLE_GAUGE=" Veuillez patienter "
@@ -27,7 +31,8 @@ TITLE_ERROR=" ERREUR "
 TITLE_SUCCESS=" Succès "
 TITLE_STARTING_DAEMON=" Démarrage du Daemon "
 TITLE_GOODBYE=" AU REVOIR "
-TITLE_SEND=" Envoyer XSPEC "
+TITLE_SEND_PUBLIC=" Envoyer Public "
+TITLE_SEND_PRIVATE=" Envoyer Private "
 TITLE_CONVERT=" Convertir jetons "
 TITLE_USERCOMMAND=" Entrer la commande "
 TITLE_CURL_RESULT=" Résultat cURL "
@@ -40,7 +45,7 @@ TITLE_ADV_MENU=" Options avancées "
 TITLE_WALLET_INFO=" Info Portefeuille "
 TITLE_STAKING_INFO=" Staking Info "
 TITLE_PLEASE_CHOOSE=" Veuillez choisir "
-TITLE_UPDATE_BINARIES=" Mettre à jour Spectrecoin "
+TITLE_UPDATE_BINARIES=" Mettre à jour Aliaswallet "
 TITLE_LANGUAGE_SELECTION=" Langue actuelle: Français/French "
 TITLE_AVAILABLE_VERSIONS=" Available versions "
 TITLE_SYSTEM_STATS=" System Stats "
@@ -65,8 +70,8 @@ BUTTON_LABEL_STOP_DAEMON="Oui, arrêter le démon"
 BUTTON_LABEL_I_HAVE_UNDERSTOOD="OUI - j'ai compris"
 BUTTON_LABEL_SHOW_BALANCE="Montrer le solde"
 BUTTON_LABEL_HIDE_BALANCE="Cacher le solde"
-BUTTON_LABEL_PUBLIC_TO_ANON="XSPEC vers SPECTRE"
-BUTTON_LABEL_ANON_TO_PUBLIC="SPECTRE vers XSPEC"
+BUTTON_LABEL_PUBLIC_TO_PRIVATE="Public vers Private"
+BUTTON_LABEL_PRIVATE_TO_PUBLIC="Private vers Public"
 BUTTON_LABEL_CLOSE="Close window"
 BUTTON_LABEL_RETURN="Return"
 BUTTON_LABEL_EXIT="Exit"
@@ -87,9 +92,9 @@ EXPL_CMD_MAIN_REFRESH="Actualiser l'interface."
 CMD_MAIN_TRANS="Transactions"
 EXPL_CMD_MAIN_VIEWTRANS="Voir toutes les transactions."
 CMD_MAIN_SEND="Envoyer jetons"
-EXPL_CMD_MAIN_SEND="Soit XSPEC ou SPECTRE."
+EXPL_CMD_MAIN_SEND="Soit Public ou Private."
 CMD_MAIN_CONVERT_COINS="Convertir jetons"
-EXPL_CMD_MAIN_CONVERT_COINS="XSPEC <-> SPECTRE."
+EXPL_CMD_MAIN_CONVERT_COINS="Public <-> Private."
 CMD_MAIN_RECEIVE="Recevoir"
 EXPL_CMD_MAIN_RECEIVE="Montrer adresses portefeuille."
 CMD_MAIN_ADVANCED_MENU="Avancé"
@@ -109,7 +114,7 @@ EXPL_CMD_STAKING_ANALYSE="Obtenir détails du staking."
 CMD_GET_WALLET_INFO="Portefeuille"
 EXPL_CMD_GET_WALLET_INFO="Obtenir les infos du portefeuille."
 CMD_UPDATE="Mise à jour"
-EXPL_CMD_UPDATE="Mie à jour des binaires Spectrecoin"
+EXPL_CMD_UPDATE="Mie à jour des binaires Aliaswallet"
 CMD_VIEW_LOG="Logfile"
 EXPL_CMD_VIEW_LOG="View log"
 CMD_CHANGE_LANGUAGE="Langue"
@@ -129,17 +134,17 @@ ERROR_SEND_FATAL="Erreur fatale inattendue dans le dialogue envoyer."
 ERROR_CONVERT_FATAL="Erreur fatale inattendue dans le dialogue conversion des jetons."
 ERROR_TRANS_FATAL="Erreur fatale inattendue dans le dialogue voir toutes les transactions."
 ERROR_GOODBYE_FATAL="Erreur fatale inattendue dans le dialogue arrêter daemon (au revoir)."
-ERROR_SEND_INVALID_ADDRESS="\Z1Vous avez entré une adresse invalide.\Zn\n\nA Une adresse XSPEC valide doit être au format:\n- Commencer par \"S\"\n- Longueur 27-34\n- Majuscule \"O\", \"I\", Minuscule \"l\", et le nombre \"0\" ne sont jamais utilisés pour éciter toute ambiguité visuelle"
-ERROR_SEND_INVALID_ANON_ADDRESS="\Z1Vous avez entré une adresse invalide.\Zn\n\nA Une adresse SPECTRE valide doit être au format:\n- Longueur 102 caractères\n- Majuscule \"O\", \"I\", Minuscule \"l\", et le nombre \"0\" ne sont jamais utilisés pour éciter toute ambiguité visuelle"
+ERROR_SEND_INVALID_ADDRESS="\Z1Vous avez entré une adresse invalide.\Zn\n\nA Une adresse Public valide doit être au format:\n- Commencer par \"S\"\n- Longueur 27-34\n- Majuscule \"O\", \"I\", Minuscule \"l\", et le nombre \"0\" ne sont jamais utilisés pour éciter toute ambiguité visuelle"
+ERROR_SEND_INVALID_PRIVATE_ADDRESS="\Z1Vous avez entré une adresse invalide.\Zn\n\nA Une adresse private valide doit être au format:\n- Longueur 102 caractères\n- Majuscule \"O\", \"I\", Minuscule \"l\", et le nombre \"0\" ne sont jamais utilisés pour éciter toute ambiguité visuelle"
 ERROR_SEND_INVALID_AMOUNT="Le montant doit etre un nombre, avec:\n- plus grand que 0\n- max. 8 décimales"
 ERROR_CURL_MSG_PROMPT="Erreur message CURL:"
 ERROR_401_UNAUTHORIZED="Erreur: RPC login en échec. Avez-vous changé le mot de passe dans redémarrer le démon? Note: Vous pouvez arrêter le démon avec la commande: wallet-stop"
-ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à sprectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
-ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à sprectrecoind n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE="Aucune connexion à Alias wallet daemon n'a pu être établie.\nVous devriez vérifier votre configuration."
+ERROR_DAEMON_NO_CONNECT="Le daemon ne répond plus depuis 60 secondes.\nAucune connexion à Alias wallet daemon n'a pu être établie.\nVous devriez vérifier votre configuration."
 #
 # use \ for a new line - note: there will be no auto line breaking
-ERROR_DAEMON_ALREADY_RUNNING="Spectrecoind (daemon) déjà en cours d'éxécution!\Mais aucune connexion n'a pu être établie.\Cela signifie que le démon vient de démarrer."
-ERROR_DAEMON_STARTING="Spectrecoind arrêté.\Démarrage Spectrecoind (démon)..."
+ERROR_DAEMON_ALREADY_RUNNING="Aliaswalletd (daemon) déjà en cours d'éxécution!\Mais aucune connexion n'a pu être établie.\Cela signifie que le démon vient de démarrer."
+ERROR_DAEMON_STARTING="Aliaswalletd arrêté.\Démarrage Aliaswalletd (démon)..."
 ERROR_DAEMON_WAITING_BEGIN="Le démon a besoin de temps pour s'initialiser.\Attendre 1 minute pour le démon..."
 ERROR_DAEMON_WAITING_MSG="secondes restantes..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS="Démon connecté.\Tout va bien."
@@ -147,8 +152,8 @@ ERROR_DAEMON_WAITING_END="C'est fait. Démarrage de l'interface..."
 #
 TEXT_HEADLINE_WALLET_INFO="Info Portefeuille"
 TEXT_BALANCE="Solde"
-TEXT_CURRENCY="XSPEC"
-TEXT_CURRENCY_ANON="SPECTRE"
+TEXT_CURRENCY="Public"
+TEXT_CURRENCY_PRIVATE="Private"
 TEXT_WALLET_STATE="Portefeuille"
 TEXT_WALLET_HAS_NO_PW="\Z1aucun PW\Zn"
 TEXT_WALLET_IS_UNLOCKED="\Z4déverrouillé\Zn"
@@ -233,7 +238,7 @@ TEXT_GOODBYE_WARNING="\Z1Avant d'éteindre le système, arrêtez le démon d'abo
 TEXT_GOODBYE_DAEMON_STILL_RUNNING="Le démon est toujours en cours d'éxécution."
 TEXT_GOODBYE_DAEMON_STOPPED="Démon arrêté."
 TEXT_GOODBYE_FEEDBACK="Les remarques sont les bienvenues, merci d'avance!"
-TEXT_GOODBYE_DAEMON_NOT_SYNCED="The spectrecoin daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED="The Alias wallet daemon is still not fully synced.\n\nGo back and show log output or exit to cmdline?"
 #
 TEXT_LOGFILE_HEADER="The daemon is in sync if you see \Z1'height='\Zn followed by the current chain height on the log output below. Please be patient, this will take a while! Scroll left/right with cursor keys."
 #
@@ -241,8 +246,8 @@ TEXT_FEEDBACK_WALLET_LOCKED="Portefeuille correctement verrouillé.\n\n\Z5Vous n
 TEXT_FEEDBACK_WALLET_UNLOCKED="Portefeuille correctement déverrouillé."
 TEXT_SUGGESTION_STAKING="Cela prendra un petit moment au démon pour mettre à jour le statut du staking, après que le portefeuille soit verrouillé/déverrouillé.\nUtiliser la \Z4${CMD_MAIN_REFRESH}\Zn commande dans le menu principal pour rafraichir l'écran."
 TEXT_FEEDBACK_RECEIVE="Appuyez sur retour pour continuer vers le menu principal."
-TEXT_DEFAULT_ADDRESS="Adresse XSPEC par défaut"
-TEXT_DEFAULT_STEALTH_ADDRESS="Adresse SPECTRE par défaut"
+TEXT_DEFAULT_PUBLIC_ADDRESS="Adresse Public par défaut"
+TEXT_DEFAULT_PRIVATE_ADDRESS="Adresse Private par défaut"
 #
 TEXT_SEND_UNLOCK_WALLET_AGAIN="Notice\nVeuillez noter:\nVous devez 'déverrouiller' le portefeuille pour staker à nouveau.\n"
 TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE="\nAugmenter la taille du terminal à au moins"
@@ -270,7 +275,7 @@ TEXT_COIN_TYPE_TO_SEND_QUESTION="\nQuel type de jeton voulez-vous envoyer?"
 TEXT_CONVERSION_QUESTION="\nDans quelle direction voulez-vous convertir?"
 TEXT_AMOUNT_TO_CONVERT="Montant à convertir"
 #
-TEXT_QUESTION_DO_UPDATE="Mettre à jour les binaires Spectrecoin?\nLe démon Spectrecoin sera arrêté!\n"
+TEXT_QUESTION_DO_UPDATE="Mettre à jour les binaires Aliaswallet?\nLe démon Aliaswallet sera arrêté!\n"
 TEXT_UPDATE_CANCELED="Mise à jour annulée"
 TEXT_UPDATE_CHOOSE_VERSION_HINT="Please select desired version with space:"
 #

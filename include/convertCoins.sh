@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2019 HLXEasy
 #
@@ -11,8 +15,8 @@
 # Ask user in which direction he wants to convert coins.
 # Return:
 # ${CONVERT_NOTHING} .. Nothing should be converted, back to main manu
-# ${CONVERT_ANON_TO_PUBLIC} .. Convert anon coins to public coins
-# ${CONVERT_PUBLIC_TO_ANON} .. Convert public coins to anon coins
+# ${CONVERT_PRIVATE_TO_PUBLIC} .. Convert anon coins to public coins
+# ${CONVERT_PUBLIC_TO_PRIVATE} .. Convert public coins to anon coins
 getConversionDestination() {
     calculateLayout
     dialog \
@@ -20,19 +24,19 @@ getConversionDestination() {
         --colors \
         --no-shadow \
         --title "${TITLE_PLEASE_CHOOSE}" \
-        --ok-label "${BUTTON_LABEL_PUBLIC_TO_ANON}" \
-        --cancel-label "${BUTTON_LABEL_ANON_TO_PUBLIC}" \
+        --ok-label "${BUTTON_LABEL_PUBLIC_TO_PRIVATE}" \
+        --cancel-label "${BUTTON_LABEL_PRIVATE_TO_PUBLIC}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
-        --yesno "${TEXT_CONVERSION_QUESTION}" 7 60
+        --yesno "${TEXT_CONVERSION_QUESTION}" 7 64
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_EXTRA})
             return ${CONVERT_NOTHING};;
         ${DIALOG_CANCEL})
-            return ${CONVERT_ANON_TO_PUBLIC};;
+            return ${CONVERT_PRIVATE_TO_PUBLIC};;
         ${DIALOG_OK})
-            return ${CONVERT_PUBLIC_TO_ANON};;
+            return ${CONVERT_PUBLIC_TO_PRIVATE};;
     esac
 }
 
@@ -49,7 +53,7 @@ convertCoins() {
     local _conversionCmd=''
     local _ringSizeParam=''
 
-    executeCURL "liststealthaddresses"
+    executeCURL "listprivateaddresses"
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
     _destinationAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
@@ -58,23 +62,23 @@ convertCoins() {
     case $? in
         ${CONVERT_NOTHING})
             refreshMainMenu_GUI;;
-        ${CONVERT_PUBLIC_TO_ANON})
-            _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY} > ${TEXT_CURRENCY_ANON}"
-            _conversionCmd="sendspectoanon"
+        ${CONVERT_PUBLIC_TO_PRIVATE})
+            _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY} > ${TEXT_CURRENCY_PRIVATE}"
+            _conversionCmd="sendpublictoprivate"
             _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}
             fi
             _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}"
             ;;
-        ${CONVERT_ANON_TO_PUBLIC})
-            _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY_ANON} > ${TEXT_CURRENCY}"
-            _conversionCmd="sendanontospec"
-            _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
+        ${CONVERT_PRIVATE_TO_PUBLIC})
+            _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY_PRIVATE} > ${TEXT_CURRENCY}"
+            _conversionCmd="sendprivatetopublic"
+            _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PRIVATE}]}+${info_global[${WALLET_STAKE_PRIVATE}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}
             fi
-            _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_ANON}"
+            _headline="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_PRIVATE}"
             _ringSizeParam=',10'
             ;;
     esac

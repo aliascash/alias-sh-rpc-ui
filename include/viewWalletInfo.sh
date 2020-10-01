@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2018-12 HLXEasy
 #
@@ -16,15 +20,15 @@ makeWalletInfoOutput() {
     echo "\n"
     echo "Version:            ${info_global[${WALLET_VERSION}]}\n"
     if ${_showBalance} ; then
-        echo "Balance XSPEC:      ${info_global[${WALLET_BALANCE}]}\n"
-        echo "Stake XSPEC:        ${info_global[${WALLET_STAKE}]}\n"
-        echo "Balance SPECTRE:    ${info_global[${WALLET_BALANCE_ANON}]}\n"
-        echo "Stake SPECTRE:      ${info_global[${WALLET_STAKE_ANON}]}\n"
+        echo "Balance Public:     ${info_global[${WALLET_BALANCE_PUBLIC}]}\n"
+        echo "Stake Public:       ${info_global[${WALLET_STAKE_PUBLIC}]}\n"
+        echo "Balance Private:    ${info_global[${WALLET_BALANCE_PRIVATE}]}\n"
+        echo "Stake Private:      ${info_global[${WALLET_STAKE_PRIVATE}]}\n"
     else
-        echo "Balance XSPEC:      ---\n"
-        echo "Stake XSPEC:        ---\n"
-        echo "Balance SPECTRE:    ---\n"
-        echo "Stake SPECTRE:      ---\n"
+        echo "Balance Public:     ---\n"
+        echo "Stake Public:       ---\n"
+        echo "Balance Private:    ---\n"
+        echo "Stake Private:      ---\n"
     fi
     echo "Connections:        ${info_global[${WALLET_CONNECTIONS}]}\n"
     echo "Data received:      ${info_global[${WALLET_DATARECEIVED}]}\n"
@@ -41,7 +45,8 @@ makeWalletInfoOutput() {
     echo "Blocks:             ${info_global[${WALLET_BLOCKS}]}\n"
     echo "Timeoffset:         ${info_global[${WALLET_TIMEOFFSET}]}\n"
     echo "Moneysupply:        ${info_global[${WALLET_MONEY_SUPPLY}]}\n"
-    echo "Spectresupply:      ${info_global[${WALLET_ANON_SUPPLY}]}\n"
+    echo "Public supply:      ${info_global[${WALLET_MONEY_SUPPLY_PUBLIC}]}\n"
+    echo "Private supply:     ${info_global[${WALLET_MONEY_SUPPLY_PRIVATE}]}\n"
     echo "Proxy:              ${info_global[${WALLET_PROXY}]}\n"
     echo "Proof of work:      ${info_global[${WALLET_PROOF_OF_WORK}]}\n"
     echo "Proof of stake:     ${info_global[${WALLET_PROOF_OF_STAKE}]}\n"

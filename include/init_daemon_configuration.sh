@@ -1,18 +1,22 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2018 HLXEasy
 #
 # ============================================================================
 
-configfileLocation=~/.spectrecoin/spectrecoin.conf
+configfileLocation=~/.aliaswallet/alias.conf
 defaultPassword=supersupersuperlongpassword
 
-stopSpectrecoind(){
-    info "Stop Spectrecoin daemon in case it is already running"
-    sudo systemctl stop spectrecoind
+stopAliaswalletd(){
+    info "Stop Aliaswallet daemon in case it is already running"
+    sudo systemctl stop aliaswalletd
     info "Done"
 }
 
@@ -22,14 +26,14 @@ generatePassword(){
 
 updateConfiguration(){
     generatePassword
-    stopSpectrecoind
+    stopAliaswalletd
     sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" -i ${configfileLocation}
 }
 
 createConfiguration(){
     generatePassword
-    stopSpectrecoind
-    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/spectrecoin.conf > ${configfileLocation}
+    stopAliaswalletd
+    sed "s#^rpcpassword=${defaultPassword}#rpcpassword=${randomRPCPassword}#g" ./sample_config_daemon/alias.conf > ${configfileLocation}
 }
 
 initDaemonConfiguration(){
@@ -77,6 +81,6 @@ initDaemonConfiguration(){
 
     if [[ -z "${logfile}" ]] ; then
         # Configuration value not found, set default
-        logfile=~/.spectrecoin/debug.log
+        logfile=~/.aliaswallet/debug.log
     fi
 }

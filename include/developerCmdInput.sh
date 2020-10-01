@@ -1,26 +1,24 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Aliaswallet shell rpc ui
+# This is a component of the Spectrecoin shell rpc ui
 #
-# SPDX-FileCopyrightText: © 2020 Alias Developers
-# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-FileCopyrightText: © 2020 The Spectrecoin developers
 # SPDX-License-Identifier: MIT
-#
-# Author: 2018 dave#0773@discord
-#
 # ============================================================================
 
 # ============================================================================
 # This function provides a mask for the user to enter commands, that are
-# send to the aliaswalletd daemon. The result will then be displayed.
+# send to the spectrecoind daemon. Additionally it can be configured, how often
+# the command should be executed. The result of the cmd is written to the file
+# "/tmp/<date>-cmd-result.txt".
 #
 # Input: USER_DAEMON_COMMAND global var. that stores the last entered command
 #        USER_DAEMON_PARAMS global var. that stores the last entered parameters
 #
 # Output: USER_DAEMON_COMMAND updated
 #         USER_DAEMON_PARAMS updated
-userCommandInput() {
+developerCommandInput() {
     local _itemBuffer
     local _oldIFS=$IFS
     local _buffer
@@ -34,6 +32,8 @@ userCommandInput() {
         _buffer+="${_itemBuffer}"
     done
     USER_DAEMON_PARAMS="${_buffer}"
+    EXECUTION_AMOUNT=1
+    EXECUTION_TIMESTAMP=$(date +%Y-%m-%d_%H%M)
     IFS=${_oldIFS}
     local _s="${TEXT_USERCOMMAND_EXPL}\n"
          _s+="${TEXT_CLIPBOARD_HINT}"
@@ -48,8 +48,9 @@ userCommandInput() {
         --form "$_s" 0 0 0 \
         "${TEXT_USERCOMMAND_CMD_EXPL}" 1 12 "" 1 11 -1 0 \
         "${TEXT_USERCOMMAND_CMD}:" 2 1 "${USER_DAEMON_COMMAND}" 2 11 33 0 \
-        "${TEXT_USERCOMMAND_PARAMS_EXPL}" 4 12 "" 3 11 -1 0 \
-        "${TEXT_USERCOMMAND_PARAMS}:" 5 1 "${USER_DAEMON_PARAMS}" 5 11 65 0 \
+        "${TEXT_USERCOMMAND_AMOUNT}:" 4 1 "${EXECUTION_AMOUNT}" 4 11 5 0 \
+        "${TEXT_USERCOMMAND_PARAMS_EXPL}" 6 12 "" 6 11 -1 0 \
+        "${TEXT_USERCOMMAND_PARAMS}:" 7 1 "${USER_DAEMON_PARAMS}" 7 11 65 0 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -66,10 +67,13 @@ userCommandInput() {
             _i=0
             local _argContainsSpaces="false"
             unset USER_DAEMON_PARAMS
+            unset EXECUTION_AMOUNT
             for _itemBuffer in ${_buffer}; do
                 _i=$((_i+1))
                 if [[ ${_i} -eq 1 ]]; then
                     USER_DAEMON_COMMAND="${_itemBuffer}"
+                elif [[ ${_i} -eq 2 ]]; then
+                    EXECUTION_AMOUNT="${_itemBuffer}"
                 else
                     if [[ ${_i} -gt 2 ]]; then
                         if [[ ${_argContainsSpaces} != "true" ]]; then
@@ -97,14 +101,15 @@ userCommandInput() {
                     fi
                 fi
             done
-            drawGauge "0" \
-                      "${TEXT_GAUGE_DEFAULT}"
-            executeCURL "${USER_DAEMON_COMMAND}" \
-                        "${USER_DAEMON_PARAMS}"
-            drawGauge "100" \
-                      "${TEXT_GAUGE_ALLDONE}"
+            idx=1
+            while [[ ${idx} -le ${EXECUTION_AMOUNT} ]] ; do
+                executeCURL "${USER_DAEMON_COMMAND}" \
+                            "${USER_DAEMON_PARAMS}"
+                echo "${curl_result_global}" >> /tmp/${EXECUTION_TIMESTAMP}-cmd-result.txt
+                idx=$((idx+1))
+            done
             curlUserFeedbackHandling
-            userCommandInput;;
+            developerCommandInput;;
     esac
     errorHandling "${ERROR_USERCOMMAND_FATAL}" \
                   1
