@@ -1,20 +1,24 @@
 #!/bin/sh
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2018 HLXEasy
+# Author: 2019 dave#0773@discord
 #
 # ============================================================================
 
 (
 cat << EOF
-ICAgIF9fX19fICAgICAgICAgICAgICAgICBfXyAgICAgICAgICAgICAgICAgICAgICAgXyAgICAg
-IFxuCiAgIC8gX19fL19fX18gIF9fXyAgX19fX18vIC9fX19fX19fX18gIF9fX19fX19fXyAgKF8p
-X19fICBcbgogICBcX18gXC8gX18gXC8gXyBcLyBfX18vIF9fLyBfX18vIF8gXC8gX19fLyBfXyBc
-LyAvIF9fIFwgXG4KICBfX18vIC8gL18vIC8gIF9fLyAvX18vIC9fLyAvICAvICBfXy8gL19fLyAv
-Xy8gLyAvIC8gLyAvIFxuCiAvX19fXy8gLl9fXy9cX19fL1xfX18vXF9fL18vICAgXF9fXy9cX19f
-L1xfX19fL18vXy8gL18vICBcbgogICAgIC9fLyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgXG4K
+ICAgICBfX18gICAgX19fICAgICAgICAgICAgICAgXyAgICAgICBfXyAgICAgIF9fX18gICAgIF9f
+IFxuCiAgICAvICAgfCAgLyAoXylfX18gX19fX19fICAgfCB8ICAgICAvIC9fX18gXy8gLyAvX18g
+IC8gL19cbgogICAvIC98IHwgLyAvIC8gX18gYC8gX19fLyAgIHwgfCAvfCAvIC8gX18gYC8gLyAv
+IF8gXC8gX18vXG4KICAvIF9fXyB8LyAvIC8gL18vIChfXyAgKSAgICB8IHwvIHwvIC8gL18vIC8g
+LyAvICBfXy8gL18gIFxuCiAvXy8gIHxfL18vXy9cX18sXy9fX19fLyAgICAgfF9fL3xfXy9cX18s
+Xy9fL18vXF9fXy9cX18vICBcbgo=
 EOF
 )

@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2018 dave#0773@discord
 #
@@ -21,7 +25,7 @@ getCoinTypeToSend() {
         --no-shadow \
         --title "${TITLE_PLEASE_CHOOSE}" \
         --ok-label "${TEXT_CURRENCY}" \
-        --cancel-label "${TEXT_CURRENCY_ANON}" \
+        --cancel-label "${TEXT_CURRENCY_PRIVATE}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
         --yesno "${TEXT_COIN_TYPE_TO_SEND_QUESTION}" 7 52
@@ -52,7 +56,7 @@ sendPublicCoins() {
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY}\n"
+    local _s="${TEXT_BALANCE} (${TEXT_CURRENCY}): ${_balance}\n"
           _s+="${TEXT_SEND_EXPL}\n"
           _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
@@ -65,7 +69,7 @@ sendPublicCoins() {
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow \
         --colors \
-        --title "${TITLE_SEND}" \
+        --title "${TITLE_SEND_PUBLIC}" \
         --form "${_s}" 16 70 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 35 0 \
         "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY}:" 4 2 "${_amount}" 4 26 24 0 \
@@ -130,21 +134,21 @@ sendPublicCoins() {
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
                 sendCoins "${_destinationAddress}"
             fi
-            sendCoins "${_destinationAddress}";;
+            sendCoins "${_destinationAddress}"
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
 }
-sendAnonCoins() {
+sendPrivateCoins() {
     local _amount
     local _destinationAddress=$1
     local _buffer
     local _narration=''
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PRIVATE}]}+${info_global[${WALLET_STAKE_PRIVATE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_ANON}\n"
+    local _s="${TEXT_BALANCE}: ${_balance} ${TEXT_CURRENCY_PRIVATE}\n"
           _s+="${TEXT_SEND_EXPL}\n"
           _s+="${TEXT_CLIPBOARD_HINT}"
     exec 3>&1
@@ -157,10 +161,10 @@ sendAnonCoins() {
         --extra-label "${BUTTON_LABEL_ADDRESS_BOOK}" \
         --no-shadow \
         --colors \
-        --title "${TITLE_SEND}" \
+        --title "${TITLE_SEND_PRIVATE}" \
         --form "${_s}" 17 70 0 \
         "${TEXT_SEND_DESTINATION_ADDRESS_EXPL}:" 2 2 "${_destinationAddress}" 2 26 102 0 \
-        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_ANON}:" 4 2 "${_amount}" 4 26 24 0 \
+        "${TEXT_SEND_AMOUNT_EXPL} ${TEXT_CURRENCY_PRIVATE}:" 4 2 "${_amount}" 4 26 24 0 \
         "${TEXT_SEND_NARRATION}:" 6 2 "${_narration}" 6 26 24 0 \
         2>&1 1>&3)
     exit_status=$?
@@ -173,7 +177,7 @@ sendAnonCoins() {
             refreshMainMenu_GUI;;
         ${DIALOG_EXTRA})
             sry
-            sendAnonCoins "test1";;
+            sendCoins "test1";;
         ${DIALOG_OK})
             # Convert buffer into array
             # $sendInput[0] = Destination address
@@ -186,8 +190,8 @@ sendAnonCoins() {
                 if [[ ${sendInput[0]} =~ ^[a-km-zA-HJ-NP-Z1-9]{102}$ ]]; then
                     _destinationAddress="${sendInput[0]}"
                 else
-                    errorHandling "${ERROR_SEND_INVALID_ANON_ADDRESS}"
-                    sendAnonCoins
+                    errorHandling "${ERROR_SEND_INVALID_PRIVATE_ADDRESS}"
+                    sendCoins
                 fi
             else
                 _destinationAddress="${sendInput[0]}"
@@ -204,9 +208,9 @@ sendAnonCoins() {
                 fi
                 if [[ -z "${sendInput[2]}" ]] ; then
                     # No narration given
-                    executeCURL "sendanontoanon" "\"${_destinationAddress}\",${_amount},10"
+                    executeCURL "sendprivate" "\"${_destinationAddress}\",${_amount},10"
                 else
-                    executeCURL "sendanontoanon" "\"${_destinationAddress}\",${_amount},10,\"${sendInput[2]}\""
+                    executeCURL "sendprivate" "\"${_destinationAddress}\",${_amount},10,\"${sendInput[2]}\""
                 fi
                 if [[ "${info_global[${WALLET_UNLOCKED_UNTIL}]}" != "${TEXT_WALLET_HAS_NO_PW}" ]]; then
                     executeCURL "walletlock"
@@ -220,9 +224,9 @@ sendAnonCoins() {
                 refreshMainMenu_DATA
             else
                 errorHandling "${ERROR_SEND_INVALID_AMOUNT}"
-                sendAnonCoins "${_destinationAddress}"
+                sendCoins "${_destinationAddress}"
             fi
-            sendAnonCoins "${_destinationAddress}";;
+            sendCoins "${_destinationAddress}";;
     esac
     errorHandling "${ERROR_SEND_FATAL}" \
                   1
@@ -234,8 +238,8 @@ sendCoins(){
         ${SEND_NOTHING})
             refreshMainMenu_GUI;;
         ${SEND_PRIVATE_COINS})
-            sendAnonCoins;;
+            sendPrivateCoins "$1";;
         ${SEND_PUBLIC_COINS})
-            sendPublicCoins;;
+            sendPublicCoins "$1";;
     esac
 }

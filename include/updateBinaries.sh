@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2019 HLXEasy
 #
@@ -20,26 +24,26 @@ updateCanceled(){
 }
 
 # ============================================================================
-# Goal: Update Spectrecoin binaries
+# Goal: Update Aliaswallet binaries
 # - Clear the screen
-# - Stop Spectrecoin daemon using sudo
+# - Stop Aliaswallet daemon using sudo
 # - Download the main installation script using curl and excute it
 performUpdate(){
     reset
-    info "Stopping spectrecoind"
-    sudo systemctl stop spectrecoind
+    info "Stopping aliaswalletd"
+    sudo systemctl stop aliaswalletd
     echo ''
     if [[ -n "${choosenVersion}" ]] ; then
         info "Updating to version ${choosenVersion}"
     fi
     info "Downloading and starting update script"
-    curl -L -s https://raw.githubusercontent.com/spectrecoin/installer/master/linux/updateSpectrecoin.sh | sudo bash -s "${choosenVersion}"
-    info "Update finished, press return to restart spectrecoind"
+    curl ${cacertParam} -L -s https://raw.githubusercontent.com/aliascash/installer/master/linux/updateAliaswallet.sh | sudo bash -s "${choosenVersion}"
+    info "Update finished, press return to restart aliaswalletd"
     read a
 }
 
 # ============================================================================
-# Goal: Update Spectrecoin binaries
+# Goal: Update Aliaswallet binaries
 # - Determine list of available versions
 # - Open dialog window with radio list of these versions
 # - Loop here if nothing was selected
@@ -58,14 +62,14 @@ chooseVersionToInstall() {
     # - 3rd field is just a dummy to fill the 3rd argument for each
     #   parameter tripple of the dialog radiolist
     # - "v*" is searched to break the for loop at this point, as here
-    #   the old, unsupported Spectrecoin versions begin.
+    #   the old, unsupported Aliaswallet versions begin.
     dialog \
         --backtitle "${TITLE_BACK}" \
         --colors \
         --no-shadow \
         --title "${TITLE_AVAILABLE_VERSIONS}" \
         --radiolist "\n${TEXT_UPDATE_CHOOSE_VERSION_HINT}" 17 50 10 \
-            $(for i in $(curl -L -s https://api.github.com/repos/spectrecoin/spectre/releases |
+            $(for i in $(curl ${cacertParam} -L -s https://api.github.com/repos/aliascash/alias-wallet/releases |
                             grep -e tag_name -e published_at -e tarball_url |
                             cut -d: -f2 |
                             cut -d '"' -f2) ; do

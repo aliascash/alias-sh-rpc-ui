@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # ============================================================================
 
@@ -90,6 +94,6 @@ calculateLayout() {
     SIZE_Y_GAUGE=0
     #
     LOG_TAIL_WINDOW_HEADER_X=5
-    LOG_TAIL_WINDOW_Y=$((${currentTPutCols} - 4))
-    LOG_TAIL_WINDOW_X=$((${currentTPutLines} - 7))
+    LOG_TAIL_WINDOW_Y=$((${currentTPutCols}))
+    LOG_TAIL_WINDOW_X=$((${currentTPutLines}-6))
 }

@@ -1,19 +1,23 @@
 #!/bin/bash
 # ============================================================================
 #
-# FILE:         spectrecoin_rpc_ui.sh
+# FILE:         aliaswallet_rpc_ui.sh
 #
-# DESCRIPTION:  DIALOG based RPC interface for Spectrecoin.
-#               It's a lightwight UI for spectrecoind, the Spectrecoin daemon
+# DESCRIPTION:  DIALOG based RPC interface for Aliaswallet.
+#               It's a lightwight UI for aliaswalletd, the Aliaswallet daemon
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # REQUIREMENTS: bash 4.x, bc, curl, dialog
 # OPTIONS:      Call script with '-h'
 # NOTES:        You may resize your terminal to get most of it
 # AUTHOR:       dave#0773@discord
 # AUTHOR:       HLXEasy
-# PROJECT:      https://spectreproject.io/
-#               https://github.com/spectrecoin/spectre
-#               https://github.com/spectrecoin/spectrecoin-sh-rpc-ui
+# PROJECT:      https://alias.cash/
+#               https://github.com/aliascash/alias
+#               https://github.com/aliascash/alias-sh-rpc-ui
 #
 # ============================================================================
 
@@ -44,6 +48,7 @@ fi
 . include/convertCoins.sh
 . include/createTransactionList.sh
 . include/createWalletInfo.sh
+. include/developerCmdInput.sh
 . include/getInfo.sh
 . include/getStakingPrediction.sh
 . include/getTransactions.sh
@@ -54,8 +59,10 @@ fi
 . include/setWalletPW.sh
 . include/updateBinaries.sh
 . include/userCmdInput.sh
+. include/viewAddresses.sh
 . include/viewLog.sh
 . include/viewStakingPrediction.sh
+. include/viewSystemStats.sh
 . include/viewTransactions.sh
 . include/viewWalletInfo.sh
 . include/walletEncryption.sh
@@ -69,7 +76,7 @@ helpMe ()
 {
     echo "
 
-    This script opens a dialog based UI to handle a Spectrecoin wallet.
+    This script opens a dialog based UI to handle a Aliaswallet wallet.
 
     Usage:
     ${0} [options]
@@ -77,7 +84,7 @@ helpMe ()
     Optional parameters:
     -c <config-file-to-use>
         Optional configuration file. Using this option you might connect to
-        different spectrecoind instances. If the configuration file is not
+        different aliaswalletd instances. If the configuration file is not
         existing, a minimal one with a random rpc password will be generated.
         Default: ${configfileLocation}
     -h  Show this help
@@ -124,7 +131,7 @@ connectToDaemon() {
 
 # ============================================================================
 # Every CURL command will yield to a reply, but this reply
-# is very long and surrounded by plain CURL data (non spectrecoind)
+# is very long and surrounded by plain CURL data (non aliaswalletd)
 #
 # Goal: after this function call the global string curl_result_global will
 #       contain just wallet data (bash-optimized)
@@ -181,7 +188,7 @@ cutCURLresult() {
 }
 
 # ============================================================================
-# Starts the daemon (spectrecoind)
+# Starts the daemon (aliaswalletd)
 #
 startDaemon() {
     if [[ "${rpcconnect}" != "127.0.0.1" ]]; then
@@ -196,7 +203,7 @@ startDaemon() {
         local _oldIFS=$IFS
         local _itemBuffer
         IFS='\\'
-        if (( $(ps -ef | grep -v grep | grep spectrecoind | wc -l) > 0 )) ; then
+        if (( $(ps -ef | grep -v grep | grep aliaswalletd | wc -l) > 0 )) ; then
             for _itemBuffer in ${ERROR_DAEMON_ALREADY_RUNNING}; do
                 echo "${_itemBuffer}"
             done
@@ -204,7 +211,7 @@ startDaemon() {
             for _itemBuffer in ${ERROR_DAEMON_STARTING}; do
                 echo "${_itemBuffer}"
             done
-            sudo systemctl start spectrecoind
+            sudo systemctl start aliaswalletd
         fi
         for _itemBuffer in ${ERROR_DAEMON_WAITING_BEGIN}; do
             echo "${_itemBuffer}"
@@ -312,6 +319,7 @@ getStakingInfo() {
     local _time
     curl_result_global=${curl_result_global#'{'}
     curl_result_global=${curl_result_global%'}'}
+    # Satisfy IntelliJ editor: '
     IFS=','
     for _itemBuffer in ${curl_result_global}; do
         if [[ ${_itemBuffer} == 'staking'* ]]; then
@@ -382,7 +390,7 @@ goodbye() {
             info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
         ${DIALOG_EXTRA})
             reset
-            sudo systemctl stop spectrecoind
+            sudo systemctl stop aliaswalletd
             echo ''
             info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
         ${DIALOG_CANCEL})
@@ -448,31 +456,63 @@ advancedmenu() {
         _explWalletStatus="${EXPL_CMD_CHANGE_WALLET_PW}"
     fi
     exec 3>&1
-    local _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
-        --colors \
-        --title "${TITLE_ADV_MENU}" \
-        --nocancel \
-        --ok-label "${BUTTON_LABEL_ENTER}" \
-        --no-shadow \
-        --menu "" 0 0 10 \
-        \
-        "${_cmdWallet}" "${_explWalletStatus}" \
-        "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
-        "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
-        "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
-        "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
-        "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
-        "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
-        "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
-        "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
-        2>&1 1>&3)
+    local _mainMenuPick
+    if [[ "${developerMode}" = 1 ]] ; then
+        # Developer mode activated, add corresponding menu entry
+        _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+            --colors \
+            --title "${TITLE_ADV_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" 0 0 12 \
+            \
+            "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
+            "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+            "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+            "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+            "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+            "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+            "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+            "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+            "${CMD_DEVELOPER_COMMAND}" "${EXPL_CMD_DEVELOPER_COMMAND}" \
+            2>&1 1>&3
+        )
+    else
+        _mainMenuPick=$(dialog --backtitle "${TITLE_BACK}" \
+            --colors \
+            --title "${TITLE_ADV_MENU}" \
+            --nocancel \
+            --ok-label "${BUTTON_LABEL_ENTER}" \
+            --no-shadow \
+            --menu "" 0 0 12 \
+            \
+            "${CMD_GET_WALLET_INFO}" "${EXPL_CMD_GET_WALLET_INFO}" \
+            "${CMD_STAKING_ANALYSE}" "${EXPL_CMD_STAKING_ANALYSE}" \
+            "${CMD_GET_PEER_INFO}" "${EXPL_CMD_GET_PEER_INFO}" \
+            "${CMD_GET_SYSTEM_STATS}" "${EXPL_CMD_GET_SYSTEM_STATS_INFO}" \
+            "${CMD_VIEW_LOG}" "${EXPL_CMD_VIEW_LOG}" \
+            "${CMD_USER_COMMAND}" "${EXPL_CMD_USER_COMMAND}" \
+            "${_cmdWallet}" "${_explWalletStatus}" \
+            "${CMD_CHANGE_LANGUAGE}" "${EXPL_CMD_CHANGE_LANGUAGE}" \
+            "${CMD_UPDATE}" "${EXPL_CMD_UPDATE}" \
+            "${CMD_MAIN_MENU}" "${EXPL_CMD_MAIN_MENU}" \
+            2>&1 1>&3
+        )
+    fi
     exit_status=$?
     exec 3>&-
-#    case ${exit_status} in
-#        ${DIALOG_ESC})
-#            refreshMainMenu_DATA;;
-#    esac
+    case ${exit_status} in
+        ${DIALOG_ESC})
+            refreshMainMenu_DATA;;
+    esac
     case ${_mainMenuPick} in
+        "${CMD_GET_SYSTEM_STATS}")
+            viewSystemStats
+            exit 100
+            advancedmenu;;
         "${CMD_GET_WALLET_INFO}")
             viewWalletInfo;;
         "${CMD_STAKING_ANALYSE}")
@@ -485,6 +525,8 @@ advancedmenu() {
             updateBinaries;;
         "${CMD_USER_COMMAND}")
             userCommandInput;;
+        "${CMD_DEVELOPER_COMMAND}")
+            developerCommandInput;;
         "${CMD_GET_PEER_INFO}")
             sry;;
         "${CMD_CHANGE_LANGUAGE}")
@@ -498,28 +540,6 @@ advancedmenu() {
             errorHandling "${ERROR_ADVMENU_FATAL}" \
                           1;;
     esac
-}
-
-# ============================================================================
-# Goal: Display the wallets addresses for the "Default Address"-account (equals default addr)
-#
-receiveCoins() {
-    executeCURL "getaddressesbyaccount" "\"Default Address\""
-    curl_result_global=${curl_result_global//','/'\n'}
-    curl_result_global=${curl_result_global//'['/''}
-    local _defaultAddress=${curl_result_global//']'/''}
-    executeCURL "liststealthaddresses"
-    curl_result_global=${curl_result_global//','/'\n'}
-    curl_result_global=${curl_result_global//'['/''}
-    local _defaultStealthAddress=$(echo ${curl_result_global} | sed -e 's/.*Stealth Address://g' -e 's/ -.*//g')
-
-    dialog --backtitle "${TITLE_BACK}" \
-               --colors \
-               --title "${TITLE_RECEIVE}" \
-               --no-shadow \
-               --infobox "${TEXT_FEEDBACK_RECEIVE}\n\n${TEXT_DEFAULT_ADDRESS}:\n${_defaultAddress}\n\n${TEXT_DEFAULT_STEALTH_ADDRESS}:\n${_defaultStealthAddress}" 0 0
-    read -s
-    refreshMainMenu_GUI
 }
 
 # ============================================================================
@@ -666,13 +686,13 @@ refreshMainMenu_GUI() {
             exit_status=$?
     fi
     exec 3>&-
-#    case ${exit_status} in
-#        "${DIALOG_ESC}")
-#            goodbye;;
-#        "${DIALOG_ERROR}")
-#            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
-#                           1;;
-#    esac
+    case ${exit_status} in
+        "${DIALOG_ESC}")
+            goodbye;;
+        "${DIALOG_ERROR}")
+            errorHandling "${ERROR_MAINMENU_FATAL} Screensize"
+                           1;;
+    esac
     case ${_mainMenuPick} in
         "${CMD_MAIN_REFRESH}")
             refreshMainMenu_DATA;;
@@ -689,7 +709,7 @@ refreshMainMenu_GUI() {
         "${CMD_MAIN_CONVERT_COINS}")
             convertCoins;;
         "${CMD_MAIN_RECEIVE}")
-            receiveCoins;;
+            viewAddresses;;
         "${CMD_MAIN_ADVANCED_MENU}")
             advancedmenu;;
         "${CMD_MAIN_QUIT}")
@@ -707,35 +727,37 @@ refreshMainMenu_DATA() {
     unset transactions
     declare -A transactions
 
+    dialog --no-shadow \
+           --infobox "Loading..." 0 0
     # have to recalc layout since it might have changed
     # (needed for transactions amount to fetch)
     calculateLayout
-    drawGauge "0" \
-            "${TEXT_GAUGE_GET_STAKING_DATA}"
+#    drawGauge "0" \
+#            "${TEXT_GAUGE_GET_STAKING_DATA}"
     executeCURL "getstakinginfo"
-    drawGauge "15" \
-            "${TEXT_GAUGE_PROCESS_STAKING_DATA}"
+#    drawGauge "15" \
+#            "${TEXT_GAUGE_PROCESS_STAKING_DATA}"
     getStakingInfo
-    drawGauge "33" \
-            "${TEXT_GAUGE_GET_INFO}"
+#    drawGauge "33" \
+#            "${TEXT_GAUGE_GET_INFO}"
     executeCURL "getinfo"
-    drawGauge "48" \
-            "${TEXT_GAUGE_PROCESS_INFO}"
+#    drawGauge "48" \
+#            "${TEXT_GAUGE_PROCESS_INFO}"
     getInfo
 
     # At this point, after getInfo() call, the wallet version is known
     handleSettings
 
     if [[ ${SIZE_X_TRANS} -gt 0 ]] ; then
-        drawGauge "66" \
-                "${TEXT_GAUGE_GET_TRANS}"
+#        drawGauge "66" \
+#                "${TEXT_GAUGE_GET_TRANS}"
         executeCURL "listtransactions" '"*",'"${COUNT_TRANS_MENU}"',0,"1"'
-        drawGauge "85" \
-                "${TEXT_GAUGE_PROCESS_TRANS}"
+#        drawGauge "85" \
+#                "${TEXT_GAUGE_PROCESS_TRANS}"
         getTransactions
     fi
-    drawGauge "100" \
-            "${TEXT_GAUGE_ALLDONE}"
+#    drawGauge "100" \
+#            "${TEXT_GAUGE_ALLDONE}"
     refreshMainMenu_GUI
 }
 
@@ -791,6 +813,23 @@ checkRequirement() {
     fi
 }
 
+checkDialogRCConfig() {
+    if [[ ! -e ~/.dialogrc ]] ; then
+        info "~/.dialogrc not found, installing it"
+        cp sample_config_daemon/dialogrc ~/.dialogrc
+        chmod 644 ~/.dialogrc
+    fi
+}
+
+# ============================================================================
+# Use ca-certificates if available
+setupCacertParam() {
+    if [[ -e /etc/ssl/certs/ca-certificates.crt ]] ; then
+        cacertParam='--cacert /etc/ssl/certs/ca-certificates.crt'
+    fi
+}
+
+
 while getopts c:h? option; do
     case ${option} in
         c) configfileLocation="${OPTARG}";;
@@ -799,32 +838,35 @@ while getopts c:h? option; do
     esac
 done
 
+cacertParam=''
 checkRequirement dialog
 checkRequirement bc
 checkRequirement curl
-
+checkDialogRCConfig
 handleSettings
+setupCacertParam
 
-export NCURSES_NO_UTF8_ACS=1
-printf '\033[8;29;134t'
+#Putty fix
+#export NCURSES_NO_UTF8_ACS=1
+#printf '\033[8;29;134t'
 initDaemonConfiguration
 if [[ $(tput lines) -lt 28 ]] || [[ $(tput cols) -lt 74 ]]; then
     simpleMsg "${TITLE_SUGGESTION}" \
               "${TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE} 45x28.\n" \
               "${BUTTON_LABEL_CONTINUE}"
+else
+    message="\n"
+    message+="$(sh ./include/logo.sh | base64 -d)"
+    message+="\n"
+    message+="${TEXT_USE_AT_YOUR_OWN_RISC}"
+    #message+="    Terminal: $(tput longname)\n"
+    #message+="    Dialog $(dialog --version)\n"
+    #message+="      Interface version: ${VERSION}\n"
+
+    simpleMsg "- --- === WARNING === --- -" \
+              "${message}" \
+              "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
 fi
-message="\n"
-message+="$(sh ./include/logo.sh | base64 -d)"
-message+="\n"
-message+="${TEXT_USE_AT_YOUR_OWN_RISC}"
-#message+="    Terminal: $(tput longname)\n"
-#message+="    Dialog $(dialog --version)\n"
-#message+="      Interface version: ${VERSION}\n"
-
-simpleMsg "- --- === WARNING === --- -" \
-          "${message}" \
-          "${BUTTON_LABEL_I_HAVE_UNDERSTOOD}"
-
 #trap refreshMainMenu_DATA INT
 #while :; do
     refreshMainMenu_DATA

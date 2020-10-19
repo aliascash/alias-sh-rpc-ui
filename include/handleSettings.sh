@@ -1,17 +1,24 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2019 HLXEasy
 #
 # ============================================================================
 
-settingsfile=~/.spectrecoin-ui-settings
+settingsfile=~/.aliaswallet-ui-settings
 
 # ============================================================================
 # Goal:
 handleSettings() {
+    # Use default
+    . include/ui_content_en.sh
+    TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
     if [[ -e "${settingsfile}" ]] ; then
         # Settingsfile found
         . "${settingsfile}"
@@ -21,13 +28,9 @@ handleSettings() {
                 # Language file existing
                 . "include/ui_content_${UI_LANGUAGE}.sh"
                 TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
-                return
             fi
         fi
     fi
-    # Use default
-    . include/ui_content_en.sh
-    TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
 }
 
 updateSettings() {

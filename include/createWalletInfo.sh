@@ -1,7 +1,11 @@
 #!/bin/bash
 # ============================================================================
 #
-# This is a component of the Spectrecoin shell rpc ui
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
 # Author: 2018 dave#0773@discord
 #
@@ -27,27 +31,27 @@ makeOutputInfo() {
         echo "${TEXT_HEADLINE_WALLET_INFO}\n"
     fi
 
-    # Balance XSPEC
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_BALANCE_UNCONF}]}+${info_global[${WALLET_STAKE}]}" | bc)
+    # Public balance
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PUBLIC}]}+${info_global[${WALLET_BALANCE_UNCONF_PUBLIC}]}+${info_global[${WALLET_STAKE_PUBLIC}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
     echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY}:-_-\Z4${_balance}\Zn" \
                     "${_textWidth}")"\n"
 
-    # Balance SPECTRE
-    _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}+${info_global[${WALLET_BALANCE_UNCONF_ANON}]}+${info_global[${WALLET_STAKE_ANON}]}" | bc)
+    # Private balance
+    _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PRIVATE}]}+${info_global[${WALLET_BALANCE_UNCONF_PRIVATE}]}+${info_global[${WALLET_STAKE_PRIVATE}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
-    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_ANON}:-_-\Z4${_balance}\Zn" \
+    echo $(fillLine "${TEXT_BALANCE} ${TEXT_CURRENCY_PRIVATE}:-_-\Z4${_balance}\Zn" \
                     "${_textWidth}")"\n"
 
     # Wallet lock state
     echo $(fillLine "${TEXT_WALLET_STATE}: ${info_global[${WALLET_UNLOCKED_UNTIL}]}-_-${TEXT_STAKING_STATE}: ${stakinginfo_global[0]}" \
                     "${_textWidth}")"\n"
 
-    # Staking Info XSPEC
+    # Public staking info
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
         echo "\n${TEXT_HEADLINE_STAKING_INFO} ${TEXT_CURRENCY}\n"
     elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
@@ -55,27 +59,27 @@ makeOutputInfo() {
     fi
     # Available for staking: getStakeWeight()
     # Aging: getBalance() - getStakeWeight
-    local _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}-${info_global[${WALLET_STAKE_WEIGHT}]}" | bc)
-    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
+    local _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PUBLIC}]}-${info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]}" | bc)
+    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
                     "${_textWidth}")"\n"
 
     # Staked: getStake()
-    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE}]}\n"
+    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE_PUBLIC}]}\n"
 
-    # Staking Info SPECTRE
+    # Private staking info
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
-        echo "\n${TEXT_HEADLINE_STAKING_INFO} ${TEXT_CURRENCY_ANON}\n"
+        echo "\n${TEXT_HEADLINE_STAKING_INFO} ${TEXT_CURRENCY_PRIVATE}\n"
     elif [[ ${TEXTHIGHT_INFO} -ge 10 ]] ; then
         echo "\n"
     fi
     # Available for staking: getStakeWeight()
     # Aging: getBalance() - getStakeWeight
-    _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_ANON}]}-${info_global[${WALLET_STAKE_WEIGHT_ANON}]}" | bc)
-    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT_ANON}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
+    _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PRIVATE}]}-${info_global[${WALLET_STAKE_WEIGHT_PRIVATE}]}" | bc)
+    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT_PRIVATE}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
                     "${_textWidth}")"\n"
 
     # Staked: getStake()
-    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE_ANON}]}\n"
+    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE_PRIVATE}]}\n"
 
     # Expected stake time
     echo $(fillLine "${TEXT_EXP_TIME}: ${stakinginfo_global[1]}" \
