@@ -32,7 +32,7 @@ makeOutputInfo() {
     fi
 
     # Public balance
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_BALANCE_UNCONF}]}+${info_global[${WALLET_STAKE}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PUBLIC}]}+${info_global[${WALLET_BALANCE_UNCONF_PUBLIC}]}+${info_global[${WALLET_STAKE_PUBLIC}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
@@ -59,8 +59,8 @@ makeOutputInfo() {
     fi
     # Available for staking: getStakeWeight()
     # Aging: getBalance() - getStakeWeight
-    local _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}-${info_global[${WALLET_STAKE_WEIGHT}]}" | bc)
-    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
+    local _aging=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PUBLIC}]}-${info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]}" | bc)
+    echo $(fillLine "${TEXT_STAKING_AVAILABLE}: \Z4${info_global[${WALLET_STAKE_WEIGHT_PUBLIC}]}\Zn-_-(\Z5${_aging}\Zn ${TEXT_MATURING_COINS})" \
                     "${_textWidth}")"\n"
 
     # Staked: getStake()
