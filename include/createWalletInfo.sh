@@ -64,7 +64,7 @@ makeOutputInfo() {
                     "${_textWidth}")"\n"
 
     # Staked: getStake()
-    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE}]}\n"
+    echo "${TEXT_STAKING_STAKED}: ${info_global[${WALLET_STAKE_PUBLIC}]}\n"
 
     # Private staking info
     if [[ ${TEXTHIGHT_INFO} -ge 13 ]] ; then
