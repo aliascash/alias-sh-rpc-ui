@@ -15,36 +15,23 @@
 # ============================================================================
 # Goal:
 changeLanguage() {
-    declare -A languageArray
-    i=1 #Index counter for adding to array
-    j=1 #Option menu value generator
-    for currentLanguage in $(ls -1 include/ui_content_*.sh) ; do
-        #Dynamic dialogs require an array that has a staggered structure
-        #array[1]=1
-        #array[2]=First_Menu_Option
-        #array[3]=2
-        #array[4]=Second_Menu_Option
-        currentLanguage=${currentLanguage##*_}
-        currentLanguage=${currentLanguage%%.*}
-        languageArray[${i}]=${j}
-        ((i++))
-        languageArray[${i}]=${currentLanguage}
-        ((i++))
-        ((j++))
-    done
-
-    # Uncomment for debug
-    #printf '%s\n' "${languageArray[@]}"
-    #read -rsp "Press any key to continue..." -n1 key
-
+    i=1 #Index counter
     exec 3>&1
+    # The for loop on the dialog parameters produces separate words and so
+    # separate arguments for dialog. That's expected behviour, so ShellCheck
+    # warning SC2046 must be disabled.
+    # shellcheck disable=SC2046
     CHOICE=$(dialog --backtitle "${TITLE_BACK}" \
                     --colors \
                     --no-shadow \
                     --title "${TITLE_LANGUAGE_SELECTION}" \
                     --menu "${TEXT_CHOOSE_LANGUAGE}" \
-                    10 40 6 \
-                    "${languageArray[@]}" \
+                    15 40 11 \
+                    $(for currentLanguage in include/ui_content_*.sh ; do
+                            currentLanguage=${currentLanguage##*_}
+                            echo "${currentLanguage%%.*}" ${i}
+                            ((i++))
+                        done) \
                     2>&1 1>&3)
     exit_status=$?
     exec 3>&-
