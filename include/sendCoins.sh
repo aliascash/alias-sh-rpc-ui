@@ -52,7 +52,7 @@ sendPublicCoins() {
     local _destinationAddress=$1
     local _buffer
     local _narration=''
-    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
+    local _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PUBLIC}]}+${info_global[${WALLET_STAKE_PUBLIC}]}" | bc)
     if [[ ${_balance} == '.'* ]]; then
         _balance="0"${_balance}
     fi
