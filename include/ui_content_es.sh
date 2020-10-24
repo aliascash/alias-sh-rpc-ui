@@ -285,3 +285,5 @@ TEXT_CHOOSE_LANGUAGE="Elegir un idioma"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Cambio de idioma cancelado"
 #
 TEXT_USE_AT_YOUR_OWN_RISC="               ¡¡¡Use a su propio riesgo!!!\n\n"
+#
+TEXT_BOOTSTRAPPING="Installation of bootstrap chain running, please wait..."

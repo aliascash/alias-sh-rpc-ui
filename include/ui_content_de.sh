@@ -283,3 +283,5 @@ TEXT_CHOOSE_LANGUAGE="Bitte Sprache auswählen"
 TEXT_CHOOSE_LANGUAGE_CANCELED="Sprachumschaltung abgebrochen"
 #
 TEXT_USE_AT_YOUR_OWN_RISC="          Verwendung auf eigene Verantwortung!!!\n\n"
+#
+TEXT_BOOTSTRAPPING="Installation der Bootstrap-Chain läuft, bitte warten..."
