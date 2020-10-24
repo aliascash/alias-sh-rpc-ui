@@ -79,6 +79,8 @@ BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE="Latest release"
 BUTTON_LABEL_UPDATE_CHOOSE_VERSION="Choose version"
 BUTTON_LABEL_REFRESH="Refresh"
 BUTTON_LABEL_BACK="Back"
+BUTTON_LABEL_YES="Yes"
+BUTTON_LABEL_NO="No"
 #
 # Main Menu
 CMD_MAIN_LOCK_WALLET="Lock"
@@ -288,3 +290,4 @@ TEXT_CHOOSE_LANGUAGE_CANCELED="Language switch canceled"
 TEXT_USE_AT_YOUR_OWN_RISC="                   Use at your own risk!\n\n"
 #
 TEXT_BOOTSTRAPPING="Installation of bootstrap chain running, please wait..."
+TEXT_ALIAS_SERVICE_NOT_ENABLED="The Alias wallet service is not enabled, so it will not be started after next reboot. Enable the service now?"

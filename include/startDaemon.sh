@@ -12,6 +12,24 @@
 # ============================================================================
 
 # ============================================================================
+# Check, if the aliaswalletd service is enabled
+checkService() {
+    if ! sudo systemctl list-unit-files | grep enabled | grep -q aliaswalletd.service ; then
+        dialog --no-shadow \
+            --colors \
+            --ok-label "${BUTTON_LABEL_YES}" \
+            --cancel-label "${BUTTON_LABEL_NO}" \
+            --default-button 'ok' \
+            --yesno "${TEXT_ALIAS_SERVICE_NOT_ENABLED}" 0 0
+        exit_status=$?
+        case ${exit_status} in
+            ${DIALOG_OK})
+                sudo systemctl enable aliaswalletd.service
+                ;;
+        esac
+    fi
+}
+# ============================================================================
 # Starts the daemon (aliaswalletd)
 #
 startDaemon() {
@@ -29,6 +47,7 @@ startDaemon() {
                   _s+="IP:${rpcconnect}\nPort:${rpcport}\n"
             errorHandling "${ERROR_DAEMON_NO_CONNECT_FROM_REMOTE}\n${_s}" 1
         else
+            checkService
             # UI should connect to local daemon, try to start it
             local _oldIFS=$IFS
             local _itemBuffer
