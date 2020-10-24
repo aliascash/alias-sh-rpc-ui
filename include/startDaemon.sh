@@ -33,11 +33,20 @@ checkService() {
 # Starts the daemon (aliaswalletd)
 #
 startDaemon() {
-    if [ -e /run/bootstrapInstallerRunning ] ; then
+    if [ -e ${HOME}/bootstrapInstallerRunning ] ; then
         dialog --no-shadow \
-               --msgbox \
-               "${TEXT_BOOTSTRAPPING}" \
-               0 0
+            --colors \
+            --ok-label "${BUTTON_LABEL_OK}" \
+            --cancel-label "${BUTTON_LABEL_EXIT}" \
+            --default-button 'ok' \
+            --yesno "${TEXT_BOOTSTRAPPING}" \
+            0 0
+        exit_status=$?
+        case ${exit_status} in
+            ${DIALOG_CANCEL})
+                exit
+                ;;
+        esac
     else
         if [[ "${rpcconnect}" != "127.0.0.1" ]]; then
             # UI should connect to remote daemon, which was not available.
