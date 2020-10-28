@@ -15,10 +15,17 @@
 # Goal: Display the wallets addresses for the "Default Address"-account
 # (equals default addr)
 viewAddresses() {
-    executeCURL "getaddressesbyaccount" "\"Default Address\""
+    executeCURL "getaddressesbyaccount" "\"Default Public Address\""
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
     local _defaultPublicAddress=${curl_result_global//']'/''}
+    # If default public address name is empty, search with the old default name
+    if [ -z "${_defaultPublicAddress}" ] ; then
+        executeCURL "getaddressesbyaccount" "\"Default Address\""
+        curl_result_global=${curl_result_global//','/'\n'}
+        curl_result_global=${curl_result_global//'['/''}
+        _defaultPublicAddress=${curl_result_global//']'/''}
+    fi
     executeCURL "listprivateaddresses"
     curl_result_global=${curl_result_global//','/'\n'}
     curl_result_global=${curl_result_global//'['/''}
