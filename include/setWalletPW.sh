@@ -59,7 +59,7 @@ setWalletPW() {
                         executeCURL "encryptwallet" "\"${_pw}\""
                         #walletpassphrasechange "oldpassphrase" "newpassphrase"
                         # maybe stops daemon?
-                        sudo service aliaswalletd stop
+                        sudo systemctl stop aliaswalletd
                         dialog --backtitle "${TITLE_BACK}" \
                                --no-shadow \
                                --colors \
