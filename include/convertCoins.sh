@@ -65,7 +65,7 @@ convertCoins() {
         ${CONVERT_PUBLIC_TO_PRIVATE})
             _convertDialogTitle="${TITLE_CONVERT}: ${TEXT_CURRENCY} > ${TEXT_CURRENCY_PRIVATE}"
             _conversionCmd="sendpublictoprivate"
-            _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE}]}+${info_global[${WALLET_STAKE}]}" | bc)
+            _balance=$(echo "scale=8 ; ${info_global[${WALLET_BALANCE_PUBLIC}]}+${info_global[${WALLET_STAKE_PUBLIC}]}" | bc)
             if [[ ${_balance} == '.'* ]]; then
                 _balance="0"${_balance}
             fi
