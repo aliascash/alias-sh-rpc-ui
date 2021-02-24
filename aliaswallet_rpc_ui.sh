@@ -55,6 +55,7 @@ fi
 . include/handleSettings.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
+. include/loadLanguage.sh
 . include/sendCoins.sh
 . include/setWalletPW.sh
 . include/startDaemon.sh

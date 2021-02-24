@@ -16,21 +16,22 @@ settingsfile=~/.aliaswallet-ui-settings
 # ============================================================================
 # Goal:
 handleSettings() {
-    # Use default
-    . include/ui_content_en.sh
-    TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
+    # Load default language, which define and fill all variables.
+    loadLanguage en
     if [[ -e "${settingsfile}" ]] ; then
         # Settingsfile found
         . "${settingsfile}"
         if [[ -n "${UI_LANGUAGE}" ]] ; then
             # Language var not empty
-            if [[ -e "include/ui_content_${UI_LANGUAGE}.sh" ]] ; then
-                # Language file existing
-                . "include/ui_content_${UI_LANGUAGE}.sh"
-                TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
+            if [[ -e "locale/ui_content_${UI_LANGUAGE}.yml" ]] ; then
+                # Language file exists, so load it "on top" of already loaded
+                # default language. Not existing entries on the choosen
+                # language stay at their default value.
+                loadLanguage "${UI_LANGUAGE}"
             fi
         fi
     fi
+    TITLE_MENU="${TITLE_BACK}(${info_global[${WALLET_VERSION}]%% *}, UI v${VERSION}) "
 }
 
 updateSettings() {
