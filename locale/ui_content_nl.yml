@@ -153,11 +153,11 @@ ERROR_401_UNAUTHORIZED: "Fout: RPC aanmelding mislukt. Heeft u het wachtwoord ge
 ERROR_DAEMON_NO_CONNECT_FROM_REMOTE: "Er kon geen verbinding worden gemaakt met de Alias portemonnee daemon.\nMogelijk moet u uw configuratie controleren."
 ERROR_DAEMON_NO_CONNECT: "Daemon reageerde niet binnen 60 sec.\nEr kon geen verbinding tot stand worden gebracht met de Alias-portemonnee daemon.\nU moet uw configuratie controleren."
 #
-ERROR_DAEMON_ALREADY_RUNNING: "Alias portemonnee (daemon) is al actief, maar er kon geen verbinding tot stand worden gebracht. Even geduld alstublieft."
-ERROR_DAEMON_STARTING: "Alias portemonnee werkt nog niet, zal nu starten...."
-ERROR_DAEMON_WAITING_BEGIN: "Daemon heeft wat tijd nodig om te initialiseren. Wacht 1 minuut op de daemon..."
+ERROR_DAEMON_ALREADY_RUNNING: "Alias portemonnee (daemon) is al actief,\nmaar er kon geen verbinding tot stand worden\ngebracht. Even geduld alstublieft."
+ERROR_DAEMON_STARTING: "Alias portemonnee werkt nog niet,\nzal nu starten...."
+ERROR_DAEMON_WAITING_BEGIN: "Daemon heeft wat tijd nodig om te initialiseren.\nWacht 1 minuut op de daemon..."
 ERROR_DAEMON_WAITING_MSG: "seconden te gaan..."
-ERROR_DAEMON_WAITING_MSG_SUCCESS: "Daemon is verbonden. Alles is in orde."
+ERROR_DAEMON_WAITING_MSG_SUCCESS: "Daemon is verbonden.\nAlles is in orde."
 ERROR_DAEMON_WAITING_END: "Helemaal klaar. Interface starten..."
 #
 TEXT_HEADLINE_WALLET_INFO: "Portemonnee informatie"
