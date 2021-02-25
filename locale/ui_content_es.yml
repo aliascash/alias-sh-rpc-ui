@@ -1,37 +1,31 @@
-#!/bin/bash
 # ============================================================================
 #
-# Este es un componente del shell rpc ui de Aliaswallet
+# This is a component of the Aliaswallet shell rpc ui
 #
 # SPDX-FileCopyrightText: © 2021 Alias Developers
 # SPDX-License-Identifier: MIT
 #
-# Autor: 2021 HLXEasy
-#
-# En Español (Versión=0.1) por Leo Bitman
+# Author: 2021 HLXEasy
 #
 # ============================================================================
-
+#
 # ============================================================================
-# Establecer variables globales para la salida de texto (para el menú principal).
+# Define global variables for text output
 #
 # 1. Yaml syntax because translations are generated with https://transifex.com/
 # 2. Comments must start with "#" as the first character on the line
-# 3. Interpretar secuencias incrustadas en el texto del diálogo mediante el siguiente carácter: "@Z"
-#    que le dice al diálogo que establezca los colores o atributos de video: 0 a 7 son los ANSI
-#    utilizado en la secuencia: negro, rojo, verde, amarillo, azul, magenta, cian y blanco respectivamente.
-#    Bold se establece con 'b', se restablece con 'B'.
-#    La inversión se establece mediante 'r', se restablece con 'R'.
-#    El subrayado se establece con 'u', se restablece con 'U'.
-#    Los ajustes son acumulativos,
-#    por ejemplo, "@Zb@Z1" hace que el siguiente texto aparezca en negrita (quizás brillante) en rojo.
-#    Se restaura la configuración normal con "@Zn".
+# 3. Interpret embedded "@Z" sequences in the dialog text by the following character,
+#    which tells dialog to set colors or video attributes: 0 through 7 are the ANSI
+#    used in curses: black, red, green, yellow, blue, magenta, cyan and white respectively.
+#    Bold is set by 'b', reset by 'B'.
+#    Reverse is set by 'r', reset by 'R'.
+#    Underline is set by 'u', reset by 'U'.
+#    The settings are cumulative,
+#    e.g., "@Zb@Z1" makes the following text bold (perhaps bright) red.
+#    Restore normal settings with "@Zn".
 #
 # ============================================================================
 # All title strings
-
-
-
 TITLE_BACK: " Interfaz del Monedero Aliaswallet Bash "
 TITLE_TRANS: " TRANSACCIONES RECIENTES "
 TITLE_INFO: "INFORMACION"
@@ -94,7 +88,7 @@ BUTTON_LABEL_YES: "Si"
 BUTTON_LABEL_NO: "No"
 #
 # ============================================================================
-# Menú principal
+# Main Menu
 CMD_MAIN_LOCK_WALLET: "Bloquear"
 EXPL_CMD_MAIN_WALLETLOCK: "Bloquear monedero, no más staking."
 CMD_MAIN_UNLOCK_WALLET: "Desbloquear"
@@ -117,7 +111,7 @@ CMD_MAIN_QUIT: "Salir"
 EXPL_CMD_MAIN_EXIT: "Salir de esta interfaz."
 #
 # ============================================================================
-# Menú Avanzado
+# Advanced Menu
 CMD_GET_SYSTEM_STATS: "Sistema"
 EXPL_CMD_GET_SYSTEM_STATS_INFO: "Mostrar información del dispositivo."
 CMD_USER_COMMAND: "Comando"

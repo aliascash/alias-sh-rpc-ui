@@ -1,0 +1,142 @@
+# ============================================================================
+#
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+#
+# Author: 2021 HLXEasy
+#
+# ============================================================================
+#
+# ============================================================================
+# Define global variables for text output
+#
+# 1. Yaml syntax because translations are generated with https://transifex.com/
+# 2. Comments must start with "#" as the first character on the line
+# 3. Interpret embedded "@Z" sequences in the dialog text by the following character,
+#    which tells dialog to set colors or video attributes: 0 through 7 are the ANSI
+#    used in curses: black, red, green, yellow, blue, magenta, cyan and white respectively.
+#    Bold is set by 'b', reset by 'B'.
+#    Reverse is set by 'r', reset by 'R'.
+#    Underline is set by 'u', reset by 'U'.
+#    The settings are cumulative,
+#    e.g., "@Zb@Z1" makes the following text bold (perhaps bright) red.
+#    Restore normal settings with "@Zn".
+#
+# ============================================================================
+# All title strings
+TITLE_TRANS: "ОСТАННІ УГОДИ"
+TITLE_GAUGE: "Будь ласка, зачекайте"
+TITLE_ERROR: "ПОМИЛКА"
+TITLE_SUCCESS: "Успішно"
+TITLE_STARTING_DAEMON: "Запуск Daemon - Вам потрібно почекати, поки"
+TITLE_GOODBYE: "Бувай"
+TITLE_SEND_PUBLIC: "Надіслати публічно"
+TITLE_SEND_PRIVATE: "Надіслати приватно"
+TITLE_CONVERT: "Конвертувати монети"
+TITLE_USERCOMMAND: "Введіть команду"
+TITLE_CURL_RESULT: " cURL результат"
+TITLE_RECEIVE: "Адреса гаманця"
+TITLE_SUGGESTION: "Навіювання"
+TITLE_PLACEHOLDER_FUNCTION: " SRY "
+TITLE_ENCRYPT_WALLET: " Encrypt Wallet "
+TITLE_VIEW_TRANSACTIONS: "Сторінка"
+TITLE_ADV_MENU: "Розширені опції"
+TITLE_WALLET_INFO: "Інформація про гаманець"
+TITLE_STAKING_INFO: "Інформація про стекінг"
+TITLE_PLEASE_CHOOSE: "Будь-ласка оберіть"
+TITLE_UPDATE_BINARIES: "Оновлення Aliaswallet"
+TITLE_LANGUAGE_SELECTION: "Поточний мова: українська"
+TITLE_AVAILABLE_VERSIONS: "Доступні версії"
+TITLE_SYSTEM_STATS: "Статистика системи"
+#
+# ============================================================================
+# Buttons
+BUTTON_LABEL_ENCRYPT: "Шифрувати"
+BUTTON_LABEL_RESTART_DAEMON: "Перезапуск daemon"
+BUTTON_LABEL_ENTER: "Enter"
+BUTTON_LABEL_OK: "OK"
+BUTTON_LABEL_LEAVE: "Залишати"
+BUTTON_LABEL_CONTINUE: "Продовжувати"
+BUTTON_LABEL_PREVIOUS: "Попередній"
+BUTTON_LABEL_NEXT: "Наступний"
+BUTTON_LABEL_SEND: "Надіслати"
+BUTTON_LABEL_EXECUTE: "Знищити"
+BUTTON_LABEL_HELP: "Допомога"
+BUTTON_LABEL_ADDRESS_BOOK: "Адресна книга"
+BUTTON_LABEL_MAIN_MENU: "Головне меню"
+BUTTON_LABEL_SHOW_STAKES: "Показати стеки"
+BUTTON_LABEL_HIDE_STAKES: "Приховати стеки"
+BUTTON_LABEL_JUST_LEAVE: "Ні, просто вийти з інтерфейсу"
+BUTTON_LABEL_STOP_DAEMON: "Так, зупинка daemon"
+BUTTON_LABEL_I_HAVE_UNDERSTOOD: "Так я розумію"
+BUTTON_LABEL_SHOW_BALANCE: "Показати баланс"
+BUTTON_LABEL_HIDE_BALANCE: "Приховати баланс"
+BUTTON_LABEL_PUBLIC_TO_PRIVATE: "З публічного в приватний"
+BUTTON_LABEL_PRIVATE_TO_PUBLIC: "З приватного в публічний"
+BUTTON_LABEL_CLOSE: "Закрити вікно"
+BUTTON_LABEL_RETURN: "Повернути"
+BUTTON_LABEL_EXIT: "Вихід"
+BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE: "Останній випуск"
+BUTTON_LABEL_UPDATE_CHOOSE_VERSION: "Виберіть версію"
+BUTTON_LABEL_REFRESH: "Оновити"
+BUTTON_LABEL_BACK: "Назад"
+BUTTON_LABEL_YES: "Так"
+BUTTON_LABEL_NO: "Ні"
+#
+# ============================================================================
+# Main Menu
+CMD_MAIN_LOCK_WALLET: "Блокування"
+EXPL_CMD_MAIN_WALLETLOCK: "Блокування гаманець, без можливості брати участь в стекінгу."
+CMD_MAIN_UNLOCK_WALLET: "Розблокувати"
+EXPL_CMD_MAIN_WALLETUNLOCK: "Відкрити гаманець тільки для стекінгу."
+CMD_MAIN_ENCRYPT_WALLET: "Шифрувати"
+EXPL_CMD_MAIN_WALLETENCRYPT: "Шифрування гаманця підвищує захист."
+CMD_MAIN_REFRESH: "Оновлення"
+EXPL_CMD_MAIN_REFRESH: "Оновлення інтерфейсу."
+CMD_MAIN_TRANS: "Операції"
+EXPL_CMD_MAIN_VIEWTRANS: "Переглянути всі транзакції."
+CMD_MAIN_SEND: "Надіслати монети"
+EXPL_CMD_MAIN_SEND: "Виберіть публічні чи приватні"
+CMD_MAIN_CONVERT_COINS: "Конвертувати монети"
+EXPL_CMD_MAIN_CONVERT_COINS: "Публічні <-> Приватні."
+CMD_MAIN_RECEIVE: "Отримати"
+EXPL_CMD_MAIN_RECEIVE: "Показати адреси гаманця"
+CMD_MAIN_ADVANCED_MENU: "Розширений"
+EXPL_CMD_MAIN_ADVANCEDMENU: "Розширені опції."
+CMD_MAIN_QUIT: "Вихід"
+EXPL_CMD_MAIN_EXIT: "Вихід з цього інтерфейсу."
+#
+# ============================================================================
+# Advanced Menu
+CMD_GET_SYSTEM_STATS: "Система"
+EXPL_CMD_GET_SYSTEM_STATS_INFO: "Показати дані пристрою."
+CMD_USER_COMMAND: "Команда"
+EXPL_CMD_USER_COMMAND: "Надіслати команди до daemon."
+CMD_DEVELOPER_COMMAND: "DevCmd"
+EXPL_CMD_DEVELOPER_COMMAND: "Режим розробника."
+CMD_CHANGE_WALLET_PW: "Reencrypt"
+EXPL_CMD_CHANGE_WALLET_PW: "Зміна пароля гаманця."
+CMD_STAKING_ANALYSE: "Стекінг"
+EXPL_CMD_STAKING_ANALYSE: "Отримати деталі стекінгу"
+CMD_GET_WALLET_INFO: "Гаманець"
+EXPL_CMD_GET_WALLET_INFO: "Отримати інформацію про гаманець."
+CMD_UPDATE: "Оновлення"
+EXPL_CMD_UPDATE: "Оновлення Aliaswallet бінарники"
+CMD_VIEW_LOG: "Файли входу"
+EXPL_CMD_VIEW_LOG: "Перегляд журналу"
+CMD_CHANGE_LANGUAGE: "Мова"
+EXPL_CMD_CHANGE_LANGUAGE: "Змінити мову цього інтерфейсу."
+CMD_GET_PEER_INFO: ""
+EXPL_CMD_GET_PEER_INFO: ""
+CMD_MAIN_MENU: "Головний"
+EXPL_CMD_MAIN_MENU: "Поверніться до головного меню."
+#
+# Error Feedback
+ERROR_MAINMENU_FATAL: "Несподівана фатальна помилка в головному вікні меню."
+ERROR_ADVMENU_FATAL: "Несподівана фатальна помилка в розширеному вікні меню."
+TEXT_WALLET_STATE: "Гаманець"
+TEXT_STAKING_STATE: "Стекінг"
+TEXT_USERCOMMAND_CMD: "Команда"
+TEXT_SYSTEM: "Система"
