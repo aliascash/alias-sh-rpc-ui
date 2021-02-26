@@ -36,6 +36,6 @@ viewAddresses() {
            --title "${TITLE_RECEIVE}" \
            --ok-label "${BUTTON_LABEL_OK}" \
            --no-shadow \
-           --msgbox "${TEXT_DEFAULT_PUBLIC_ADDRESS}:\n${_defaultPublicAddress}\n\n${TEXT_DEFAULT_PRIVATE_ADDRESS}:\n${_defaultPrivateAddress}" 12 "${SIZE_X_TRANS_VIEW}"
+           --msgbox "\n${TEXT_DEFAULT_PUBLIC_ADDRESS}:\n${_defaultPublicAddress}\n\n${TEXT_DEFAULT_PRIVATE_ADDRESS}:\n${_defaultPrivateAddress}" 12 55
     refreshMainMenu_GUI
 }
