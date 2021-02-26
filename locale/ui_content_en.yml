@@ -159,6 +159,7 @@ ERROR_DAEMON_WAITING_BEGIN: "Daemon needs some time to initialize.\nWaiting 1 mi
 ERROR_DAEMON_WAITING_MSG: "seconds to go..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS: "Daemon connected.\nEverythings fine."
 ERROR_DAEMON_WAITING_END: "All done. Starting Interface..."
+ERROR_LANGUAGE_NOT_FOUND: "Configured language '%s' not found, reset to default '%s'."
 #
 TEXT_HEADLINE_WALLET_INFO: "Wallet Info"
 TEXT_BALANCE: "Balance"
