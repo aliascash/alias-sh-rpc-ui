@@ -161,6 +161,7 @@ ERROR_DAEMON_WAITING_MSG_SUCCESS: "Verbindung zum Daemon hergestellt."
 ERROR_DAEMON_WAITING_END: "Vorbereitungen erledigt, starte GUI..."
 ERROR_LANGUAGE_NOT_FOUND: "Konfigurierte Sprache '%s' nicht gefunden, setze auf Standard '%s' zurück."
 #
+TEXT_LOADING_UI: "Lade Benutzeroberfläche und verbinde zum Daemon..."
 TEXT_HEADLINE_WALLET_INFO: "Wallet Info"
 TEXT_BALANCE: "Saldo"
 TEXT_CURRENCY: "Public"
