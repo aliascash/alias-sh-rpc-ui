@@ -248,6 +248,7 @@ TEXT_GAUGE_GET_TRANS: "Getting transactions data from daemon..."
 TEXT_GAUGE_PROCESS_TRANS: "Processing transactions data..."
 #
 TEXT_GOODBYE_WARNING: "@Z1If you plan to shutdown the system, daemon must be stopped before to prevent database inconsistencies!@Zn\n\nDo you want to stop the daemon (no more staking) or just exit the UI?"
+TEXT_GOODBYE_WARNING_REMOTE: "Exit Shell-UI?\n(Daemon is still running as we're remote connected)"
 TEXT_GOODBYE_DAEMON_STILL_RUNNING: "Daemon is still running."
 TEXT_GOODBYE_DAEMON_STOPPED: "Daemon stopped."
 TEXT_GOODBYE_FEEDBACK: "Any feedback appreciated, please let us know. Thank you!"
