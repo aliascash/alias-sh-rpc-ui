@@ -248,6 +248,7 @@ TEXT_GAUGE_GET_TRANS: "Transaktionsdaten vom Dienst holen..."
 TEXT_GAUGE_PROCESS_TRANS: "Transaktionsdaten verarbeiten..."
 #
 TEXT_GOODBYE_WARNING: "@Z1Wenn das System heruntergefahren werden soll, muss der Dienst vorher gestoppt werden, um Datenbank-Inkonsistenzen zu vermeiden!@Zn\n\nMöchten Sie den Dienst stoppen (kein weiteres Staking) oder nur das UI beenden?"
+TEXT_GOODBYE_WARNING_REMOTE: "Shell-UI beenden?\n(Daemon läuft weiterhin, da Remote-Verbindung besteht)"
 TEXT_GOODBYE_DAEMON_STILL_RUNNING: "Dienst läuft noch."
 TEXT_GOODBYE_DAEMON_STOPPED: "Dienst gestoppt."
 TEXT_GOODBYE_FEEDBACK: "Jegliches Feedback ist gern gesehen! Vielen Dank."
