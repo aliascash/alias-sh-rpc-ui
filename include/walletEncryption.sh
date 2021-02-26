@@ -22,7 +22,7 @@ getPassword(){
     _currentPassword=$(dialog --backtitle "${TITLE_BACK}" \
         --no-shadow \
         --insecure \
-        --passwordbox "${_question}" 0 0 \
+        --passwordbox "\n ${_question}" 10 50 \
         2>&1 1>&3)
     exit_status=$?
     exec 3>&-
@@ -56,20 +56,20 @@ changePasswordDialog() {
 
     getPassword "${TEXT_CURRENT_PW_EXPL}" currentPassword
     if [[ -z "${currentPassword}" ]] ; then
-        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NO_PASS_GIVEN}" 6 30
+        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "\n ${TEXT_NO_PASS_GIVEN}" 8 50
         changePasswordDialog
     else
         getPassword "${TEXT_NEW_PW1_EXPL}" newPassword1
         getPassword "${TEXT_NEW_PW2_EXPL}" newPassword2
         if [[ -z "${newPassword1}" ]] ; then
-            dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NO_NEW_PASS_GIVEN}" 6 30
+            dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "\n ${TEXT_NO_NEW_PASS_GIVEN}" 8 50
             changePasswordDialog
         elif [[ "${newPassword1}" != "${newPassword2}" ]] ; then
-            dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NEW_PASS_NOT_EQUAL}" 6 30
+            dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "\n ${TEXT_NEW_PASS_NOT_EQUAL}" 8 50
             changePasswordDialog
         else
             executeCURL "walletpassphrasechange" "\"${currentPassword}\",\"${newPassword1}\""
-            dialog --title "${TITLE_SUCCESS}" --no-shadow --msgbox "${TEXT_PASS_CHANGE_SUCCESSFUL}" 6 30
+            dialog --title "${TITLE_SUCCESS}" --no-shadow --msgbox "\n ${TEXT_PASS_CHANGE_SUCCESSFUL}" 8 50
         fi
     fi
     unset currentPassword
@@ -85,14 +85,14 @@ encryptWallet() {
     getPassword "${TEXT_NEW_PW1_EXPL}" newPassword1
     getPassword "${TEXT_NEW_PW2_EXPL}" newPassword2
     if [[ -z "${newPassword1}" ]] ; then
-        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NO_NEW_PASS_GIVEN}" 6 30
+        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "\n ${TEXT_NO_NEW_PASS_GIVEN}" 8 50
         encryptWallet
     elif [[ "${newPassword1}" != "${newPassword2}" ]] ; then
-        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "${TEXT_NEW_PASS_NOT_EQUAL}" 6 30
+        dialog --title "${TITLE_ERROR}" --no-shadow --msgbox "\n ${TEXT_NEW_PASS_NOT_EQUAL}" 8 50
         encryptWallet
     else
         executeCURL "encryptwallet" "\"${newPassword1}\""
-        dialog --title "${TITLE_SUCCESS}" --no-shadow --msgbox "${TEXT_WALLET_ENCRYPTION_SUCCESSFUL}" 6 30
+        dialog --title "${TITLE_SUCCESS}" --no-shadow --msgbox "\n ${TEXT_WALLET_ENCRYPTION_SUCCESSFUL}" 8 50
     fi
     unset newPassword1
     unset newPassword2
