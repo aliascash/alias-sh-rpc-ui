@@ -43,8 +43,13 @@ loadLanguage() {
                 #echo "Evaluating '${currentLine}'"
                 currentKey="${currentLine%%: *}"
                 currentValue=${currentLine#*: }
-                #echo "Key: $currentKey / Value: $currentValue"
-                eval "$currentKey"="${currentValue//@/\\}"
+                if [ -n "${currentValue}" ] ; then
+                    #echo "Key: $currentKey / Value: $currentValue"
+                    eval "$currentKey"="${currentValue//@/\\}"
+                else
+                    #echo "Value of key ${currentKey} is empty, skipping evaluation"
+                    :
+                fi
                 ;;
         esac
     done < "locale/ui_content_${languageToLoad}.yml"
