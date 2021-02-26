@@ -673,7 +673,7 @@ refreshMainMenu_DATA() {
     declare -A transactions
 
     dialog --no-shadow \
-           --infobox "Loading..." 0 0
+           --infobox "\n${TEXT_LOADING_UI}" 6 40
     # have to recalc layout since it might have changed
     # (needed for transactions amount to fetch)
     calculateLayout
