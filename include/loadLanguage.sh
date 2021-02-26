@@ -43,7 +43,9 @@ loadLanguage() {
                 #echo "Evaluating '${currentLine}'"
                 currentKey="${currentLine%%: *}"
                 currentValue=${currentLine#*: }
-                if [ -n "${currentValue}" ] ; then
+                # $currentValue is not really empty if no value given,
+                # there's still '""' on it!
+                if [ "${currentValue}" != '""' ] ; then
                     #echo "Key: $currentKey / Value: $currentValue"
                     eval "$currentKey"="${currentValue//@/\\}"
                 else
