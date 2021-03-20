@@ -28,7 +28,7 @@
 # All title strings
 TITLE_BACK: " Interfaz del Monedero Aliaswallet Bash "
 TITLE_TRANS: " TRANSACCIONES RECIENTES "
-TITLE_INFO: "INFORMACION"
+TITLE_INFO: ""
 TITLE_GAUGE: " Por favor espere "
 TITLE_ERROR: " ERROR "
 TITLE_SUCCESS: " Éxito "
@@ -159,7 +159,9 @@ ERROR_DAEMON_WAITING_BEGIN: "El demonio necesita algo de tiempo para inicializar
 ERROR_DAEMON_WAITING_MSG: "segundos para ir..."
 ERROR_DAEMON_WAITING_MSG_SUCCESS: "Demonio conectado.\nTodo está bien."
 ERROR_DAEMON_WAITING_END: "Todo listo. Iniciando Interfaz..."
+ERROR_LANGUAGE_NOT_FOUND: "No se ha encontrado el idioma configurado '%s', restablece el predeterminado '%s'."
 #
+TEXT_LOADING_UI: "Cargando la interfaz de usuario y conectando con el daemon..."
 TEXT_HEADLINE_WALLET_INFO: "Info del monedero"
 TEXT_BALANCE: "Saldo"
 TEXT_CURRENCY: "Publico"
@@ -246,6 +248,7 @@ TEXT_GAUGE_GET_TRANS: "Obteniendo datos de transacciones del demonio..."
 TEXT_GAUGE_PROCESS_TRANS: "Procesando datos de transacciones..."
 #
 TEXT_GOODBYE_WARNING: "@Z1Si planea apagar el sistema, ¡el demonio debe detenerse antes para evitar inconsistencias en la base de datos!@Zn\n\n¿Desea detener el demonio (no más staking) o sólo salir de la IU?@Zn"
+TEXT_GOODBYE_WARNING_REMOTE: "¿Salir de Shell-UI?\n(El Daemon sigue funcionando ya que estamos conectados remotamente)"
 TEXT_GOODBYE_DAEMON_STILL_RUNNING: "El demonio todavía se está ejecutando."
 TEXT_GOODBYE_DAEMON_STOPPED: "Demonio detenido."
 TEXT_GOODBYE_FEEDBACK: "Cualquier comentario apreciado, por favor déjanos saber. ¡Gracias!"
