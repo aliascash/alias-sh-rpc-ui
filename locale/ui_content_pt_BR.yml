@@ -1,0 +1,302 @@
+# ============================================================================
+#
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+#
+# Author: 2021 HLXEasy
+#
+# ============================================================================
+#
+# ============================================================================
+# Define global variables for text output
+#
+# 1. Yaml syntax because translations are generated with https://transifex.com/
+# 2. Comments must start with "#" as the first character on the line
+# 3. Interpret embedded "@Z" sequences in the dialog text by the following character,
+#    which tells dialog to set colors or video attributes: 0 through 7 are the ANSI
+#    used in curses: black, red, green, yellow, blue, magenta, cyan and white respectively.
+#    Bold is set by 'b', reset by 'B'.
+#    Reverse is set by 'r', reset by 'R'.
+#    Underline is set by 'u', reset by 'U'.
+#    The settings are cumulative,
+#    e.g., "@Zb@Z1" makes the following text bold (perhaps bright) red.
+#    Restore normal settings with "@Zn".
+#
+# ============================================================================
+# All title strings
+TITLE_BACK: " Interface Aliaswallet Bash "
+TITLE_TRANS: " TRANSAÇÕES RECENTES "
+TITLE_INFO: ""
+TITLE_GAUGE: " Por favor, aguarde "
+TITLE_ERROR: "ERRO"
+TITLE_SUCCESS: " Sucesso "
+TITLE_STARTING_DAEMON: " Iniciando Daemon - Você precisa esperar até "
+TITLE_GOODBYE: " BOA VEZ "
+TITLE_SEND_PUBLIC: "Enviar ao público"
+TITLE_SEND_PRIVATE: "Enviar Privado"
+TITLE_CONVERT: "Converter moedas "
+TITLE_USERCOMMAND: "Entrar no Comando "
+TITLE_CURL_RESULT: "resultado cURL "
+TITLE_RECEIVE: " Endereços de carteira "
+TITLE_SUGGESTION: "Sugestão "
+TITLE_PLACEHOLDER_FUNCTION: " SRY "
+TITLE_ENCRYPT_WALLET: " Carteira Encriptada "
+TITLE_VIEW_TRANSACTIONS: " Página "
+TITLE_ADV_MENU: " Opções avançadas "
+TITLE_WALLET_INFO: "Informações da carteira"
+TITLE_STAKING_INFO: " Informações sobre a estaca "
+TITLE_PLEASE_CHOOSE: " Favor escolher "
+TITLE_UPDATE_BINARIES: "Atualização do Aliaswallet "
+TITLE_LANGUAGE_SELECTION: " Idioma atual: inglês "
+TITLE_AVAILABLE_VERSIONS: " Versões disponíveis "
+TITLE_SYSTEM_STATS: " Estatísticas do sistema "
+#
+# ============================================================================
+# Buttons
+BUTTON_LABEL_ENCRYPT: "Encripte"
+BUTTON_LABEL_RESTART_DAEMON: "Reinicie o daemon"
+BUTTON_LABEL_ENTER: "Digite"
+BUTTON_LABEL_OK: "OK"
+BUTTON_LABEL_LEAVE: "Sair"
+BUTTON_LABEL_CONTINUE: "Continuação"
+BUTTON_LABEL_PREVIOUS: "Anterior"
+BUTTON_LABEL_NEXT: "Próximo"
+BUTTON_LABEL_SEND: "Enviar"
+BUTTON_LABEL_EXECUTE: "Executar"
+BUTTON_LABEL_HELP: "Ajuda"
+BUTTON_LABEL_ADDRESS_BOOK: "Lista de endereços"
+BUTTON_LABEL_MAIN_MENU: "Menu Principal"
+BUTTON_LABEL_SHOW_STAKES: "Mostrar estacas"
+BUTTON_LABEL_HIDE_STAKES: "Ocultar estacas"
+BUTTON_LABEL_JUST_LEAVE: "Não, basta sair da UI"
+BUTTON_LABEL_STOP_DAEMON: "Sim, pare o demônio"
+BUTTON_LABEL_I_HAVE_UNDERSTOOD: "SIM - Eu entendo"
+BUTTON_LABEL_SHOW_BALANCE: "Mostrar equilíbrio"
+BUTTON_LABEL_HIDE_BALANCE: "Ocultar o equilíbrio"
+BUTTON_LABEL_PUBLIC_TO_PRIVATE: "De público a privado"
+BUTTON_LABEL_PRIVATE_TO_PUBLIC: "De privado para público"
+BUTTON_LABEL_CLOSE: "Fechar janela"
+BUTTON_LABEL_RETURN: "Retornar"
+BUTTON_LABEL_EXIT: "Saída"
+BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE: "Último lançamento"
+BUTTON_LABEL_UPDATE_CHOOSE_VERSION: "Escolha a versão"
+BUTTON_LABEL_REFRESH: "Atualização"
+BUTTON_LABEL_BACK: "Voltar"
+BUTTON_LABEL_YES: "Sim"
+BUTTON_LABEL_NO: "Não"
+#
+# ============================================================================
+# Main Menu
+CMD_MAIN_LOCK_WALLET: "Fechadura"
+EXPL_CMD_MAIN_WALLETLOCK: "Fechadura da carteira, sem mais estacas."
+CMD_MAIN_UNLOCK_WALLET: "Desbloqueie"
+EXPL_CMD_MAIN_WALLETUNLOCK: "Desbloquear a carteira somente para estacas."
+CMD_MAIN_ENCRYPT_WALLET: "Encripte"
+EXPL_CMD_MAIN_WALLETENCRYPT: "Encripta a carteira, proporciona Segurança."
+CMD_MAIN_REFRESH: "Atualização"
+EXPL_CMD_MAIN_REFRESH: "Refresque a interface."
+CMD_MAIN_TRANS: "Transações"
+EXPL_CMD_MAIN_VIEWTRANS: "Ver todas as transações."
+CMD_MAIN_SEND: "Enviar moedas"
+EXPL_CMD_MAIN_SEND: "Público ou Privado."
+CMD_MAIN_CONVERT_COINS: "Converter moedas"
+EXPL_CMD_MAIN_CONVERT_COINS: "Público <->Privado."
+CMD_MAIN_RECEIVE: "Receba"
+EXPL_CMD_MAIN_RECEIVE: "Mostrar endereços de carteiras."
+CMD_MAIN_ADVANCED_MENU: "Avançado"
+EXPL_CMD_MAIN_ADVANCEDMENU: "Opções avançadas."
+CMD_MAIN_QUIT: "Sair"
+EXPL_CMD_MAIN_EXIT: "Saia desta interface."
+#
+# ============================================================================
+# Advanced Menu
+CMD_GET_SYSTEM_STATS: "Sistema"
+EXPL_CMD_GET_SYSTEM_STATS_INFO: "Mostrar informações do dispositivo."
+CMD_USER_COMMAND: "Comando"
+EXPL_CMD_USER_COMMAND: "Envio de comandos para daemon."
+CMD_DEVELOPER_COMMAND: "DevCmd"
+EXPL_CMD_DEVELOPER_COMMAND: "Modo desenvolvedor."
+CMD_CHANGE_WALLET_PW: "Reencriptação"
+EXPL_CMD_CHANGE_WALLET_PW: "Alterar a senha da carteira."
+CMD_STAKING_ANALYSE: "Estacas"
+EXPL_CMD_STAKING_ANALYSE: "Obtenha detalhes da piquetagem."
+CMD_GET_WALLET_INFO: "Carteira"
+EXPL_CMD_GET_WALLET_INFO: "Obtenha informações sobre a carteira."
+CMD_UPDATE: "Atualização"
+EXPL_CMD_UPDATE: "Atualização dos binários Aliaswallet"
+CMD_VIEW_LOG: "Arquivo de log"
+EXPL_CMD_VIEW_LOG: "Ver log"
+CMD_CHANGE_LANGUAGE: "Idioma"
+EXPL_CMD_CHANGE_LANGUAGE: "Mude o idioma desta IU."
+CMD_GET_PEER_INFO: "Pares"
+EXPL_CMD_GET_PEER_INFO: "Mostrar os pares atuais."
+CMD_MAIN_MENU: "Principal"
+EXPL_CMD_MAIN_MENU: "Voltar ao menu principal."
+#
+# Error Feedback
+ERROR_MAINMENU_FATAL: "Erro fatal inesperado no diálogo do menu principal."
+ERROR_ADVMENU_FATAL: "Erro fatal inesperado no diálogo do menu avançado."
+ERROR_SYSTEM_STATS_FATAL: "Erro fatal inesperado no diálogo das estatísticas do sistema."
+ERROR_USERCOMMAND_FATAL: "Erro fatal inesperado no diálogo de comando do usuário."
+ERROR_PW_FATAL: "Erro fatal inesperado no diálogo de senha."
+ERROR_SEND_FATAL: "Erro fatal inesperado no diálogo de envio."
+ERROR_CONVERT_FATAL: "Erro fatal inesperado no diálogo de conversão de moedas."
+ERROR_TRANS_FATAL: "Erro fatal inesperado ao ver todas as transações de diálogo."
+ERROR_GOODBYE_FATAL: "Erro fatal inesperado no diálogo daemon stop (adeus)."
+ERROR_SEND_INVALID_ADDRESS: "@Z1Você inseriu um endereço inválido.@Zn\n\nUm endereço público válido deve estar na forma:\n- Começando com 'S'\n- Comprimento 27-34\n- As letras maiúsculas 'O', 'I', letras minúsculas 'l' e o número '0' nunca são usadas para evitar ambigüidade visual"
+ERROR_SEND_INVALID_PRIVATE_ADDRESS: "@Z1Você inseriu um endereço inválido.@Zn\n\nUm endereço privado válido deve estar no formulário:\n- Comprimento 102 caracteres\n- As letras maiúsculas 'O', 'I', letras minúsculas 'l' e o número '0' nunca são usadas para evitar ambigüidade visual"
+ERROR_SEND_INVALID_AMOUNT: "O valor deve ser um número, com:- maior que 0- máximo. 8 dígitos atrás da vírgula decimal"
+ERROR_CURL_MSG_PROMPT: "Mensagem de erro CURL:"
+ERROR_401_UNAUTHORIZED: "Erro: O login do RPC falhou. Você mudou a senha sem reiniciar o daemon? Nota: Você pode parar o daemon com o comando: wallet-stop"
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE: "Nenhuma conexão com o daemon da carteira Alias poderia ser estabelecida.Talvez você precise \nverificar sua configuração."
+ERROR_DAEMON_NO_CONNECT: "Daemon não respondeu em 60 segundos.\nNenhuma conexão com o Daemon da carteira Alias pôde ser estabelecida.\nTalvez você precise verificar sua configuração."
+#
+ERROR_DAEMON_ALREADY_RUNNING: "Aliaswalletd (daemon) já em funcionamento!\nMas nenhuma conexão pôde ser estabelecida.\nIsto significa que o daemon foi apenas iniciado."
+ERROR_DAEMON_STARTING: "O Aliaswalletd não está em funcionamento.\nIniciando Aliaswalletd (daemon)..."
+ERROR_DAEMON_WAITING_BEGIN: "Daemon precisa de algum tempo para se inicializar.\nEsperar 1 minuto para o daemon..."
+ERROR_DAEMON_WAITING_MSG: "segundos para ir..."
+ERROR_DAEMON_WAITING_MSG_SUCCESS: "Daemon conectado.\nTudo de bom."
+ERROR_DAEMON_WAITING_END: "Tudo feito. Interface inicial..."
+ERROR_LANGUAGE_NOT_FOUND: "Configurado idioma '%s' não encontrado, redefinido para o padrão '%s'."
+#
+TEXT_LOADING_UI: "Carregando a interface do usuário e conectando-se ao daemon..."
+TEXT_HEADLINE_WALLET_INFO: "Informações sobre a carteira"
+TEXT_BALANCE: "Balanço"
+TEXT_CURRENCY: "Público"
+TEXT_CURRENCY_PRIVATE: "Privado"
+TEXT_WALLET_STATE: "Carteira"
+TEXT_WALLET_HAS_NO_PW: "@Z1no PW@Zn"
+TEXT_WALLET_IS_UNLOCKED: "@Z4unlocked@Zn"
+TEXT_WALLET_IS_LOCKED: "@Z1locked@Zn"
+#
+TEXT_HEADLINE_CLIENT_INFO: "Informações do cliente"
+TEXT_DAEMON_VERSION: "Versão"
+TEXT_DAEMON_ERRORS_DURING_RUNTIME: "Erros"
+TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME: "nenhuma"
+TEXT_DAEMON_IP: "IP"
+TEXT_DAEMON_PEERS: "Pares"
+TEXT_DAEMON_DOWNLOADED_DATA: "Baixar"
+TEXT_DAEMON_UPLOADED_DATA: "Enviar"
+#
+TEXT_HEADLINE_STAKING_INFO: "Informações sobre a estaca"
+TEXT_STAKING_STATE: "Estaca"
+TEXT_STAKING_ON: "@Z4ON@Zn"
+TEXT_STAKING_OFF: "@Z1OFF@Zn"
+TEXT_STAKING_COINS: "Moedas"
+TEXT_MATURING_COINS: "Envelhecimento"
+TEXT_EXP_TIME: "Tempo previsto"
+TEXT_STAKING_AVAILABLE: "Disponível em"
+TEXT_STAKING_STAKED: "Estacado"
+#
+TEXT_STAKE: "@Z4STAKE@Zn"
+TEXT_IMMATURE: "@Z5IMMATURE@Zn"
+TEXT_RECEIVED: "@Z2RECEIVED@Zn"
+TEXT_TRANSFERRED: "@Z1SENDED@Zn"
+TEXT_CONTRIBUTE: "@Z6CONTRIBUTION@Zn"
+TEXT_CONFIRMATIONS: "Confirmações"
+TEXT_ADDRESS: "Endereço"
+TEXT_TXID: "TxID"
+TEXT_NARRATION: "Narração"
+TEXT_FEE: "Tarifa"
+#
+TEXT_CLIPBOARD_HINT: "No Linux: Use @Z6[CTRL]@Zn + @Z6[SHIFT]@Zn + @Z6[V]@Zn para colar a partir da prancheta."
+TEXT_SEND_DESTINATION_ADDRESS_EXPL: "Endereço de destino"
+TEXT_SEND_DESTINATION_ADDRESS: "Endereço"
+TEXT_SEND_AMOUNT_EXPL: "Quantidade de"
+TEXT_SEND_AMOUNT: "Montante"
+TEXT_SEND_EXPL: "Digite o endereço de destino."
+TEXT_SEND_NARRATION: "Narração"
+#
+TEXT_PW_EXPL: "Digite a senha da carteira"
+TEXT_CURRENT_PW_EXPL: "Digite a senha da carteira atual"
+TEXT_NEW_PW1_EXPL: "Digite a nova senha da carteira"
+TEXT_NEW_PW2_EXPL: "Digite a nova senha novamente"
+TEXT_NO_PASS_GIVEN: "Nenhuma senha fornecida"
+TEXT_NO_NEW_PASS_GIVEN: "Nenhuma nova senha fornecida"
+TEXT_NEW_PASS_NOT_EQUAL: "As novas senhas não correspondem"
+TEXT_PASS_CHANGE_SUCCESSFUL: "Mudança de frase-senha executada com sucesso"
+TEXT_WALLET_ENCRYPTION_SUCCESSFUL: "Carteira criptografada com sucesso. Daemon reiniciando..."
+#
+TEXT_USERCOMMAND_EXPL: "Aqui você pode inserir comandos que serão enviados para o Daemon."
+TEXT_USERCOMMAND_CMD_EXPL: "tipo ajuda para informações"
+TEXT_USERCOMMAND_CMD: "Comando"
+TEXT_USERCOMMAND_PARAMS_EXPL: "separados por espaços"
+TEXT_USERCOMMAND_PARAMS: "Parâmetro"
+TEXT_USERCOMMAND_AMOUNT: "Montante"
+#
+TEXT_SYSTEM: "Sistema"
+TEXT_MAX_FREQENCY: "Máx. Freqüência"
+TEXT_THRESHOLD: "Limiar"
+TEXT_TEMPERATURE: "Temperatura"
+TEXT_SD_CARD: "Cartão SD"
+TEXT_FREE_DISK_SPACE: "Espaço livre em disco disponível"
+TEXT_FREE_RAM: "RAM disponível gratuitamente"
+TEXT_OS: "Sistema de operação"
+TEXT_KERNEL: "Versão do Kernel Linux"
+TEXT_SWAP_DISABLED: "A troca é desativada."
+TEXT_SWAP_SIZE: "Trocar o tamanho"
+#
+TEXT_GAUGE_ALLDONE: "Tudo feito."
+TEXT_GAUGE_DEFAULT: "Obtendo dados de daemon..."
+TEXT_GAUGE_GET_INFO: "Obtendo informações gerais de daemon..."
+TEXT_GAUGE_PROCESS_INFO: "Processamento de dados de informações gerais..."
+TEXT_GAUGE_GET_STAKING_DATA: "Obtendo dados de staking daemon..."
+TEXT_GAUGE_PROCESS_STAKING_DATA: "Processamento de dados de piquetagem..."
+TEXT_GAUGE_GET_TRANS: "Obtendo dados de transações de daemon..."
+TEXT_GAUGE_PROCESS_TRANS: "Processamento de dados de transações..."
+#
+TEXT_GOODBYE_WARNING: "@Z1 If you plan to shut down the system, the daemon must be stopped first to avoid inconsistencies in the database!@Zn\n\nDo you want to stop the daemon (no more stakes) or just exit the UI?"
+TEXT_GOODBYE_WARNING_REMOTE: "Sair da Shell-UI?\n(Daemon ainda está funcionando, pois estamos conectados remotamente)"
+TEXT_GOODBYE_DAEMON_STILL_RUNNING: "O Daemon ainda está em funcionamento."
+TEXT_GOODBYE_DAEMON_STOPPED: "Daemon parou."
+TEXT_GOODBYE_FEEDBACK: "Qualquer feedback apreciado, por favor nos avise. Obrigado!"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED: "O daemon da carteira do Alias ainda não está totalmente sincronizado.\n\nVoltar e mostrar a saída do log ou sair para a cmdline?"
+#
+TEXT_LOGFILE_HEADER: "O daemon está em sincronia se você vir @Z1'height='@Zn seguido pela altura atual da cadeia na saída do log abaixo. Por favor, seja paciente, isto vai demorar um pouco! Percorra para a esquerda/direita com as teclas do cursor."
+#
+TEXT_FEEDBACK_WALLET_LOCKED: "Carteira fechada com sucesso.\n\n@Z5Você não poderá mais apostar.@Zn\n\nUse @Z4${CMD_MAIN_UNLOCK_WALLET}@Zn no menu principal para destravar a carteira apenas para estacar novamente."
+TEXT_FEEDBACK_WALLET_UNLOCKED: "Carteira desbloqueada com sucesso."
+TEXT_SUGGESTION_STAKING: "Levará pouco tempo para que o daemon atualize o status da estaca, depois que a carteira foi destravada/travada.\nUse o comando @Z4${CMD_MAIN_REFRESH}@Zn no menu principal para atualizar a tela."
+TEXT_FEEDBACK_RECEIVE: "Pressione voltar para continuar para o menu principal."
+TEXT_DEFAULT_PUBLIC_ADDRESS: "Endereço público padrão"
+TEXT_DEFAULT_PRIVATE_ADDRESS: "Endereço privado padrão"
+#
+TEXT_SEND_UNLOCK_WALLET_AGAIN: "Aviso\nPor favor, observe:\nVocê tem que 'destravar' a carteira para estacar novamente.\n"
+TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE: "\nAumentar o tamanho do terminal para pelo menos"
+TEXT_PLACEHOLDER_FUNCTION: "\nEm construção...\n\nSry neste momento, este é um espaço reservado."
+#
+TEXT_ESTIMATIONS: "Estimativas"
+TEXT_ONE_MONTH: "um mês"
+TEXT_HALF_YEAR: "meio ano"
+TEXT_ONE_YEAR: "um ano"
+TEXT_TWO_YEARS: "dois anos"
+TEXT_THREE_YEARS: "três anos"
+TEXT_FOUR_YEARS: "quatro anos"
+TEXT_FIVE_YEARS: "cinco anos"
+TEXT_STAKING_ANALYSIS_TIMEFRAME: "Prazo de estimativa"
+TEXT_STAKING_ANALYSIS_LAST_THOUSAND: "Nas últimas 1000 transações"
+TEXT_STAKING_ANALYSIS_AMOUNTS: "Transações com estacas"
+TEXT_STAKING_ANALYSIS_TOTAL_REWARD: "Recompensa total"
+TEXT_STAKING_ANALYSIS_TOTAL_TODAY: "Total de moedas"
+TEXT_STAKING_ANALYSIS_REWARD_PER_YEAR: "- Taxa de recompensa por ano"
+TEXT_STAKING_ANALYSIS_COINS_IN_ONE_MONTH: "- Total de moedas em um mês"
+TEXT_STAKING_ANALYSIS_STAKED_COINS_IN: "- Moedas apostadas em"
+TEXT_STAKING_ANALYSIS_TOTAL_COINS_IN: "- Total de moedas em"
+#
+TEXT_COIN_TYPE_TO_SEND_QUESTION: "\nQue tipo de moeda você deseja enviar?"
+TEXT_CONVERSION_QUESTION: "\nEm que direção você quer se converter?"
+TEXT_AMOUNT_TO_CONVERT: "Montante a converter"
+#
+TEXT_QUESTION_DO_UPDATE: "Atualizar os binários Aliaswallet?\nO daemon aliaswallet será detido!\n"
+TEXT_UPDATE_CANCELED: "Atualização cancelada"
+TEXT_UPDATE_CHOOSE_VERSION_HINT: "Por favor, selecione a versão desejada com espaço:"
+#
+TEXT_CHOOSE_LANGUAGE: "Escolha um idioma"
+TEXT_CHOOSE_LANGUAGE_CANCELED: "Troca de idioma cancelada"
+#
+TEXT_USE_AT_YOUR_OWN_RISC: " Use por sua própria conta e risco!\n\n"
+#
+TEXT_BOOTSTRAPPING: "Instalação da corrente do bootstrap, aguarde, por favor..."
+TEXT_ALIAS_SERVICE_NOT_ENABLED: "O serviço de carteira Alias não está habilitado, portanto, não será iniciado após a próxima reinicialização. Habilitar o serviço agora?"
