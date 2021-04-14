@@ -1,4 +1,5 @@
 # Shell-UI for [Aliaswallet](https://alias.cash) daemon
+[![HitCount](http://hits.dwyl.com/aliascash/alias-sh-rpc-ui.svg)](http://hits.dwyl.com/aliascash/alias-sh-rpc-ui)
 
 This is a Shell script (in fact a Bash script) which offers a simple
 user interface to the Aliaswallet daemon.
