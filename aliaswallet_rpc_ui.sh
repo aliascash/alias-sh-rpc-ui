@@ -55,6 +55,7 @@ fi
 . include/handleSettings.sh
 . include/helpers_console.sh
 . include/init_daemon_configuration.sh
+. include/loadLanguage.sh
 . include/sendCoins.sh
 . include/setWalletPW.sh
 . include/startDaemon.sh
@@ -315,36 +316,61 @@ sry() {
 # ============================================================================
 # This marks the regular ending of the script
 goodbye() {
-    local _s=""
-    dialog --no-shadow \
-        --colors \
-        --extra-button \
-        --ok-label "${BUTTON_LABEL_JUST_LEAVE}" \
-        --extra-label "${BUTTON_LABEL_STOP_DAEMON}" \
-        --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
-        --default-button 'ok' \
-        --yesno "${TEXT_GOODBYE_WARNING}" 0 0
-    exit_status=$?
-    case ${exit_status} in
-        ${DIALOG_ESC})
-            refreshMainMenu_GUI;;
-        ${DIALOG_OK})
-            reset
-            echo ''
-            info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
-        ${DIALOG_EXTRA})
-            reset
-            sudo systemctl stop aliaswalletd
-            echo ''
-            info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
-        ${DIALOG_CANCEL})
-            refreshMainMenu_GUI;;
-        *)
-            errorHandling "${ERROR_GOODBYE_FATAL}" \
-                          1;;
-    esac
-    info "${TEXT_GOODBYE_FEEDBACK}"
-    echo ''
+    if [[ ( "${rpcconnect}" = '127.0.0.1' ) || ( "${rpcconnect}" = 'localhost' ) ]] ; then
+        local _s=""
+        dialog --no-shadow \
+            --colors \
+            --extra-button \
+            --ok-label "${BUTTON_LABEL_JUST_LEAVE}" \
+            --extra-label "${BUTTON_LABEL_STOP_DAEMON}" \
+            --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
+            --default-button 'ok' \
+            --yesno "${TEXT_GOODBYE_WARNING}" 0 0
+        exit_status=$?
+        case ${exit_status} in
+            ${DIALOG_ESC})
+                refreshMainMenu_GUI;;
+            ${DIALOG_OK})
+                reset
+                echo ''
+                info "${TEXT_GOODBYE_DAEMON_STILL_RUNNING}";;
+            ${DIALOG_EXTRA})
+                reset
+                sudo systemctl stop aliaswalletd
+                echo ''
+                info "${TEXT_GOODBYE_DAEMON_STOPPED}";;
+            ${DIALOG_CANCEL})
+                refreshMainMenu_GUI;;
+            *)
+                errorHandling "${ERROR_GOODBYE_FATAL}" \
+                              1;;
+        esac
+        info "${TEXT_GOODBYE_FEEDBACK}"
+        echo ''
+    else
+        dialog --no-shadow \
+            --colors \
+            --ok-label "${BUTTON_LABEL_JUST_LEAVE}" \
+            --cancel-label "${BUTTON_LABEL_MAIN_MENU}" \
+            --default-button 'ok' \
+            --yesno "\n${TEXT_GOODBYE_WARNING_REMOTE}\n " 0 0
+        exit_status=$?
+        case ${exit_status} in
+            ${DIALOG_ESC})
+                refreshMainMenu_GUI;;
+            ${DIALOG_OK})
+                reset
+                echo ''
+                ;;
+            ${DIALOG_CANCEL})
+                refreshMainMenu_GUI;;
+            *)
+                errorHandling "${ERROR_GOODBYE_FATAL}" \
+                              1;;
+        esac
+        info "${TEXT_GOODBYE_FEEDBACK}"
+        echo ''
+    fi
     exit 0
 }
 
@@ -672,7 +698,7 @@ refreshMainMenu_DATA() {
     declare -A transactions
 
     dialog --no-shadow \
-           --infobox "Loading..." 0 0
+           --infobox "\n${TEXT_LOADING_UI}" 6 40
     # have to recalc layout since it might have changed
     # (needed for transactions amount to fetch)
     calculateLayout

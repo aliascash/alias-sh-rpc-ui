@@ -27,7 +27,7 @@ changeLanguage() {
                     --title "${TITLE_LANGUAGE_SELECTION}" \
                     --menu "${TEXT_CHOOSE_LANGUAGE}" \
                     15 40 11 \
-                    $(for currentLanguage in include/ui_content_*.sh ; do
+                    $(for currentLanguage in locale/ui_content_*.yml ; do
                             currentLanguage=${currentLanguage##*_}
                             echo "${currentLanguage%%.*}" ${i}
                             ((i++))
@@ -45,7 +45,7 @@ changeLanguage() {
 #            UI_LANGUAGE=${languageArray[${entryPositionInList}]}
             UI_LANGUAGE=${CHOICE}
             updateSettings
-            . include/ui_content_${UI_LANGUAGE}.sh
+            loadLanguage "${UI_LANGUAGE}"
             ;;
         *)
             dialog --backtitle "${TITLE_BACK}" \

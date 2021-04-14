@@ -28,7 +28,7 @@ getConversionDestination() {
         --cancel-label "${BUTTON_LABEL_PRIVATE_TO_PUBLIC}" \
         --extra-button --extra-label "${BUTTON_LABEL_MAIN_MENU}" \
         --default-button "extra" \
-        --yesno "${TEXT_CONVERSION_QUESTION}" 7 64
+        --yesno "${TEXT_CONVERSION_QUESTION}" 7 70
     exit_status=$?
     case ${exit_status} in
         ${DIALOG_EXTRA})
@@ -92,7 +92,7 @@ convertCoins() {
         --no-shadow \
         --colors \
         --title "${_convertDialogTitle}" \
-        --form "${_headline}" 12 65 0 \
+        --form "\n ${_headline}\n" 14 65 0 \
         "${TEXT_AMOUNT_TO_CONVERT}:" 2 2 "${_amount}" 2 29 24 0 \
         "${TEXT_SEND_NARRATION}:" 4 2 "${_narration}" 4 29 24 0 \
         " " 5 1 "" 5 0 0 0\

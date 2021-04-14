@@ -1,0 +1,302 @@
+# ============================================================================
+#
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+#
+# Author: 2021 HLXEasy
+#
+# ============================================================================
+#
+# ============================================================================
+# Define global variables for text output
+#
+# 1. Yaml syntax because translations are generated with https://transifex.com/
+# 2. Comments must start with "#" as the first character on the line
+# 3. Interpret embedded "@Z" sequences in the dialog text by the following character,
+#    which tells dialog to set colors or video attributes: 0 through 7 are the ANSI
+#    used in curses: black, red, green, yellow, blue, magenta, cyan and white respectively.
+#    Bold is set by 'b', reset by 'B'.
+#    Reverse is set by 'r', reset by 'R'.
+#    Underline is set by 'u', reset by 'U'.
+#    The settings are cumulative,
+#    e.g., "@Zb@Z1" makes the following text bold (perhaps bright) red.
+#    Restore normal settings with "@Zn".
+#
+# ============================================================================
+# All title strings
+TITLE_BACK: "Aliasmonedero Interfaz Bash "
+TITLE_TRANS: " TRANSACCIONES RECIENTES "
+TITLE_INFO: ""
+TITLE_GAUGE: " Por favor, espere "
+TITLE_ERROR: " ERROR "
+TITLE_SUCCESS: " Éxito "
+TITLE_STARTING_DAEMON: " Iniciar Daemon - Es necesario esperar hasta que "
+TITLE_GOODBYE: "ADIOS"
+TITLE_SEND_PUBLIC: "Envío Público"
+TITLE_SEND_PRIVATE: "Envío Privado"
+TITLE_CONVERT: "Convertir monedas"
+TITLE_USERCOMMAND: "Introducir Comando"
+TITLE_CURL_RESULT: "Resultado cURL"
+TITLE_RECEIVE: "Direcciones del monedero "
+TITLE_SUGGESTION: "Sugerencia"
+TITLE_PLACEHOLDER_FUNCTION: " SRY "
+TITLE_ENCRYPT_WALLET: "Monedero encriptado "
+TITLE_VIEW_TRANSACTIONS: "Página "
+TITLE_ADV_MENU: "Opciones avanzadas "
+TITLE_WALLET_INFO: "Información del monedero"
+TITLE_STAKING_INFO: "Info de apuestas"
+TITLE_PLEASE_CHOOSE: "Por favor, seleccione"
+TITLE_UPDATE_BINARIES: "Actualizar Aliaswallet "
+TITLE_LANGUAGE_SELECTION: "Idioma actual: inglés "
+TITLE_AVAILABLE_VERSIONS: "Versiones disponibles "
+TITLE_SYSTEM_STATS: "Estadísticas del sistema "
+#
+# ============================================================================
+# Buttons
+BUTTON_LABEL_ENCRYPT: "Encriptar"
+BUTTON_LABEL_RESTART_DAEMON: "Reiniciar daemon"
+BUTTON_LABEL_ENTER: "Entrar"
+BUTTON_LABEL_OK: "OK"
+BUTTON_LABEL_LEAVE: "Salir"
+BUTTON_LABEL_CONTINUE: "Continuar"
+BUTTON_LABEL_PREVIOUS: "Anteriormente"
+BUTTON_LABEL_NEXT: "Siguiente"
+BUTTON_LABEL_SEND: "Enviar"
+BUTTON_LABEL_EXECUTE: "Ejecutar"
+BUTTON_LABEL_HELP: "Ayuda"
+BUTTON_LABEL_ADDRESS_BOOK: "Libreta de Direcciones"
+BUTTON_LABEL_MAIN_MENU: "Menú principal"
+BUTTON_LABEL_SHOW_STAKES: "Mostrar las apuestas"
+BUTTON_LABEL_HIDE_STAKES: "Ocultar las apuestas"
+BUTTON_LABEL_JUST_LEAVE: "No, sólo salir de la UI"
+BUTTON_LABEL_STOP_DAEMON: "Si, detener daemon"
+BUTTON_LABEL_I_HAVE_UNDERSTOOD: "SI - Entiendo"
+BUTTON_LABEL_SHOW_BALANCE: "Mostrar balance"
+BUTTON_LABEL_HIDE_BALANCE: "Ocultar el saldo"
+BUTTON_LABEL_PUBLIC_TO_PRIVATE: "De público a privado"
+BUTTON_LABEL_PRIVATE_TO_PUBLIC: "De privado a público"
+BUTTON_LABEL_CLOSE: "Cerrar ventana"
+BUTTON_LABEL_RETURN: "Volver"
+BUTTON_LABEL_EXIT: "Salida"
+BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE: "Última versión"
+BUTTON_LABEL_UPDATE_CHOOSE_VERSION: "Elija la versión"
+BUTTON_LABEL_REFRESH: "Actualizar"
+BUTTON_LABEL_BACK: "Volver"
+BUTTON_LABEL_YES: "Si"
+BUTTON_LABEL_NO: "No"
+#
+# ============================================================================
+# Main Menu
+CMD_MAIN_LOCK_WALLET: "Bloqueo"
+EXPL_CMD_MAIN_WALLETLOCK: "Monedero cerrado, no más apuestas."
+CMD_MAIN_UNLOCK_WALLET: "Desbloquear"
+EXPL_CMD_MAIN_WALLETUNLOCK: "Desbloquea el monedero sólo para las apuestas."
+CMD_MAIN_ENCRYPT_WALLET: "Encriptar"
+EXPL_CMD_MAIN_WALLETENCRYPT: "Encriptar el monedero, proporciona seguridad."
+CMD_MAIN_REFRESH: "Actualización"
+EXPL_CMD_MAIN_REFRESH: "Recarga la interfaz."
+CMD_MAIN_TRANS: "Transacciones"
+EXPL_CMD_MAIN_VIEWTRANS: "Ver todas las transacciones."
+CMD_MAIN_SEND: "Enviar monedas"
+EXPL_CMD_MAIN_SEND: "Ya sea público o privado."
+CMD_MAIN_CONVERT_COINS: "Convertir Monedas"
+EXPL_CMD_MAIN_CONVERT_COINS: "Publico <-> Privado."
+CMD_MAIN_RECEIVE: "Recibir"
+EXPL_CMD_MAIN_RECEIVE: "Mostrar las direcciones de los monederos."
+CMD_MAIN_ADVANCED_MENU: "Avanzado"
+EXPL_CMD_MAIN_ADVANCEDMENU: "Opciones avanzadas."
+CMD_MAIN_QUIT: "Deja"
+EXPL_CMD_MAIN_EXIT: "Salir de esta interfaz."
+#
+# ============================================================================
+# Advanced Menu
+CMD_GET_SYSTEM_STATS: "Sistema"
+EXPL_CMD_GET_SYSTEM_STATS_INFO: "Mostrar información del dispositivo."
+CMD_USER_COMMAND: "Comando"
+EXPL_CMD_USER_COMMAND: "Envío de comandos al daemon."
+CMD_DEVELOPER_COMMAND: "DevCmd"
+EXPL_CMD_DEVELOPER_COMMAND: "Modo desarrollador."
+CMD_CHANGE_WALLET_PW: "Reencriptar"
+EXPL_CMD_CHANGE_WALLET_PW: "Cambiar la contraseña del monedero."
+CMD_STAKING_ANALYSE: "apuesta"
+EXPL_CMD_STAKING_ANALYSE: "Obtenga los detalles de las apuestas."
+CMD_GET_WALLET_INFO: "Monedero"
+EXPL_CMD_GET_WALLET_INFO: "Obtenga información sobre el monedero."
+CMD_UPDATE: "Actualizar"
+EXPL_CMD_UPDATE: "Actualizar los binarios del monedero Alias"
+CMD_VIEW_LOG: "Archivo de registro"
+EXPL_CMD_VIEW_LOG: "Ver registro"
+CMD_CHANGE_LANGUAGE: "Idioma"
+EXPL_CMD_CHANGE_LANGUAGE: "Cambiar el idioma de esta interfaz de usuario."
+CMD_GET_PEER_INFO: "Colegas"
+EXPL_CMD_GET_PEER_INFO: "Mostrar los pares actuales."
+CMD_MAIN_MENU: "Principal"
+EXPL_CMD_MAIN_MENU: "Volver al menú principal."
+#
+# Error Feedback
+ERROR_MAINMENU_FATAL: "Error fatal inesperado en el diálogo del menú principal."
+ERROR_ADVMENU_FATAL: "Error fatal inesperado en el diálogo del menú avanzado."
+ERROR_SYSTEM_STATS_FATAL: "Error fatal inesperado en el diálogo de estadísticas del sistema."
+ERROR_USERCOMMAND_FATAL: "Error fatal inesperado en el diálogo de comandos del usuario."
+ERROR_PW_FATAL: "Error fatal inesperado en el diálogo de la contraseña."
+ERROR_SEND_FATAL: "Error fatal inesperado en el diálogo de envío."
+ERROR_CONVERT_FATAL: "Error fatal inesperado en el diálogo de conversión de monedas."
+ERROR_TRANS_FATAL: "Error fatal inesperado en el diálogo de ver todas las transacciones."
+ERROR_GOODBYE_FATAL: "Error fatal inesperado en el diálogo de parada del daemon (despedida)."
+ERROR_SEND_INVALID_ADDRESS: "@Z1Has introducido una dirección no válida.@Zn\n\nUna dirección pública válida debe tener la forma\n- Que empiece por 'S'\n- Longitud 27-34\n- La letra mayúscula \"O\", la \"I\", la letra minúscula \"l\" y el número \"0\" no se utilizan nunca para evitar la ambigüedad visual"
+ERROR_SEND_INVALID_PRIVATE_ADDRESS: "@Z1Has introducido una dirección no válida.@Zn\n\nUna dirección privada válida debe estar en el formulario:\n- Longitud 102 caracteres\n- La letra mayúscula \"O\", la \"I\", la letra minúscula \"l\" y el número \"0\" no se utilizan nunca para evitar la ambigüedad visual"
+ERROR_SEND_INVALID_AMOUNT: "El importe debe ser un número, con:\n- mayor que 0\n- máx. 8 dígitos detrás del punto decimal"
+ERROR_CURL_MSG_PROMPT: "Mensaje de error de CURL:"
+ERROR_401_UNAUTHORIZED: "Error: Ha fallado el inicio de sesión RPC. ¿Ha cambiado la contraseña sin reiniciar el demonio? Nota: Puede detener el demonio con el comando: wallet-stop"
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE: "No se ha podido establecer una conexión con el daemon del monedero Alias.\nEs posible que tenga que comprobar su configuración."
+ERROR_DAEMON_NO_CONNECT: "El demonio no respondió en 60 segundos.\nNo se ha podido establecer una conexión con el daemon de Alias wallet.\nEs posible que tenga que comprobar su configuración."
+#
+ERROR_DAEMON_ALREADY_RUNNING: "¡Aliaswalletd ( daemon) ya se está ejecutando!\nPero no se ha podido establecer ninguna conexión.\nEsto significa que el daemon se acaba de iniciar."
+ERROR_DAEMON_STARTING: "Aliaswalletd no se está ejecutando.\nIniciando Aliaswalletd (daemon)..."
+ERROR_DAEMON_WAITING_BEGIN: "Daemon necesita algo de tiempo para inicializarse.\nEsperando 1 minuto para el daemon..."
+ERROR_DAEMON_WAITING_MSG: "segundos para ir..."
+ERROR_DAEMON_WAITING_MSG_SUCCESS: "Daemon conectado.\nTodo está bien."
+ERROR_DAEMON_WAITING_END: "Todo hecho. Iniciando la interfaz..."
+ERROR_LANGUAGE_NOT_FOUND: "No se ha encontrado el idioma configurado '%s', restablece el predeterminado '%s'."
+#
+TEXT_LOADING_UI: "Cargando la interfaz de usuario y conectando con el daemon..."
+TEXT_HEADLINE_WALLET_INFO: "Info Monedero"
+TEXT_BALANCE: "Balance"
+TEXT_CURRENCY: "Público"
+TEXT_CURRENCY_PRIVATE: "Privado"
+TEXT_WALLET_STATE: "Monedero"
+TEXT_WALLET_HAS_NO_PW: "@Z1no PW@Zn"
+TEXT_WALLET_IS_UNLOCKED: "@Z4desbloqueado@Zn"
+TEXT_WALLET_IS_LOCKED: "@Z1bloqueado@Zn"
+#
+TEXT_HEADLINE_CLIENT_INFO: "Información del cliente"
+TEXT_DAEMON_VERSION: "Versión"
+TEXT_DAEMON_ERRORS_DURING_RUNTIME: "Errores"
+TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME: "ninguno"
+TEXT_DAEMON_IP: "IP"
+TEXT_DAEMON_PEERS: "Colaboradores"
+TEXT_DAEMON_DOWNLOADED_DATA: "Descargar"
+TEXT_DAEMON_UPLOADED_DATA: "Subir a"
+#
+TEXT_HEADLINE_STAKING_INFO: "Información sobre las apuestas"
+TEXT_STAKING_STATE: "Apuesta"
+TEXT_STAKING_ON: "@Z4ON@Zn"
+TEXT_STAKING_OFF: "@Z1OFF@Zn"
+TEXT_STAKING_COINS: "Monedas"
+TEXT_MATURING_COINS: "envejecimiento"
+TEXT_EXP_TIME: "Tiempo previsto"
+TEXT_STAKING_AVAILABLE: "Disponible"
+TEXT_STAKING_STAKED: "Apostado"
+#
+TEXT_STAKE: "@Z4APUESTA@Zn"
+TEXT_IMMATURE: "@Z5INMADURA@Zn"
+TEXT_RECEIVED: "@Z2RECIBIDO@Zn"
+TEXT_TRANSFERRED: "@Z1ENVIADO@Zn"
+TEXT_CONTRIBUTE: "@Z6CONTRIBUCIÓN@Zn"
+TEXT_CONFIRMATIONS: "Confirmaciones"
+TEXT_ADDRESS: "Dirección"
+TEXT_TXID: "TxID"
+TEXT_NARRATION: "Narración"
+TEXT_FEE: "Tasa"
+#
+TEXT_CLIPBOARD_HINT: "En Linux: Utilice @Z6[CTRL]@Zn + @Z6[SHIFT]@Zn + @Z6[V]@Zn para pegar desde el portapapeles."
+TEXT_SEND_DESTINATION_ADDRESS_EXPL: "Dirección de destino"
+TEXT_SEND_DESTINATION_ADDRESS: "Dirección"
+TEXT_SEND_AMOUNT_EXPL: "Cantidad de"
+TEXT_SEND_AMOUNT: "Cantidad"
+TEXT_SEND_EXPL: "Ingrese la Dirección de destino"
+TEXT_SEND_NARRATION: "Narración"
+#
+TEXT_PW_EXPL: "Introduzca la contraseña del monedero"
+TEXT_CURRENT_PW_EXPL: "Introduzca la contraseña actual del monedero"
+TEXT_NEW_PW1_EXPL: "Introduzca la nueva contraseña del monedero"
+TEXT_NEW_PW2_EXPL: "Volver a introducir la nueva contraseña"
+TEXT_NO_PASS_GIVEN: "No se ha dado la contraseña"
+TEXT_NO_NEW_PASS_GIVEN: "No se ha dado la nueva contraseña"
+TEXT_NEW_PASS_NOT_EQUAL: "Las nuevas contraseñas no coinciden"
+TEXT_PASS_CHANGE_SUCCESSFUL: "Cambio de frase de acceso ejecutado con éxito"
+TEXT_WALLET_ENCRYPTION_SUCCESSFUL: "Monedero encriptado con éxito. Reiniciando Daemon..."
+#
+TEXT_USERCOMMAND_EXPL: "Aquí puedes introducir los comandos que se enviarán al Daemon."
+TEXT_USERCOMMAND_CMD_EXPL: "escriba help para obtener información"
+TEXT_USERCOMMAND_CMD: "Comando"
+TEXT_USERCOMMAND_PARAMS_EXPL: "separado por espacios"
+TEXT_USERCOMMAND_PARAMS: "Parámetro"
+TEXT_USERCOMMAND_AMOUNT: "Cantidad"
+#
+TEXT_SYSTEM: "Sistema"
+TEXT_MAX_FREQENCY: "Máx. Frecuencia"
+TEXT_THRESHOLD: "Threshold"
+TEXT_TEMPERATURE: "Temperatura"
+TEXT_SD_CARD: "SD Card"
+TEXT_FREE_DISK_SPACE: "Espacio libre en el disco duro"
+TEXT_FREE_RAM: "Memoria RAM disponible"
+TEXT_OS: "Sistema operativo"
+TEXT_KERNEL: "Linux Kernel Version"
+TEXT_SWAP_DISABLED: "El intercambio está desactivado."
+TEXT_SWAP_SIZE: "Tamaño del intercambio"
+#
+TEXT_GAUGE_ALLDONE: "Todo listo."
+TEXT_GAUGE_DEFAULT: "Obteniendo datos del daemon..."
+TEXT_GAUGE_GET_INFO: "Obtención de datos de información general del daemon..."
+TEXT_GAUGE_PROCESS_INFO: "Procesando datos de info general..."
+TEXT_GAUGE_GET_STAKING_DATA: "Obtendo datos de apuestas del daemon..."
+TEXT_GAUGE_PROCESS_STAKING_DATA: "Procesando Datos de Apuesta..."
+TEXT_GAUGE_GET_TRANS: "Obtendo datos de transacciones del daemon..."
+TEXT_GAUGE_PROCESS_TRANS: "Procesando datos de las transacciones..."
+#
+TEXT_GOODBYE_WARNING: "@Z1Si planeas apagar el sistema, el demonio debe ser detenido antes para evitar inconsistencias en la base de datos @Zn\n\n¿Quiere detener el daemon (no más apuestas) o sólo salir de la UI?"
+TEXT_GOODBYE_WARNING_REMOTE: "¿Salir de Shell-UI?\n( El Daemon sigue funcionando ya que estamos conectados remotamente)"
+TEXT_GOODBYE_DAEMON_STILL_RUNNING: "Daemon sigue funcionando."
+TEXT_GOODBYE_DAEMON_STOPPED: "Daemon se ha detenido."
+TEXT_GOODBYE_FEEDBACK: "Se agradece cualquier comentario, por favor, háganoslo saber. Gracias."
+TEXT_GOODBYE_DAEMON_NOT_SYNCED: "El daemon del monedero Alias todavía no está totalmente sincronizado.\n\n¿Vuelve a mostrar la salida del registro o salir a cmdline?"
+#
+TEXT_LOGFILE_HEADER: "El demonio está sincronizado si ves @Z1'height='@Zn seguido de la altura actual de la cadena en la salida del registro de abajo. Por favor, tenga paciencia, ¡esto llevará un tiempo! Desplácese a la izquierda/derecha con las teclas del cursor."
+#
+TEXT_FEEDBACK_WALLET_LOCKED: "Cartera bloqueada con éxito.\n\n@Z5Ya no podrás apostar.@Zn\n\nUtilice @Z4${CMD_MAIN_UNLOCK_WALLET}@Zn en el menú principal para desbloquear el monedero para apostar de nuevo."
+TEXT_FEEDBACK_WALLET_UNLOCKED: "Monedero desbloqueado con éxito."
+TEXT_SUGGESTION_STAKING: "El daemon tardará un poco en actualizar el estado de las apuestas, después de que el monedero haya sido desbloqueado/bloqueado.\nUtilice el comando @Z4${CMD_MAIN_REFRESH}@Zn en el menú principal para actualizar la pantalla."
+TEXT_FEEDBACK_RECEIVE: "Pulse \"Volver\" para continuar con el menú principal."
+TEXT_DEFAULT_PUBLIC_ADDRESS: "Dirección pública por defecto"
+TEXT_DEFAULT_PRIVATE_ADDRESS: "Dirección privada por defecto"
+#
+TEXT_SEND_UNLOCK_WALLET_AGAIN: "Aviso\nPor favor, tenga en cuenta:\nTienes que 'desbloquear' el monedero para volver a apostar.\n"
+TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE: "\nAumente el tamaño del terminal a un mínimo de"
+TEXT_PLACEHOLDER_FUNCTION: "\nEn construcción...\n\nLo siento en este momento este es un marcador de posición"
+#
+TEXT_ESTIMATIONS: "Estimaciones"
+TEXT_ONE_MONTH: "un mes"
+TEXT_HALF_YEAR: "medio año"
+TEXT_ONE_YEAR: "un año"
+TEXT_TWO_YEARS: "dos años"
+TEXT_THREE_YEARS: "tres años"
+TEXT_FOUR_YEARS: "cuatro años"
+TEXT_FIVE_YEARS: "cinco años"
+TEXT_STAKING_ANALYSIS_TIMEFRAME: "Plazo de estimación"
+TEXT_STAKING_ANALYSIS_LAST_THOUSAND: "En las últimas 1000 transacciones"
+TEXT_STAKING_ANALYSIS_AMOUNTS: "Operaciones de apuestas"
+TEXT_STAKING_ANALYSIS_TOTAL_REWARD: "Recompensa total"
+TEXT_STAKING_ANALYSIS_TOTAL_TODAY: "Total de monedas"
+TEXT_STAKING_ANALYSIS_REWARD_PER_YEAR: "- Tasa de recompensa por apuesta al año"
+TEXT_STAKING_ANALYSIS_COINS_IN_ONE_MONTH: "- Total de monedas en un mes"
+TEXT_STAKING_ANALYSIS_STAKED_COINS_IN: "- Monedas apostadas en"
+TEXT_STAKING_ANALYSIS_TOTAL_COINS_IN: "- Total de monedas en"
+#
+TEXT_COIN_TYPE_TO_SEND_QUESTION: "\n¿Qué tipo de moneda quiere enviar?"
+TEXT_CONVERSION_QUESTION: "\nIn which direction do you want to convert?"
+TEXT_AMOUNT_TO_CONVERT: "Cantidad a convertir"
+#
+TEXT_QUESTION_DO_UPDATE: "¿Actualizar los binarios de Aliaswallet?\nEl daemon de Aliaswallet se detendrá.\n"
+TEXT_UPDATE_CANCELED: "Actualización cancelada"
+TEXT_UPDATE_CHOOSE_VERSION_HINT: "Por favor, seleccione la versión deseada con espacio:"
+#
+TEXT_CHOOSE_LANGUAGE: "Elige un idioma"
+TEXT_CHOOSE_LANGUAGE_CANCELED: "Cambio de idioma cancelado"
+#
+TEXT_USE_AT_YOUR_OWN_RISC: "                   Utilícelo bajo su propio riesgo.\n\n"
+#
+TEXT_BOOTSTRAPPING: "Instalación de la cadena bootstrap en marcha, por favor espere..."
+TEXT_ALIAS_SERVICE_NOT_ENABLED: "El servicio de cartera Alias no está habilitado, por lo que no se iniciará tras el próximo reinicio. ¿Habilitar el servicio ahora?"

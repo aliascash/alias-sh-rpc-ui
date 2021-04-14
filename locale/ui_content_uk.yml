@@ -1,0 +1,302 @@
+# ============================================================================
+#
+# This is a component of the Aliaswallet shell rpc ui
+#
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+#
+# Author: 2021 HLXEasy
+#
+# ============================================================================
+#
+# ============================================================================
+# Define global variables for text output
+#
+# 1. Yaml syntax because translations are generated with https://transifex.com/
+# 2. Comments must start with "#" as the first character on the line
+# 3. Interpret embedded "@Z" sequences in the dialog text by the following character,
+#    which tells dialog to set colors or video attributes: 0 through 7 are the ANSI
+#    used in curses: black, red, green, yellow, blue, magenta, cyan and white respectively.
+#    Bold is set by 'b', reset by 'B'.
+#    Reverse is set by 'r', reset by 'R'.
+#    Underline is set by 'u', reset by 'U'.
+#    The settings are cumulative,
+#    e.g., "@Zb@Z1" makes the following text bold (perhaps bright) red.
+#    Restore normal settings with "@Zn".
+#
+# ============================================================================
+# All title strings
+TITLE_BACK: " Alias гаманець Bash інтерфейс"
+TITLE_TRANS: "ОСТАННІ УГОДИ"
+TITLE_INFO: ""
+TITLE_GAUGE: "Будь ласка, зачекайте"
+TITLE_ERROR: "ПОМИЛКА"
+TITLE_SUCCESS: "Успішно"
+TITLE_STARTING_DAEMON: "Запуск служби гаманця  - Вам потрібно почекати, поки"
+TITLE_GOODBYE: "Бувай"
+TITLE_SEND_PUBLIC: "Надіслати публічно"
+TITLE_SEND_PRIVATE: "Надіслати приватно"
+TITLE_CONVERT: "Конвертувати монети"
+TITLE_USERCOMMAND: "Введіть команду"
+TITLE_CURL_RESULT: " cURL результат"
+TITLE_RECEIVE: "Адреса гаманця"
+TITLE_SUGGESTION: "Навіювання"
+TITLE_PLACEHOLDER_FUNCTION: " SRY "
+TITLE_ENCRYPT_WALLET: " Encrypt Wallet "
+TITLE_VIEW_TRANSACTIONS: "Сторінка"
+TITLE_ADV_MENU: "Розширені опції"
+TITLE_WALLET_INFO: "Інформація про гаманець"
+TITLE_STAKING_INFO: "Інформація про стекінг"
+TITLE_PLEASE_CHOOSE: "Будь-ласка оберіть"
+TITLE_UPDATE_BINARIES: "Оновлення Aliaswallet"
+TITLE_LANGUAGE_SELECTION: "Поточний мова: українська"
+TITLE_AVAILABLE_VERSIONS: "Доступні версії"
+TITLE_SYSTEM_STATS: "Статистика системи"
+#
+# ============================================================================
+# Buttons
+BUTTON_LABEL_ENCRYPT: "Шифрувати"
+BUTTON_LABEL_RESTART_DAEMON: "Перезапуск служби гаманця"
+BUTTON_LABEL_ENTER: "Enter"
+BUTTON_LABEL_OK: "OK"
+BUTTON_LABEL_LEAVE: "Залишати"
+BUTTON_LABEL_CONTINUE: "Продовжувати"
+BUTTON_LABEL_PREVIOUS: "Попередній"
+BUTTON_LABEL_NEXT: "Наступний"
+BUTTON_LABEL_SEND: "Надіслати"
+BUTTON_LABEL_EXECUTE: "Знищити"
+BUTTON_LABEL_HELP: "Допомога"
+BUTTON_LABEL_ADDRESS_BOOK: "Адресна книга"
+BUTTON_LABEL_MAIN_MENU: "Головне меню"
+BUTTON_LABEL_SHOW_STAKES: "Показати стеки"
+BUTTON_LABEL_HIDE_STAKES: "Приховати стеки"
+BUTTON_LABEL_JUST_LEAVE: "Ні, просто вийти з інтерфейсу"
+BUTTON_LABEL_STOP_DAEMON: "Так, зупинка служби гаманця"
+BUTTON_LABEL_I_HAVE_UNDERSTOOD: "Так я розумію"
+BUTTON_LABEL_SHOW_BALANCE: "Показати баланс"
+BUTTON_LABEL_HIDE_BALANCE: "Приховати баланс"
+BUTTON_LABEL_PUBLIC_TO_PRIVATE: "З публічного в приватний"
+BUTTON_LABEL_PRIVATE_TO_PUBLIC: "З приватного в публічний"
+BUTTON_LABEL_CLOSE: "Закрити вікно"
+BUTTON_LABEL_RETURN: "Повернути"
+BUTTON_LABEL_EXIT: "Вихід"
+BUTTON_LABEL_UPDATE_TO_LATEST_RELEASE: "Останній випуск"
+BUTTON_LABEL_UPDATE_CHOOSE_VERSION: "Виберіть версію"
+BUTTON_LABEL_REFRESH: "Оновити"
+BUTTON_LABEL_BACK: "Назад"
+BUTTON_LABEL_YES: "Так"
+BUTTON_LABEL_NO: "Ні"
+#
+# ============================================================================
+# Main Menu
+CMD_MAIN_LOCK_WALLET: "Блокування"
+EXPL_CMD_MAIN_WALLETLOCK: "Блокування гаманець, без можливості брати участь в стекінгу."
+CMD_MAIN_UNLOCK_WALLET: "Розблокувати"
+EXPL_CMD_MAIN_WALLETUNLOCK: "Відкрити гаманець тільки для стекінгу."
+CMD_MAIN_ENCRYPT_WALLET: "Шифрувати"
+EXPL_CMD_MAIN_WALLETENCRYPT: "Шифрування гаманця підвищує захист."
+CMD_MAIN_REFRESH: "Оновлення"
+EXPL_CMD_MAIN_REFRESH: "Оновлення інтерфейсу."
+CMD_MAIN_TRANS: "Операції"
+EXPL_CMD_MAIN_VIEWTRANS: "Переглянути всі транзакції."
+CMD_MAIN_SEND: "Надіслати монети"
+EXPL_CMD_MAIN_SEND: "Виберіть публічні чи приватні"
+CMD_MAIN_CONVERT_COINS: "Конвертувати монети"
+EXPL_CMD_MAIN_CONVERT_COINS: "Публічні <-> Приватні."
+CMD_MAIN_RECEIVE: "Отримати"
+EXPL_CMD_MAIN_RECEIVE: "Показати адреси гаманця"
+CMD_MAIN_ADVANCED_MENU: "Розширений"
+EXPL_CMD_MAIN_ADVANCEDMENU: "Розширені опції."
+CMD_MAIN_QUIT: "Вихід"
+EXPL_CMD_MAIN_EXIT: "Вихід з цього інтерфейсу."
+#
+# ============================================================================
+# Advanced Menu
+CMD_GET_SYSTEM_STATS: "Система"
+EXPL_CMD_GET_SYSTEM_STATS_INFO: "Показати дані пристрою."
+CMD_USER_COMMAND: "Команда"
+EXPL_CMD_USER_COMMAND: "Надіслати команди до служби гаманця."
+CMD_DEVELOPER_COMMAND: "Командний рядок розробника"
+EXPL_CMD_DEVELOPER_COMMAND: "Режим розробника."
+CMD_CHANGE_WALLET_PW: "Reencrypt"
+EXPL_CMD_CHANGE_WALLET_PW: "Зміна пароля гаманця."
+CMD_STAKING_ANALYSE: "Стекінг"
+EXPL_CMD_STAKING_ANALYSE: "Отримати деталі стекінгу"
+CMD_GET_WALLET_INFO: "Гаманець"
+EXPL_CMD_GET_WALLET_INFO: "Отримати інформацію про гаманець."
+CMD_UPDATE: "Оновлення"
+EXPL_CMD_UPDATE: "Оновлення Aliaswallet бінарники"
+CMD_VIEW_LOG: "Файли входу"
+EXPL_CMD_VIEW_LOG: "Перегляд журналу"
+CMD_CHANGE_LANGUAGE: "Мова"
+EXPL_CMD_CHANGE_LANGUAGE: "Змінити мову цього інтерфейсу."
+CMD_GET_PEER_INFO: "Peers"
+EXPL_CMD_GET_PEER_INFO: "Відображення поточних вузлів мережі. "
+CMD_MAIN_MENU: "Головний"
+EXPL_CMD_MAIN_MENU: "Поверніться до головного меню."
+#
+# Error Feedback
+ERROR_MAINMENU_FATAL: "Несподівана фатальна помилка в головному вікні меню."
+ERROR_ADVMENU_FATAL: "Несподівана фатальна помилка в розширеному вікні меню."
+ERROR_SYSTEM_STATS_FATAL: "Несподівана фатальна помилка в діалозі системи статистики."
+ERROR_USERCOMMAND_FATAL: "Несподівана фатальна помилка в діалозі команди користувача."
+ERROR_PW_FATAL: "Несподівана фатальна помилка в діалозі введення пароля."
+ERROR_SEND_FATAL: "Несподівана фатальна помилка в діалозі відправки."
+ERROR_CONVERT_FATAL: "Несподівана фатальна помилка в діалозі конвертації монет."
+ERROR_TRANS_FATAL: "Несподівана фатальна помилка в діалозі перегляду всіх операцій."
+ERROR_GOODBYE_FATAL: "Несподівана фатальна помилка в службі гаманця, зупинка (вимкнення)."
+ERROR_SEND_INVALID_ADDRESS: "@Z1 Ви ввели неправильну адресу.@Zn\n\nСправжня публічна адреса повинна бути в формі:\n- Починатись з 'S'\n- Довжина 27-34\n- Прописні літери 'O', 'I', мала літера 'l' і число '0' ніколи не використовується для запобігання візуальної неоднозначності"
+ERROR_SEND_INVALID_PRIVATE_ADDRESS: "@Z1 Ви ввели неправильну адресу.@Zn\n\nСправжня приватна адреса повиненна бути в формі:\n- Довжина 102 символа\n- Прописні літери 'O', 'I', мала літера 'l' і число '0' ніколи не використовується для запобігання візуальної неоднозначності"
+ERROR_SEND_INVALID_AMOUNT: "Сума повинна бути числом, з:\n- більшою за 0\n- макс. 8 цифр позаду десяткової коми"
+ERROR_CURL_MSG_PROMPT: "CURL повідомлення про помилку:"
+ERROR_401_UNAUTHORIZED: "Помилка: RPC Ввійти не вдалося. Ви змінили пароль без перезапуску служби гаманця? Примітка: Ви можете зупинити службу гаманця за допомогою команди: wallet-stop"
+ERROR_DAEMON_NO_CONNECT_FROM_REMOTE: "Неможливо встановити підключення до служби гаманця Alias. Вам , можливо, буде потрібно перевірити конфігурації."
+ERROR_DAEMON_NO_CONNECT: "Служба гаманця не відповідає протягом 60 sec.\nНеможливо встановити підключення до служби гаманця Alias. \nВам , можливо, буде потрібно перевірити конфігурації."
+#
+ERROR_DAEMON_ALREADY_RUNNING: "Alias гаманець (служба гаманця) вже працює! \nАле неможливо встановити з'єднання.\nЦе означає, що служба гаманця була щойно запущений."
+ERROR_DAEMON_STARTING: "Відбувається запуск Alias гаманця (служби гаманця) ..."
+ERROR_DAEMON_WAITING_BEGIN: "Службі гаманця потрібно деякий час для ініціалізації. Чекаємо 1 хвилину службу гаманця..."
+ERROR_DAEMON_WAITING_MSG: "секунд, щоб перейти ..."
+ERROR_DAEMON_WAITING_MSG_SUCCESS: "Службу гаманця підключено.\nВсе добре."
+ERROR_DAEMON_WAITING_END: "Готово. Запуск інтерфейсу ..."
+ERROR_LANGUAGE_NOT_FOUND: "Вибрану мову '%s' не знайдено, скиньте до значення за замовчуванням '%s'."
+#
+TEXT_LOADING_UI: "Завантаження користувацького інтерфейсу та підключення до служби гаманця..."
+TEXT_HEADLINE_WALLET_INFO: "Інформація про гаманець"
+TEXT_BALANCE: "Баланс"
+TEXT_CURRENCY: "Публічний"
+TEXT_CURRENCY_PRIVATE: "Приватний"
+TEXT_WALLET_STATE: "Гаманець"
+TEXT_WALLET_HAS_NO_PW: "@Z1 немає PW @Zn"
+TEXT_WALLET_IS_UNLOCKED: "@ Z4 розблоковано @Zn"
+TEXT_WALLET_IS_LOCKED: "@Z1 заблоковано @Zn"
+#
+TEXT_HEADLINE_CLIENT_INFO: "Інформація про клієнта"
+TEXT_DAEMON_VERSION: "Версія"
+TEXT_DAEMON_ERRORS_DURING_RUNTIME: "Помилки"
+TEXT_DAEMON_NO_ERRORS_DURING_RUNTIME: "Ніхто"
+TEXT_DAEMON_IP: "IP"
+TEXT_DAEMON_PEERS: "Вузли мережі"
+TEXT_DAEMON_DOWNLOADED_DATA: "Скачати"
+TEXT_DAEMON_UPLOADED_DATA: "Оновити"
+#
+TEXT_HEADLINE_STAKING_INFO: "Інформація про стекінг"
+TEXT_STAKING_STATE: "Стекінг"
+TEXT_STAKING_ON: "@Z4ВКЛ@Zn"
+TEXT_STAKING_OFF: "@Z1ВИКЛ@Zn"
+TEXT_STAKING_COINS: "Монети"
+TEXT_MATURING_COINS: "старіння"
+TEXT_EXP_TIME: "Час очікування"
+TEXT_STAKING_AVAILABLE: "Наявний"
+TEXT_STAKING_STAKED: "Здобуто"
+#
+TEXT_STAKE: "@Z4STAKE@Zn"
+TEXT_IMMATURE: "@Z5IMMATURE@Zn"
+TEXT_RECEIVED: "@Z2RECEIVED@Zn"
+TEXT_TRANSFERRED: "@Z1SENDED@Zn"
+TEXT_CONTRIBUTE: "@Z6CONTRIBUTION@Zn"
+TEXT_CONFIRMATIONS: "Підтвердження"
+TEXT_ADDRESS: "Адреса"
+TEXT_TXID: "TxID"
+TEXT_NARRATION: "Переказ"
+TEXT_FEE: "Плата"
+#
+TEXT_CLIPBOARD_HINT: "У Linux: Використовувати @Z6[CTRL]@Zn + @Z6[SHIFT]@Zn + @Z6[V]@Zn для вставки з буфера обміну."
+TEXT_SEND_DESTINATION_ADDRESS_EXPL: "Адреса призначення"
+TEXT_SEND_DESTINATION_ADDRESS: "Адреса"
+TEXT_SEND_AMOUNT_EXPL: "Кількість"
+TEXT_SEND_AMOUNT: "Сума"
+TEXT_SEND_EXPL: "Введіть адресу одержувача."
+TEXT_SEND_NARRATION: "Переказ"
+#
+TEXT_PW_EXPL: "Введіть пароль гаманця"
+TEXT_CURRENT_PW_EXPL: "Введіть поточний пароль гаманця"
+TEXT_NEW_PW1_EXPL: "Введіть новий пароль гаманця"
+TEXT_NEW_PW2_EXPL: "Введіть новий пароль ще раз"
+TEXT_NO_PASS_GIVEN: "Не вказано пароль"
+TEXT_NO_NEW_PASS_GIVEN: "Не вказано новий пароль"
+TEXT_NEW_PASS_NOT_EQUAL: "Нові паролі не збігаються"
+TEXT_PASS_CHANGE_SUCCESSFUL: "Зміна парольної фрази успішно виконана"
+TEXT_WALLET_ENCRYPTION_SUCCESSFUL: "Гаманець успішно зашифрований. Перезапуск служби гаманця..."
+#
+TEXT_USERCOMMAND_EXPL: "Тут ви можете вводити команди, які будуть посилатись в службу гаманця."
+TEXT_USERCOMMAND_CMD_EXPL: "тип інформаційної допомоги"
+TEXT_USERCOMMAND_CMD: "Команда"
+TEXT_USERCOMMAND_PARAMS_EXPL: "розділених пробілами"
+TEXT_USERCOMMAND_PARAMS: "Параметр"
+TEXT_USERCOMMAND_AMOUNT: "Сума"
+#
+TEXT_SYSTEM: "Система"
+TEXT_MAX_FREQENCY: "Максимальна частота"
+TEXT_THRESHOLD: "Поріг"
+TEXT_TEMPERATURE: "Температура"
+TEXT_SD_CARD: "Флеш-картка"
+TEXT_FREE_DISK_SPACE: "Вільне місце на диску"
+TEXT_FREE_RAM: "Доступний обсяг вільної оперативної пам'яті"
+TEXT_OS: "Операційна система"
+TEXT_KERNEL: "Ядро Linux версії"
+TEXT_SWAP_DISABLED: "Перекачування відключено."
+TEXT_SWAP_SIZE: "Розмір підкачки"
+#
+TEXT_GAUGE_ALLDONE: "Готово."
+TEXT_GAUGE_DEFAULT: "Отримання даних від служби гаманця..."
+TEXT_GAUGE_GET_INFO: "Отримання загальної інформації від служби гаманця..."
+TEXT_GAUGE_PROCESS_INFO: " Інформація про обробку загальних даних..."
+TEXT_GAUGE_GET_STAKING_DATA: "Отримання даних про ставки з служби гаманця... "
+TEXT_GAUGE_PROCESS_STAKING_DATA: "Обробка даних розміщення ..."
+TEXT_GAUGE_GET_TRANS: "Отримання даних транзакцій з служби гаманця... "
+TEXT_GAUGE_PROCESS_TRANS: "Обробка даних про транзакції..."
+#
+TEXT_GOODBYE_WARNING: "@ Z1 Якщо ви плануєте вимикати систему, служба гаманця повинна бути зупинена перша, щоб запобігти неузгодженості бази даних! @Zn \n\nЧи не хочете зупинити службу гаманця (зупинити стекінг) або просто вийти з  інтерфейсу?"
+TEXT_GOODBYE_WARNING_REMOTE: "Вийти з інтерфейсу оболонки?\n(Служба гаманця все ще працює, оскільки ми віддалено підключені)"
+TEXT_GOODBYE_DAEMON_STILL_RUNNING: "Служба гаманця все ще працює."
+TEXT_GOODBYE_DAEMON_STOPPED: "Служба гаманця зупинилася."
+TEXT_GOODBYE_FEEDBACK: "Будь-який зворотній зв'язок цінний, будь ласка, повідомте нам про це. Дякую!"
+TEXT_GOODBYE_DAEMON_NOT_SYNCED: "Служба гаманця Alias ще не повністю синхронізовалась. \n\nПовернутися назад до журналу  виходу або командного рядка?"
+#
+TEXT_LOGFILE_HEADER: "Daemon в синхронізації, якщо ви бачите @ Z1'висота = '@ Zn з подальшим поточної висотою ланцюга на виході журналу нижче. Будь ласка, будьте терплячі, це займе якийсь час! Прокрутка вліво / вправо за допомогою клавіш управління курсором."
+#
+TEXT_FEEDBACK_WALLET_LOCKED: "Гаманець успішно заблоковано. @Z5 Ви не зможе зробити ставку більше. @ Zn Використовуйте @ Z4 $ {CMD_MAIN_UNLOCK_WALLET} @Zn в головному меню, щоб відкрити гаманець тільки для стекінгу."
+TEXT_FEEDBACK_WALLET_UNLOCKED: "Гаманець успішно розблоковано."
+TEXT_SUGGESTION_STAKING: "Після того, як служба гаманця розблокує / заблокує гаманець, для оновлення статусу ставки знадобиться невеликий проміжок часу.\nВикористовуйте команду @ Z4 $ {CMD_MAIN_REFRESH} @Zn в головному меню, щоб оновити екран."
+TEXT_FEEDBACK_RECEIVE: "Натиснути для повернення до головного меню."
+TEXT_DEFAULT_PUBLIC_ADDRESS: "За замовчуванням публічна адреса"
+TEXT_DEFAULT_PRIVATE_ADDRESS: "За замовчуванням приватна адреса"
+#
+TEXT_SEND_UNLOCK_WALLET_AGAIN: "Зауважте\nБудь ласка, запиши:\nВам доведеться «розблокувати» гаманець для повторної ставки.\n"
+TEXT_SUGGESTION_TO_INCREASE_TERMINAL_SIZE: "\nЗбільште розмір терміналу як мінімум"
+TEXT_PLACEHOLDER_FUNCTION: "\nУ розробці..."
+#
+TEXT_ESTIMATIONS: "оцінки"
+TEXT_ONE_MONTH: "один місяць"
+TEXT_HALF_YEAR: "півроку"
+TEXT_ONE_YEAR: "один рік"
+TEXT_TWO_YEARS: "два роки"
+TEXT_THREE_YEARS: "три роки"
+TEXT_FOUR_YEARS: "чотири роки"
+TEXT_FIVE_YEARS: "п'ять років"
+TEXT_STAKING_ANALYSIS_TIMEFRAME: "тимчасові рамки оцінка"
+TEXT_STAKING_ANALYSIS_LAST_THOUSAND: "Протягом останні 1000 угод"
+TEXT_STAKING_ANALYSIS_AMOUNTS: "Операції стекінгу"
+TEXT_STAKING_ANALYSIS_TOTAL_REWARD: "Загальна нагорода"
+TEXT_STAKING_ANALYSIS_TOTAL_TODAY: "Загалом монет"
+TEXT_STAKING_ANALYSIS_REWARD_PER_YEAR: "- Винесення ставка винагороди за рік"
+TEXT_STAKING_ANALYSIS_COINS_IN_ONE_MONTH: "- Всього монет на місяць"
+TEXT_STAKING_ANALYSIS_STAKED_COINS_IN: "- Здобуто монети"
+TEXT_STAKING_ANALYSIS_TOTAL_COINS_IN: "- Всього монет в "
+#
+TEXT_COIN_TYPE_TO_SEND_QUESTION: "\nЯкий тип монети ви хочете надіслати? "
+TEXT_CONVERSION_QUESTION: "\nВ якому напрямку ви хочете конвертувати? "
+TEXT_AMOUNT_TO_CONVERT: "Сума для конвертації "
+#
+TEXT_QUESTION_DO_UPDATE: "Оновити бінарники Alias гаманця? \nСлужба гаманця Alias буде зупинена! \n"
+TEXT_UPDATE_CANCELED: "Оновлення скасовано"
+TEXT_UPDATE_CHOOSE_VERSION_HINT: "Будь ласка, виберіть потрібну версію:"
+#
+TEXT_CHOOSE_LANGUAGE: "Виберіть мову"
+TEXT_CHOOSE_LANGUAGE_CANCELED: "Зміна мови скасована"
+#
+TEXT_USE_AT_YOUR_OWN_RISC: "Використовуйте на свій страх і ризик! \n\n"
+#
+TEXT_BOOTSTRAPPING: "Відбувається завантаження ланцюга блокчейну, будь ласка, зачекайте ..."
+TEXT_ALIAS_SERVICE_NOT_ENABLED: "Служба Alias не активована, тому гаманець не буде запущений після наступного перезавантаження. Включити служби зараз?"
