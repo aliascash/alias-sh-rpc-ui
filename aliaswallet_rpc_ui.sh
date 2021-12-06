@@ -812,6 +812,7 @@ cacertParam=''
 checkRequirement dialog
 checkRequirement bc
 checkRequirement curl
+checkRequirement jq
 checkDialogRCConfig
 handleSettings
 setupCacertParam

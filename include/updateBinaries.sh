@@ -13,6 +13,104 @@
 
 choosenVersionFile=/tmp/choosenVersion-$$.txt
 
+# ----------------------------------------------------------------------------
+# Current aarch64 Raspberry Pi OS has ID=debian on /etc/os-release
+# So check if we're really on a Raspi or not
+handleRaspiAarch64() {
+    if [ "$(uname -m)" = aarch64 ] ; then
+        archiveName="RaspberryPi-Buster"
+    fi
+}
+
+determineDistribution() {
+    # ----------------------------------------------------------------------------
+    # Determining current operating system (distribution)
+    if [[ -e /etc/os-release ]] ; then
+        . /etc/os-release
+    else
+        echo "File /etc/os-release not found, not updating anything"
+        exit 1
+    fi
+
+    archiveName=''
+    case ${ID} in
+        "debian")
+            case ${VERSION_ID} in
+                "9")
+                    archiveName='Debian-Stretch'
+                    handleRaspiAarch64
+                    ;;
+                "10")
+                    archiveName='Debian-Buster'
+                    handleRaspiAarch64
+                    ;;
+                *)
+                    case ${PRETTY_NAME} in
+                        *"bullseye"*)
+                            archiveName='Debian-Buster'
+                            handleRaspiAarch64
+                            ;;
+                        *)
+                            cat /etc/os-release
+                            exit 1
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+        "ubuntu")
+            usedDistro="ubuntu"
+            case ${VERSION_CODENAME} in
+                "bionic"|"cosmic")
+                    archiveName='Ubuntu-18-04'
+                    ;;
+                "focal")
+                    archiveName='Ubuntu-20-04'
+                    ;;
+                *)
+                    echo "Unsupported operating system ID=${ID}, VERSION_ID=${VERSION_CODENAME}"
+                    exit
+                    ;;
+            esac
+            ;;
+        "centos")
+            usedDistro="CentOS"
+            ;;
+        "fedora")
+            usedDistro="Fedora"
+            ;;
+        "opensuse-leap")
+            usedDistro="OpenSUSE-Tumbleweed"
+            ;;
+        "raspbian")
+            usedDistro="raspberry"
+            case ${VERSION_ID} in
+                "9")
+                    archiveName='RaspberryPi-Stretch'
+                    ;;
+                "10")
+                    archiveName='RaspberryPi-Buster'
+                    ;;
+                *)
+                    case ${PRETTY_NAME} in
+                        *"bullseye"*)
+                            archiveName='RaspberryPi-Buster'
+                            ;;
+                        *)
+                            cat /etc/os-release
+                            exit 1
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+        *)
+            echo "Unsupported operating system ${ID}, VERSION_ID=${VERSION_ID}"
+            exit
+            ;;
+    esac
+}
+
 # ============================================================================
 # Goal: Just a simple info box to show the update was canceled
 updateCanceled(){
@@ -50,32 +148,52 @@ performUpdate(){
 # - Put selected version into ${choosenVersion}
 # - Start update
 chooseVersionToInstall() {
+    local showReleaseVersions=$1
+    local negateResult=''
+
+    determineDistribution
+
+    if ${showReleaseVersions} ; then
+        negateResult='| not'
+    fi
     rm -f ${choosenVersionFile}
+
     # Exactly three parameters are required per entry on the dialog radiolist.
-    # Result of curl-grep-cut-cut are three lines per release like this example:
+    # Result of curl-jq-query are three lines per release like this example:
     #
-    # Build144
-    # 2019-03-31T15
-    # https
+    # Alias-4.4.0-f1d56b63-Debian-Buster.tgz
+    # 2021-08-25T20:56:13Z
+    # Bot
     #
-    # - From the 2nd field only the first 10 chars where used
+    # - From the 1st field the version is extracted
+    # - From the 2nd field the date is extracted
     # - 3rd field is just a dummy to fill the 3rd argument for each
     #   parameter tripple of the dialog radiolist
-    # - "v*" is searched to break the for loop at this point, as here
-    #   the old, unsupported Aliaswallet versions begin.
     dialog \
         --backtitle "${TITLE_BACK}" \
         --colors \
         --no-shadow \
         --title "${TITLE_AVAILABLE_VERSIONS}" \
         --radiolist "\n${TEXT_UPDATE_CHOOSE_VERSION_HINT}" 17 50 10 \
-            $(for i in $(curl ${cacertParam} -L -s https://api.github.com/repos/aliascash/alias-wallet/releases |
-                            grep -e tag_name -e published_at -e tarball_url |
-                            cut -d: -f2 |
-                            cut -d '"' -f2) ; do
-                if [[ ${i} == v* ]] ; then break ; fi
-                echo "${i:0:10}" ;
-            done ) 2>${choosenVersionFile}
+            $(while read currentEntry ; do 
+                case ${currentEntry} in
+                    Bot|User)
+                        # Dummy output as empty first column
+                        echo "Bot"
+                        ;;
+                    Alias*)
+                        # Output version
+                        currentEntry=${currentEntry#*-}
+                        echo ${currentEntry%%-*}
+                        ;;
+                    *)
+                        # Output date
+                        echo ${currentEntry%%T*}
+                        ;;
+                esac
+            done < <(curl ${cacertParam} -L -s https://api.github.com/repos/aliascash/alias-wallet/releases |
+                        jq -r ".[].assets[] | select(.name | contains(\"${archiveName}\")) | select(.name | contains(\"tgz\")) | select(.name | contains(\"Build\") ${negateResult}) | .name, .updated_at, .uploader.type")
+                    ) 2>${choosenVersionFile}
     if [[ $? = ${DIALOG_OK} ]] ; then
         if [[ -f ${choosenVersionFile} ]] ; then
             choosenVersion=$(cat ${choosenVersionFile})
@@ -121,10 +239,10 @@ updateBinaries() {
             updateCanceled
             ;;
         ${DIALOG_CANCEL})
-            chooseVersionToInstall
+            chooseVersionToInstall false
             ;;
         ${DIALOG_OK})
-            performUpdate
+            chooseVersionToInstall true
             ;;
     esac
     refreshMainMenu_DATA
